@@ -26,7 +26,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 | `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [eza.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/eza.md)「エイリアスを足す」（`EZA_OPTS` は既定の値） |
 | `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)「gdu の名前で呼ぶ」 |
 | `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [yazi.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/yazi.md) 手順 3 |
-| starship | `starship` があり、まだ初期化していない | 後半 | [starship.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/starship.md) 手順 3 |
+| starship | `starship` があり、まだ初期化していない | 後半 | [starship.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/starship.md) 手順 4・5 |
 | WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) 手順 6 |
 | zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [zoxide.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/zoxide.md) 手順 6（`--cmd z`） |
 
