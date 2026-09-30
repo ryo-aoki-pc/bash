@@ -1,0 +1,16 @@
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export EDITOR=nvim
+export VISUAL=nvim
+alias vi=nvim
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
+alias ll="eza -l --git --group-directories-first"
+alias la="eza -la --git --group-directories-first"
+alias lt="eza --tree --level=2"
+alias gdu=gdu-go
+eval "$(starship init bash)"
+[ -r "${WEZTERM_SHELL_INTEGRATION:=$HOME/.config/wezterm/shell/wezterm.sh}" ] && . "$WEZTERM_SHELL_INTEGRATION"
+[ -n "$WEZTERM_SHELL_INTEGRATION" ] && . "$WEZTERM_SHELL_INTEGRATION"
+eval "$(zoxide init bash --cmd z)"
+eval "$(zoxide init bash)"

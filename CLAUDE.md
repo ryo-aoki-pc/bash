@@ -1,0 +1,85 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## このリポジトリは何か
+
+いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。非公開のリポジトリ。
+
+- 読むもの・読む順番とその実測・移行で消す行の説明は `README.md`（参照用）
+- 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
+
+ビルド・テストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
+
+## よく使うコマンド
+
+```bash
+# 構文と静的検査（shellcheck は setup-notes の docs/shellcheck.md で入れる）
+bash -n bashrc
+shellcheck -s bash bashrc
+
+# 非対話のシェルで何も出さないこと（0 が出ればよい）
+bash -c '. ~/.config/bash/bashrc' 2>&1 | wc -c
+bash -u -c '. ~/.config/bash/bashrc; echo ok'   # set -u でも読める
+
+# 移行の awk を、控えに当てて結果だけ見る（~/.bashrc は変えない）
+awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.bashrc | diff ~/.bashrc -
+```
+
+- プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（README の「読む順番」の表の作り方）
+  - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
+- AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/homebrew.md）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
+
+## 構成
+
+- `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
+- `migrate/` — 導入の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
+  - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
+  - `old-y.txt` — yazi の `y()` の 7 行（並びがすべて同じときだけ消す）
+  - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
+- `docs/install.md` — 導入・更新・ロールバックの手順書
+- `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
+
+## 変えたら合わせて直すもの
+
+- `bashrc` に読むものを足した・変えた → README の「読むもの」の表、`docs/install.md` の手順 9 とその補足の出力
+- 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
+  - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
+- 読む順番を変えた → README の「読む順番」の表を実測で直す
+- 導入のしかた（置き場所・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
+
+## コードの注意
+
+- **何も出力しない**。`ssh <ホスト> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（AlmaLinux 10 と Git Bash の両方で実測）。出力すると scp・rsync が壊れる
+- 前半には、非対話のシェルでも要るもの（PATH と `export` する環境変数）だけを置く。エイリアス・関数・プロンプトの初期化は後半に置く（非対話のシェルで `eval "$(zoxide init bash)"` などを動かさない）
+- **判定は `if …; then …; fi` で書く**。`[ … ] && …` は、偽のときに `$?` を 1 のまま残す。ファイルの最後の `$?` は最初のプロンプトの前のコマンドの終了コードとして扱われ、WezTerm のシェル統合が OSC 133 の `D;1` を送る
+- ツールの有無は `command -v <コマンド> >/dev/null 2>&1`（組み込みで fork しない）
+- `set -u` でも読めるよう、未設定かもしれない変数は `${変数-}` で参照する
+- 関数の中から読まない・読ませない（ツールの初期化が出す `declare` が、その関数のローカル変数になる）
+- ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
+- ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の CLAUDE.md の実測）
+- **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由と実測は README の「読む順番」
+  - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
+  - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
+- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は setup-notes の yazi.md の手順 3 と同じ文字列にする（`migrate/old-y.txt` とも同じ）
+
+## docs/install.md の書き方
+
+setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の CLAUDE.md の「docs/install.md の書き方」と同じ）。要点:
+
+- タイトルの直後に `## 実施手順` を置き、手順は**番号付きリスト 1 つ**（マーカーはすべて `1.`、本文は 3 スペース字下げ）
+  - リードの `> [!IMPORTANT]` に実行する場所・前提・対話や切り替えのある手順、続けて読み方の箇条書き、検証範囲の `> [!WARNING]`
+  - 変数は置かない（URL と置き場所は固定）
+- 各手順は「1 行の説明（「〜する。」）→ コマンドのブロック → 箇条書き（確認・分岐・注意）→ 折り畳み 1 つ（`<details>` / `<summary>補足: 〜</summary>`、前後に空行）」
+  - 箇条書きは 1 項目 1 事実で、末尾に「。」を付けない。理由・実測・出力例は折り畳みへ
+  - 条件付きの手順は 1 行の説明に条件を書き、判定する手順の箇条書きに「〜なら、手順 N は飛ばす」
+  - コマンドの無い操作（エディタで直す、端末を開き直す）も独立した手順にし、次にコマンドを貼る手順の直前に「**次の手順は、〜してから貼る**」を置く
+  - 対話のあるコマンド（非公開のリポジトリの `git clone` は認証を聞くことがある）は、その手順の最後のコマンドにする
+  - `<...>` を含むコマンドはブロックに置かず、箇条書きのインラインコードにする。出力例の値は `<USER>` / `<HOST>` などのプレースホルダで書く
+- 手順の後ろに `## 更新`・`## ロールバック`（リード → 番号付きリスト → `---`。節ごとに 1 から数える）、最後に `## 補足`（対象と検証環境・実施前の状態・選択した方針・完了時点の状態・注意点・参照・付録）
+- 手順の参照は、`## 実施手順` の中では「手順 N」、ほかの節からは `[手順 N](#実施手順)`、その節の中は「この節の手順 N」。手順を分けたりまとめたりしたら番号を付け替える（README と、元の手順書の箇条書きの番号も）
+- アラートは本文の最上位にだけ置き、1 文書に 5 つまで。取り戻せない削除のある節は `> [!CAUTION]` で手順を名指しし、その手順の説明に「（取り戻せない）」
+- 閉じの `**` を約物に接して閉じない（`**…（…）**を` は太字にならない）
+- 補足の「状態」行は、何を通したか・確認したこと・確認していないことの入れ子の箇条書き。**検証範囲が変わったら、状態行・リードの `> [!WARNING]`・付録を合わせて直す**。付録（検証記録）は書き直さない（手順番号の付け替えだけ）
+- コマンドは実際に実行したものを載せる。手順書のブロックを変えたら、コンテナなどで抜き出して流し直してから「検証済み」と書く
+- パスワード・鍵・トークンは書かない
