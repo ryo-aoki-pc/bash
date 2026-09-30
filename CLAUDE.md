@@ -20,7 +20,8 @@ shellcheck -s bash bashrc
 
 # 非対話のシェルで何も出さないこと（0 が出ればよい）
 bash -c '. ~/.config/bash/bashrc' 2>&1 | wc -c
-bash -u -c '. ~/.config/bash/bashrc; echo ok'   # set -u でも読める
+bash -u -c '. ~/.config/bash/bashrc; echo ok'                                  # set -u でも読める（前半。非対話では後半の前で抜ける）
+bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'  # 後半も（ok-1 が出ればよい）
 
 # 移行の awk を、控えに当てて結果だけ見る（~/.bashrc は変えない）
 awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.bashrc | diff ~/.bashrc -
@@ -42,7 +43,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 
 ## 変えたら合わせて直すもの
 
-- `bashrc` に読むものを足した・変えた → README の「読むもの」の表、`docs/install.md` の手順 9 とその補足の出力
+- `bashrc` に読むものを足した・変えた → README の「読むもの」の表、`docs/install.md` の手順 10 とその補足の出力
 - 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
   - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
 - 読む順番を変えた → README の「読む順番」の表を実測で直す
@@ -55,11 +56,12 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - **判定は `if …; then …; fi` で書く**。`[ … ] && …` は、偽のときに `$?` を 1 のまま残す。ファイルの最後の `$?` は最初のプロンプトの前のコマンドの終了コードとして扱われ、WezTerm のシェル統合が OSC 133 の `D;1` を送る
 - ツールの有無は `command -v <コマンド> >/dev/null 2>&1`（組み込みで fork しない）
 - `set -u` でも読めるよう、未設定かもしれない変数は `${変数-}` で参照する
-- 関数の中から読まない・読ませない（ツールの初期化が出す `declare` が、その関数のローカル変数になる）
+- 関数の中から読まない・読ませない（読み込むものが関数の外で `declare` を使うと、その関数のローカル変数になる。2026-09-30 の `brew shellenv`・starship 1.26.0・`shell/wezterm.sh`・zoxide 0.10.0 の初期化には無く、検証コンテナで関数の中から読んでも動いたが、上がったときに壊れないように）
 - ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
 - ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の CLAUDE.md の実測）
 - **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由と実測は README の「読む順番」
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
+  - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。docs/install.md 手順 6）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
 - インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は setup-notes の yazi.md の手順 3 と同じ文字列にする（`migrate/old-y.txt` とも同じ）
 

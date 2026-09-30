@@ -8,7 +8,8 @@
 > - **前提**: git が入っていて、GitHub の非公開のリポジトリを clone できること
 >   - AlmaLinux 10: setup-notes の [git.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/git.md) と、[gh.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gh.md) の `gh auth login`（git の認証も gh に任せる）
 >   - Windows 11: [Git for Windows](https://gitforwindows.org/)（git の認証は、同梱の Git Credential Manager がブラウザで聞く）
-> - **手順 5 はエディタで直す操作、手順 8 は端末を開き直す操作**。手順 9 は、開き直した端末で貼る
+> - **手順 2 は、git の認証を聞かれることがある**（Windows は Git Credential Manager がブラウザで聞く）。clone が終わってから手順 3 を貼る
+> - **手順 6 はエディタで直す操作、手順 9 は端末を開き直す操作**。手順 10 は、開き直した端末で貼る
 
 - 上から順にコードブロックを貼る
 - 各手順の末尾の「補足」（折り畳み）と後半の[補足](#補足)は、実行するだけなら読まなくてよい。折り畳みの中のブロックも貼らなくてよい
@@ -26,7 +27,7 @@
    ```
 
    - `ls` が `No such file or directory` で、`grep` が何も出さなければ、まだ入っていない。手順 2 へ進む
-   - `ls` がディレクトリを出し、`grep` が `if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi` の行を出したら、入っている。手順 2〜9 は飛ばして、[更新](#更新)を行う
+   - `ls` がディレクトリを出し、`grep` が `if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi` の行を出したら、入っている。手順 2〜10 は飛ばして、[更新](#更新)を行う
    - Git Bash で `~/.bashrc` がまだ無ければ、`grep` は `No such file or directory` と出す（手順 3 で作られる）
 
 1. この設定を `~/.config/bash` に clone する。
@@ -44,7 +45,7 @@
    <summary>補足: <code>~/.config/bash</code> に置く理由</summary>
 
    - ほかの自分用の設定（`~/.config/wezterm`・`~/.config/yazi`・`~/.config/lazygit`・`~/.config/nvim`）と同じく、ツールの名前の付いたディレクトリにまとめる
-   - `~/.bashrc` の 1 行（手順 6）と、手順 3 の `awk` は、この置き場所を決め打ちにしている。別の場所に置くなら、両方を書き換える
+   - `~/.bashrc` の 1 行（手順 5）と、手順 3 の `awk` は、この置き場所を決め打ちにしている。別の場所に置くなら、両方を書き換える
    - Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれるはず（試していない）
    - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナで `git -c core.autocrlf=true clone` して確かめた）
 
@@ -83,31 +84,24 @@
 
    ```bash
    git --no-pager diff --no-index ~/.bashrc.before-bash ~/.bashrc
-   grep -n -i -E 'linuxbrew|zoxide|starship|yazi|eza|gdu-go|MANPAGER|nvim|DOCKER_HOST|wezterm' ~/.bashrc
+   grep -n -i -E 'brew|zoxide|starship|yazi|eza|gdu-go|MANPAGER|nvim|DOCKER_HOST|wezterm' ~/.bashrc
    ```
 
    - `git diff` の `-` で始まる行が、手順 3 で消した行
-   - `grep` が何も出さなければ、手順 5 は飛ばす
-   - `grep` が行を出したら、手順 5 でエディタで見る（行の番号が左に出る）
+   - `grep` が何も出さなければ、手順 6・7 は飛ばす
+   - `grep` が行を出したら、手順 6 でエディタで見る（行の番号が左に出る）
 
    <details>
    <summary>補足: 残る行の例</summary>
 
-   - 古い形の WezTerm の行（`if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` から `fi` までの 3 行など）。`grep` は `fi` の行を出さないので、手順 5 で `fi` まで消す
+   - 古い形の WezTerm の行（`if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` から `fi` までの 3 行など）。`grep` は `fi` の行を出さないので、手順 6 で `fi` まで消す
    - 手で直した行（`alias ll="eza -l --icons"`、`eval "$(zoxide init bash --cmd cd)"` など）
+   - Homebrew のコマンドを使う行（`brew --prefix` で補完を読む行など）。手順 3 で消した `brew shellenv` の行の代わりに、手順 5 の 1 行が Homebrew の PATH を足すので、その 1 行より前では動かなくなる
    - WSL で、Windows 側のシェル統合を読む行（wezterm の docs/install.md の「WSL でもシェル統合を使う」）。WSL の `~/.config/wezterm` は無いので、この行は残す
+   - 手順 3 から手順 6 までの間に新しく開いたシェルでは、残った行が `command not found` を出すことがある（検証コンテナで、手順 6 の前に残っていた `eval "$(zoxide init bash --cmd cd)"` が `zoxide: command not found` を出した。手順 6 で後ろへ移すと出なくなった）
    - `diff` は AlmaLinux 10 の最小のコンテナに無かったので、git の `diff --no-index` を使っている
 
    </details>
-
-1. 手順 4 で行が出たときだけ、`~/.bashrc` をエディタで開き、この設定と重なる行を消す。
-
-   - この設定が同じことをする行（README の[読むもの](../README.md#読むもの)の表）は消す。`if … fi` で囲んだ行は `fi` まで消す
-   - この設定と違う形で使いたい行（`--cmd cd` の zoxide など）は、消さずに残す。手順 6 の 1 行より後ろへ移すと、この設定の後に読まれる
-   - WSL の WezTerm の行は残す。starship を使うなら、手順 6 の 1 行より後ろへ移す（前にあると、starship が WezTerm に送る終了コードを 0 にする。README の[読む順番](../README.md#読む順番)）
-   - トークンなど、ホストだけの行は残す
-   - 直した結果の構文は、手順 6 の `bash -n` で確かめる
-   - **次の手順は、エディタを閉じてから貼る**
 
 1. `~/.bashrc` の末尾に、この設定を読む 1 行を足す。
 
@@ -132,6 +126,35 @@
    - `~/.config/bash` が無いホスト（まだ clone していない・消した）では、何もしない
 
    </details>
+
+1. 手順 4 で行が出たときだけ、`~/.bashrc` をエディタで開き、この設定と重なる行を消して、残す行を末尾の 1 行より後ろへ移す。
+
+   - この設定が同じことをする行（README の[読むもの](../README.md#読むもの)の表）は消す。`if … fi` で囲んだ行は `fi` まで消す
+   - この設定と違う形で使いたい行（`--cmd cd` の zoxide、手で直した `alias ll` など）は、消さずに、手順 5 で足した末尾の 1 行より後ろへ移す
+   - zoxide の行を残すときは、`--hook none` を足す（例: `eval "$(zoxide init bash --cmd cd --hook none)"`）
+   - Homebrew のコマンドを使う行も、手順 5 の 1 行より後ろへ移す（Homebrew の PATH は、その 1 行で足される）
+   - WSL の WezTerm の行は残す。starship を使うなら、手順 5 の 1 行より後ろへ移す（前にあると、starship が WezTerm に送る終了コードを 0 にする。README の[読む順番](../README.md#読む順番)）
+   - トークンなど、ホストだけの行は残す（前でも後ろでもよい）
+   - **次の手順は、エディタを閉じてから貼る**
+
+   <details>
+   <summary>補足: 残す行を後ろへ移す理由</summary>
+
+   - 前に残した行は、この設定より先に読まれる。Homebrew の PATH はまだ無く（`command not found`）、エイリアスはこの設定に上書きされる。zoxide の行が前にあると、この設定は zoxide を初期化し直さないので、`z` ができない
+   - この設定は `eval "$(zoxide init bash)"` でフックを足している。zoxide は `PROMPT_COMMAND` の先頭の要素しか見ないので、AlmaLinux 10（`/etc/bashrc` が配列にする）では、後ろに残した zoxide の行がフックをもう 1 つ足し、`. ~/.bashrc` で読み直すたびに増える（検証コンテナで `[1]="__zoxide_hook" [2]="__zoxide_hook"`）
+   - `--hook none` を足すと、残した行は `cd` などの関数だけを足す。検証コンテナでは、フックは読み直しても 1 つのままで、`cd share` で `/usr/share` に移り、`zoxide: detected a possible configuration issue.` は出なかった。`z` もそのまま使える（この設定が定義する）
+
+   </details>
+
+1. 手順 6 でエディタで直したときだけ、構文と並びを確かめる。
+
+   ```bash
+   bash -n ~/.bashrc && echo 'bash -n: OK'
+   grep -n -i -E 'config/bash/bashrc|brew|zoxide|starship|yazi|eza|gdu-go|MANPAGER|nvim|DOCKER_HOST|wezterm' ~/.bashrc
+   ```
+
+   - `bash -n: OK` と出ればよい。`syntax error` と出たら、手順 6 に戻って直す
+   - 手順 6 で残した行の番号が、`config/bash/bashrc` の行（手順 5 の 1 行）の番号より大きければよい
 
 1. ログインシェルの設定ファイルが無いときだけ（新しい Git Bash など）、`~/.bashrc` を読む `~/.bash_profile` を作る。
 
@@ -176,7 +199,7 @@
    - 1 行目が `1` なら、対話のシェルでこの設定が最後まで読まれている
    - 2〜4 行目は、このホストに入っているツールの分だけ出る（README の[読むもの](../README.md#読むもの)）。eza があれば `ll`・`la`・`lt`、yazi があれば `function`（`y`）、zoxide があれば `function`（`z`）
    - 最後が `0` なら、非対話のシェル（`ssh <HOST> <コマンド>`・scp・rsync）で何も出力しない
-   - 1 行目が `読まれていない` なら、手順 6・7 を見直す
+   - 1 行目が `読まれていない` なら、手順 5・8 を見直す
 
    <details>
    <summary>補足: 検証コンテナでの出力</summary>
@@ -210,13 +233,22 @@
 
    ```bash
    git -C ~/.config/bash pull --ff-only
-   git -C ~/.config/bash log -1 --oneline
    ```
 
    - 新しいコミットが無ければ、`Already up to date.` と出る
-   - 開いている端末には効かない。[手順 8](#実施手順) と同じく開き直す
+   - `Username for 'https://github.com':` と聞かれたら、`Ctrl+C` で止め、[前提](#実施手順)の認証を済ませてから貼り直す
    - 手元で変えたファイルがあって pull が止まったら、`git -C ~/.config/bash status` で見る
    - インターネットに出られないホストは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（git は `ALL_PROXY` を読む。試していない）
+   - **次の手順は、pull が終わってから貼る**（認証を聞かれている間に貼ると、答えとして食われる）
+
+1. 取り込んだコミットを確かめる。
+
+   ```bash
+   git -C ~/.config/bash log -1 --oneline
+   ```
+
+   - いちばん新しいコミットが 1 行出る
+   - 開いている端末には効かない。[手順 9](#実施手順) と同じく開き直す
 
 ---
 
@@ -236,6 +268,7 @@
    ```
 
    - `0` と出ればよい
+   - この節の手順 3 で控えに戻すまで、新しく開いたシェルでは、[手順 6](#実施手順) で後ろへ移した行が `command not found` を出すことがある（Homebrew の PATH を足す行が無くなるため）
 
 1. [手順 3](#実施手順) の控えと、今の `~/.bashrc` の違いを見る。
 
@@ -243,8 +276,9 @@
    git --no-pager diff --no-index ~/.bashrc ~/.bashrc.before-bash
    ```
 
-   - `+` で始まる行が、控えから戻すと戻る行（[手順 3](#実施手順) で消した行と、[手順 5](#実施手順) でエディタで消した行）
+   - `+` で始まる行が、控えから戻すと戻る行（[手順 3](#実施手順) で消した行と、[手順 6](#実施手順) でエディタで消した行）
    - `-` で始まる行が、控えから戻すと消える行（控えを取った後に足した行）
+   - 控えに戻さないなら、この節の手順 3 は飛ばす（`~/.bashrc.before-bash` は、要らなければ手で消す）
 
 1. 控えの内容に戻すときだけ、控えから戻す。
 
@@ -254,16 +288,17 @@
    ```
 
    - `bash -n: OK` と出ればよい
-   - 戻さないなら、`~/.bashrc.before-bash` は要らなければ手で消す
 
 1. 設定のリポジトリに、手元だけの変更が無いか確かめる。
 
    ```bash
    git -C ~/.config/bash status --short --branch
+   git -C ~/.config/bash log --branches --not --remotes --oneline
+   git -C ~/.config/bash stash list
    ```
 
-   - `## main...origin/main` の 1 行だけなら、手元だけの変更は無い
-   - ほかの行や `[ahead 1]` などが出たら、要るものを別の場所へ写してから、この節の手順 5 へ進む
+   - `## main...origin/main` の 1 行だけが出て、`log` と `stash list` が何も出さなければ、手元だけの変更は無い
+   - ほかの行・`[ahead 1]` など・`log` のコミット・`stash@{0}` などが出たら、要るものを別の場所へ写してから、この節の手順 5 へ進む
 
 1. 設定を消す（取り戻せない）。
 
@@ -273,7 +308,7 @@
    ```
 
    - `No such file or directory` と出る
-   - [手順 7](#実施手順) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で同じものを作り直す）
+   - [手順 8](#実施手順) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[手順 8](#実施手順) の補足。試していない）
    - 開いている端末には、この設定の関数やフックが残る。開き直すと消える
 
 ---
@@ -286,15 +321,17 @@
 - **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
 - **状態**: **x86_64 のコンテナでのみ検証済み（2026-09-30）。実機・Windows 11 の Git Bash・WSL では本実行していない**
   - 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
-  - 手順 8・9 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 9 のブロックを打ち込んで出力を読んだ
+  - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
+  - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
   - 確認したこと
     - 未導入の判定、clone（`core.autocrlf=true` でも LF）、clone に失敗したときの手順 3 の `中断:`
-    - 元の手順書の行の消し方: 実機と同じ並びの `~/.bashrc`、今の手順書の行をすべて持つ `~/.bashrc`、`/etc/skel` のままの `~/.bashrc`、`~/.bashrc` の無いホーム（Git Bash の代わり）
+    - 元の手順書の行の消し方: 実機と同じ並びの `~/.bashrc`（ホストだけの行つき）、今の手順書の行をすべて持つ `~/.bashrc`、`/etc/skel` のままの `~/.bashrc`、`~/.bashrc` の無いホーム（Git Bash の代わり）
+    - 手順 6 で残す行を後ろへ移す形（Homebrew のコマンドを使う行、`--hook none` を足した `--cmd cd` の zoxide）と、手順 7 の確かめ
     - 移行の前後のシェルの比較（エイリアス・関数・`PATH`・環境変数・`PROMPT_COMMAND`）
     - 読み込みの 1 行と 2 度貼ったとき、`~/.bash_profile` の有無、開き直したログインシェルでの読み込み
-    - 非対話のシェルで何も出さないこと（`bash -c`・`ssh` のコマンド・scp・sftp・rsync）、`set -u`
-    - 更新（新しいコミットを入れた fast-forward）、ロールバック
-    - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（zoxide と starship）
+    - 非対話のシェルで何も出さないこと（`bash -c`・`ssh` のコマンド・scp・sftp・rsync）、`set -u`（非対話の前半と、対話の後半）
+    - 更新（新しいコミットを入れた fast-forward）、ロールバック（手元だけのコミットと stash が見えることも）
+    - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（Homebrew・zoxide・yazi・eza・gdu・bat・Neovim・starship）
   - **確認していないこと**: Windows 11 の Git Bash（`awk`・`~/.bash_profile` の生成・起動の時間・`y()` が Windows のパスを受け取るところ）、WSL、実機（AlmaLinux 10）と aarch64、非公開のリポジトリの認証（検証コンテナは手元の bare リポジトリから clone した）、インターネットに出られないホストでの更新、端末の画面（プロンプトへのジャンプなど）、podman のソケットがあるときの `DOCKER_HOST`
 
 | 項目 | 検証コンテナ |
@@ -303,19 +340,19 @@
 | OS | AlmaLinux 10.2 (Lavender Lion) / x86_64（`almalinux:10`、Docker 29.3.1、`--network host`） |
 | bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` |
 | Homebrew | 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） |
-| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0` の直し（README の[読む順番](../README.md#読む順番)）を足したもの |
+| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） |
 | sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） |
 
 > [!NOTE]
-> 出力例の値は `<USER>` / `<WIN_USER>` / `<HOST>` / `<N>` などのプレースホルダで書いてある。ツールの版は実行日によって変わる。
+> 出力例の値は `<USER>` / `<WIN_USER>` / `<HOST>` などのプレースホルダで書いてある。ツールの版は実行日によって変わる。
 
 手順書全体に関わる理由・実測・落とし穴と検証記録（手順ごとのものは各手順の末尾の「補足」にある）。手順を実行するだけなら読まなくてよい。
 
 ### 実施前の状態
 
-| 項目 | 移行するホスト（検証の mig） | 新しいホスト（検証の new） |
+| 項目 | 移行するホスト（検証の m3） | 新しいホスト（検証の n2） |
 |---|---|---|
-| `~/.bashrc` | `/etc/skel` の 25 行の後ろに、元の手順書の行（付録） | `/etc/skel` のまま |
+| `~/.bashrc` | `/etc/skel` の 25 行の後ろに、元の手順書の行とホストだけの行（付録） | `/etc/skel` のまま |
 | `~/.config/bash` | 無し | 無し |
 | Homebrew とツール | あり（検証環境の表） | あり |
 | `~/.config/wezterm` | あり | 無し |
@@ -336,7 +373,7 @@
   - 項目が約 10 個で、読む順番を 1 か所で見られる。ファイルの並びの順（ロケール）や、NTFS でファイルを開く回数を気にしなくてよい
 - **非公開のリポジトリ**（利用者の選択）。clone と pull に GitHub の認証が要る
 - **プロンプトの 3 つ（starship・WezTerm・zoxide）は、この順に読む**。setup-notes の starship.md の並び（starship を最後）とは違う。理由と実測は README の[読む順番](../README.md#読む順番)
-- **元の手順書の行は、行全体が同じものだけを機械的に消し、ほかはエディタで直す**（手順 3〜5）
+- **元の手順書の行は、行全体が同じものだけを機械的に消し、ほかはエディタで直す**（手順 3・4・6・7）
 
 ### 完了時点の状態
 
@@ -345,9 +382,9 @@
 | `~/.config/bash` | このリポジトリの clone（`main`） |
 | `~/.bashrc` | 元の手順書の行が消え、末尾に `if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi` |
 | `~/.bashrc.before-bash` | 手順 3 の控え |
-| `~/.bash_profile` | 手順 7 で作ったときだけ（ログインシェルの設定ファイルが 1 つも無かったホスト） |
+| `~/.bash_profile` | 手順 8 で作ったときだけ（ログインシェルの設定ファイルが 1 つも無かったホスト） |
 
-- 開き直したシェルでの確かめ（手順 9）の出力は、手順 9 の補足にある
+- 開き直したシェルでの確かめ（手順 10）の出力は、手順 10 の補足にある
 
 ### 注意点
 
@@ -363,7 +400,7 @@
 - **root のシェルは対象外**
   - root の `~/.bashrc` にこの 1 行を足すと、Homebrew のユーザーが持つコマンドを root で動かす。root で Homebrew のコマンドを使うなら、setup-notes の [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)
 - **WSL・MSYS2・QMK MSYS は、ホームが別**
-  - WSL は、WSL の中で手順 1〜9 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
+  - WSL は、WSL の中で手順 1〜10 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
 - **macOS と zsh は対象外**（Homebrew の場所も `/home/linuxbrew/.linuxbrew` 決め打ち）
 
 ### 参照
@@ -382,32 +419,52 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 - 検証環境だけの変更
   - dnf・Homebrew・git がホストのプロキシを通るように `https_proxy` を渡し、プロキシの CA を取り込んだ
   - root で `git openssh-server openssh-clients rsync strace procps-ng util-linux which sudo findutils tar file gcc make diffutils man-db` を入れた
-  - Homebrew は、`/home/linuxbrew/.linuxbrew` を先に作って、インストーラを `NONINTERACTIVE=1` で流して入れた。その後 `brew install zoxide yazi eza bat neovim gdu starship`（全ユーザーから見える）
+  - Homebrew は、`/home/linuxbrew/.linuxbrew` を先に作って、インストーラを `NONINTERACTIVE=1` で流して入れた。その後 `brew install zoxide yazi eza bat neovim gdu starship shellcheck`（全ユーザーから見える）
   - 手順 2 の clone の URL を、このリポジトリの作業中のコミットの bare リポジトリ（`/tmp/bash.git`）に置き換えた（非公開の GitHub への認証は試していない）。root が持つ bare リポジトリなので、`git config --system --add safe.directory /tmp/bash.git` を足した
-  - `~/.config/wezterm` には ryo-aoki-pc/wezterm を clone し、`shell/wezterm.sh` を `PS0` の直しの入ったものに差し替えた
+  - `~/.config/wezterm` には ryo-aoki-pc/wezterm を clone し、`shell/wezterm.sh` を直したものに差し替えた
   - sshd は、`/etc/ssh/sshd_config.d/90-test.conf`（`Port 2222`・`ListenAddress 127.0.0.1`）で立て、ユーザーごとに鍵を作った
-- **この文書の bash のコードブロックを機械的に抜き出したもの**を、手順ごとにそのユーザーの `bash -s` に流した（折り畳みの中のブロックは除いた）
-- 手順 5 は、エディタの代わりに `sed -i 27,29d ~/.bashrc` で、手順 4 の `grep` が出した `if … fi` の 3 行を消した
-- 手順 8・9: そのユーザーで `script -q -E never -O <ログ> -c 'bash -il'` を `TERM=xterm-256color TERM_PROGRAM=WezTerm` で開き（手順 8 の代わり）、手順 9 のブロックを 1 行ずつ打ち込んで、ログから制御文字を除いて読んだ
+- **この文書の bash のコードブロックを機械的に抜き出したもの**を、手順ごとにそのユーザーの `bash -s` に流した（折り畳みの中のブロックは除いた。`su -` で入るので、流すたびにそのユーザーのログインシェルが `~/.bashrc` を読む）
+- 手順 6 は、エディタの代わりに awk で、手順 4 の `grep` が出した WezTerm の `if … fi` の 3 行を消し、Homebrew を使う 3 行と zoxide の行を末尾へ移して、zoxide の行に `--hook none` を足した
+- 手順 9・10: そのユーザーで `script -q -E never -O <ログ> -c 'bash -il'` を `TERM=xterm-256color TERM_PROGRAM=WezTerm` で開き（手順 9 の代わり）、手順 10 のブロックを 1 行ずつ打ち込んで、ログから制御文字を除いて読んだ
 
-| 実行 | ユーザー（実施前の `~/.bashrc`） | 流した手順 | 結果 |
-|---|---|---|---|
-| 1 | mig（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、後ろにダミーの `GITLAB_TOKEN` と `GITLAB_HOST`） | 手順 1〜4・5（`sed`）・6・7・9、[更新](#更新)の手順 1、[ロールバック](#ロールバック)の手順 1〜5 | 手順 1 は `No such file or directory` だけ。最初の手順 2 は、bare リポジトリの `safe.directory` を足す前で `fatal: detected dubious ownership` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった（足した後に手順 2 から流し直した）。手順 3 は `bash -n: OK`。手順 4 の `git diff` は 26〜34 行目の 9 行を `-` で出し、`grep` は `27:if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` と `28:  . "$WEZTERM_SHELL_INTEGRATION"`（`fi` の行は出ない）。手順 7 は `.bash_profile` の 4・5 行目。手順 9 は手順 9 の補足のとおり。更新は `Fast-forward`。ロールバックの手順 1 は `0`、手順 2 は消した 9 行と `if … fi` の 3 行を `+` で出し、手順 3 で実施前の `~/.bashrc` に戻った |
-| 1 | mig2（`/etc/skel` の後ろに、今の手順書が書く行をすべて手順書の並びで。starship が最後） | 手順 1〜4・6・7・9 | 手順 3 で 20 行がすべて消え、手順 4 の `grep` は何も出さなかった（手順 5 は飛ばした） |
-| 1 | new（`/etc/skel` のまま） | 手順 1〜4・6・7・9 | 手順 4 は何も出さず、手順 9 は mig と同じ |
-| 1 | gb（ホームにドットファイルが 1 つも無い。Git Bash の新しいホームの代わり） | 手順 1〜4・6・7・9 | 手順 1 は `grep: /home/gb/.bashrc: No such file or directory` も出した。手順 3 で空の `~/.bashrc` ができた。手順 7 は 2 行の `~/.bash_profile` を作り、手順 9 のログインシェルはそこから `~/.bashrc` を読んだ（1 行目が `1`） |
+**2 回目（今の版。手順 5・6 を入れ替え、手順 7 を足し、更新を 2 つに分け、ロールバックの手順 4 に `log` と `stash list` を足した後）**
 
-個別に確かめたこと:
+| ユーザー（実施前の `~/.bashrc`） | 流した手順 | 結果 |
+|---|---|---|
+| m3（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、39〜41 行目 `if type brew &>/dev/null; then` で `brew --prefix` を使う 3 行、42 行目 `eval "$(zoxide init bash --cmd cd)"`、43 行目ダミーの `GITLAB_TOKEN`） | 手順 1〜5・6（awk）・7・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5 | 手順 3 は `bash -n: OK`。手順 4 の `git diff` は 26〜34 行目の 9 行を `-` で出し、`grep` は WezTerm の 2 行（`fi` は出ない）・Homebrew を使う 2 行・zoxide の行を出した。手順 4・5 を流したログインシェルは `zoxide: command not found` を出した（手順 4 の補足）。手順 7 は `bash -n: OK` と、読み込みの行（28 行目）の後ろに移した 29・30・32 行目。手順 10 は手順 10 の補足のとおり。更新は `Fast-forward` と `検証用のコミット` の 1 行。ロールバックの手順 1 は `0`、手順 2 は消した行と移した行を出し、手順 3 で実施前と同じ 43 行に戻った。手順 4 は `## …` の 1 行だけ、手順 5 は `No such file or directory` |
+| m4（`/etc/skel` の後ろに、今の手順書が書く行をすべて手順書の並びで。starship が最後） | 手順 1〜5・8・10 | 手順 3 で 20 行がすべて消え、手順 4 の `grep` は何も出さなかった（手順 6・7 は飛ばした） |
+| n2（`/etc/skel` のまま） | 手順 1〜5・8・10 | 手順 4 は何も出さず、手順 10 は m4 と同じ |
+| g2（ホームにドットファイルが 1 つも無い。Git Bash の新しいホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `grep: /home/g2/.bashrc: No such file or directory` も出した。手順 3 で空の `~/.bashrc` ができた。手順 8 は 2 行の `~/.bash_profile` を作り、手順 10 のログインシェルはそこから `~/.bashrc` を読んだ（1 行目が `1`） |
+
+- 最初に流した n2・g2 は、検証の手違いで `~/.config` を root で作っていたので、手順 2 が `Permission denied` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった（直してから、はじめから流し直した）
+
+2 回目で個別に確かめたこと:
+
+| 確かめたこと | 結果 |
+|---|---|
+| m3 の、開き直した対話のシェル | `MY_BREW_PREFIX=/home/linuxbrew/.linuxbrew`（Homebrew を使う行が動いた）、`type -t cd z` は 2 つとも `function`、`PROMPT_COMMAND` の `__zoxide_hook` は `. ~/.bashrc` の前後とも 1 つ、`cd /usr/share; cd; cd share` で `/usr/share`、`zoxide: detected a possible configuration issue.` は出なかった |
+| `set -u`（m3） | `bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1`（後半まで読んだ） |
+| 手元だけのコミットと stash があるときのロールバックの手順 4（n2） | `[ahead 1]`、`log` のコミット 1 行、`stash@{0}: …` が出た |
+
+**1 回目（手順 5 と 6 が逆で、手順 7 が無かった版）**
+
+| ユーザー（実施前の `~/.bashrc`） | 流した手順（今の番号） | 結果 |
+|---|---|---|
+| mig（m3 から、Homebrew を使う 3 行と `--cmd cd` の zoxide の行を除いたもの。`GITLAB_HOST` の行もあった） | 手順 1〜4、手順 6（`sed -i 27,29d`）、手順 5・8・10、更新（当時の 1 つのブロック）、ロールバックの手順 1〜5 | 最初の手順 2 は、bare リポジトリの `safe.directory` を足す前で `fatal: detected dubious ownership` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった。そのほかは 2 回目の m3 と同じ（手順 3 で 9 行が消え、手順 3 の控えから実施前に戻った） |
+| mig2（2 回目の m4 と同じ） | 手順 1〜5・8・10 | 2 回目の m4 と同じ |
+| new・gb（2 回目の n2・g2 と同じ） | 手順 1〜5・8・10 | 2 回目の n2・g2 と同じ |
+
+1 回目で個別に確かめたこと:
 
 | 確かめたこと | 結果 |
 |---|---|
 | 移行の前後の、対話のシェルの状態（mig2。`alias`・`declare -F`・`PATH`・`EDITOR`・`VISUAL`・`MANPAGER`・`DOCKER_HOST`・`PROMPT_COMMAND`） | 違いは 2 つだけ。`DOCKER_HOST` が `unix:///podman/podman.sock`（ソケットが無く、`XDG_RUNTIME_DIR` も空のまま足されていた）から空になった。`PROMPT_COMMAND` は `([0]="starship_precmd" [1]="__zoxide_hook")` から `([0]="__wezterm_prompt_command;__wz_mouse_off;starship_precmd" [1]="__zoxide_hook")` になった（README の[読む順番](../README.md#読む順番)） |
 | 移行の前後（mig） | `PATH` は変わらず、`GITLAB_*` の 2 行は `~/.bashrc` に残った。前の `~/.bashrc` に無かった eza・gdu・Neovim・bat・starship の設定が足された（Homebrew に入っているため）。WezTerm の関数は、古い形の行が `WEZTERM_SHELL_INTEGRATION` を要したので前には無かった |
-| 2 度目の手順 3・6 | `中断: ~/.bashrc.before-bash が既にある`。読み込みの行は 1 つのまま |
+| 2 度目の手順 3・5 | `中断: ~/.bashrc.before-bash が既にある`。読み込みの行は 1 つのまま |
 | `git -c core.autocrlf=true clone` | `git ls-files --eol` はすべて `i/lf w/lf attr/text=auto eol=lf`、`bashrc` の CR は 0 個。CRLF にした `bashrc` を読むと `$'\r': command not found` と `syntax error` になった |
 | `remove-old-lines.awk` を直接（すべての行の後ろに、手で直した `alias ll="eza -l --icons"`、ファイルの末尾で改行の無い `y()`、余分な `}` を置いたファイル） | 手で直した行と余分な `}` は残り、`y()` は 2 つとも消えた。余分な `}` は `bash -n` が `syntax error near unexpected token '}'` で見つけた |
 | 非対話のシェル（全部のツールがあるユーザー） | `bash -c '. ~/.bashrc' 2>&1 \| wc -c` は `0`。`ssh <HOST> true` の出力は 0 バイト（初回の `known_hosts` の警告を除く）。`ssh <HOST> 'echo …'` では `EDITOR=nvim` と Homebrew の `brew` が見え、`y`・`ll`・`z` と `__bash_config_loaded` は無かった。scp・`scp -O`・sftp・rsync は通った |
-| `set -u` | `bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok` |
+| `set -u`（非対話） | `bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok` |
 | 起動の時間（`bash -i -c exit` を 20 回の平均。全部のツールがあるユーザー） | `/etc/skel` だけ 38.6 ms、今の手順書どおりの `~/.bashrc` 77.5 ms、この設定 79.1 ms |
 | 非対話で `~/.bashrc` を読む時間と、起動するプロセス（`strace -f` の `clone`） | `/etc/skel` だけ 34.1 ms・22 回、今の手順書どおり 64.2 ms・54 回、この設定 46.7 ms・27 回（非対話では zoxide と starship を初期化しないため） |
 | 開いたシェルに zoxide を入れて `. ~/.bashrc` | `z` が使え、警告は出ず、`false` の後は `D;1` |
@@ -417,7 +474,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 #### 未確認事項
 
-- Windows 11 の Git Bash での実行（`awk`・`git diff --no-index`・`~/.bash_profile` の生成と Git for Windows の警告・起動の時間・`command -v` が見つからないときの時間・`y()`）
+- Windows 11 の Git Bash での実行（`awk`・`git diff --no-index`・`~/.bash_profile` の生成と Git for Windows の警告・起動の時間・`command -v` が見つからないときの時間・`y()`・`--hook none` の zoxide）
 - WSL、MSYS2・QMK MSYS
 - 実機（AlmaLinux 10）と aarch64
 - 非公開の GitHub のリポジトリの clone と pull（gh と Git Credential Manager の認証）

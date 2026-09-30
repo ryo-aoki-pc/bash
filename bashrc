@@ -14,7 +14,8 @@
 # ※ 判定は if … fi で書く。[ … ] && … だと、ツールが無いときに $? が 1 のまま残り、
 #   最初のプロンプトが失敗の扱いになる（WezTerm の OSC 133 の D;1 など）
 # ※ set -u のシェルでも読めるよう、未設定かもしれない変数は ${変数-} で参照する
-# ※ 関数の中から読まない（ツールの初期化が出す declare が、その関数のローカル変数になる）
+# ※ 関数の中から読まない（読み込むものが関数の外で declare を使うと、その関数のローカル変数になる。
+#   今の Homebrew・starship・WezTerm・zoxide の初期化には無いが、上がったときに壊れないように）
 
 # --- すべての bash ------------------------------------------------------------
 # ssh <ホスト> <コマンド> や ssh -t <ホスト> lazygit のような非対話のシェルでも要る、
@@ -93,9 +94,11 @@ fi
 # zoxide（docs/zoxide.md 手順 6）
 # 読み直したときは初期化し直さない（AlmaLinux の /etc/bashrc は PROMPT_COMMAND を配列にし、
 # zoxide は配列の先頭しか見ないので、初期化のたびにフックを重ねて足す）
+# ~/.bashrc の読み込みの行より後ろで別の形（--cmd cd など）の zoxide を読むなら、--hook none を付ける
+# （付けないとフックが 2 つになる。docs/install.md 手順 6）
 if command -v zoxide >/dev/null 2>&1 && ! declare -F __zoxide_hook >/dev/null; then
 	eval "$(zoxide init bash)"
 fi
 
-# 読み込んだ印（docs/install.md の手順 9 で確かめる用。非対話のシェルでは上で抜けるので付かない）
+# 読み込んだ印（docs/install.md の手順 10 で確かめる用。非対話のシェルでは上で抜けるので付かない）
 __bash_config_loaded=1
