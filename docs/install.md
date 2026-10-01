@@ -17,7 +17,7 @@
 - 手順の後: 以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は x86_64 のコンテナでのみ検証した**（画面の代わりに `script` の擬似端末で対話のシェルを動かした）。**実機・Windows 11 の Git Bash・WSL では試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は x86_64 のコンテナでのみ検証した**（画面の代わりに `script` の擬似端末で対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**（WezTerm の GUI の画面とキー操作は、まだ試していない）。**AlmaLinux 10 の実機・WSL では試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -36,18 +36,20 @@
    git clone https://github.com/ryo-aoki-pc/bash.git ~/.config/bash
    ```
 
-   - `Cloning into '/home/<USER>/.config/bash'...` と出る
+   - `Cloning into '/home/<USER>/.config/bash'...` と出る（Git Bash では `Cloning into 'C:/Users/<WIN_USER>/.config/bash'...`）
    - 非公開のリポジトリなので、git の認証が無いと `Username for 'https://github.com':` と聞かれる。`Ctrl+C` で止め、[前提](#実施手順)の認証を済ませてから貼り直す
-   - Windows では、Git Credential Manager がブラウザで GitHub のサインインを聞くことがある（試していない）
+   - Windows では、Git Credential Manager に GitHub の資格情報が無ければ、サインインを求められる（ブラウザでのサインインそのものは試していない）
+   - Windows でも gh で GitHub にログインしてあるなら、`gh auth setup-git` で git の認証を gh に任せてもよい（AlmaLinux 10 と同じ形。この手順の補足）
    - **次の手順は、clone が終わってから貼る**（認証を聞かれている間に貼ると、答えとして食われる）
 
    <details>
-   <summary>補足: <code>~/.config/bash</code> に置く理由</summary>
+   <summary>補足: <code>~/.config/bash</code> に置く理由と、Windows の認証</summary>
 
    - ほかの自分用の設定（`~/.config/wezterm`・`~/.config/yazi`・`~/.config/lazygit`・`~/.config/nvim`）と同じく、ツールの名前の付いたディレクトリにまとめる
    - `~/.bashrc` の 1 行（手順 5）と、手順 3 の `awk` は、この置き場所を決め打ちにしている。別の場所に置くなら、両方を書き換える
-   - Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれるはず（試していない）
-   - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナで `git -c core.autocrlf=true clone` して確かめた）
+   - Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
+   - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナと、Windows 11 の Git for Windows 2.55.0 で `git -c core.autocrlf=true clone` して確かめた）
+   - 検証した Windows 11 の PC は、Git Credential Manager に GitHub の資格情報が無かった（GCM のトレースで `Found 0 accounts`）。サインインの画面を開かないよう、`gh auth setup-git` が書くのと同じ指定（`credential.helper` を空にして、`https://github.com` だけ `!gh auth git-credential`）を環境変数（`GIT_CONFIG_COUNT` など）でそのシェルにだけ渡し、手順 2 と[更新](#更新)の手順 1 を通した
 
    </details>
 
@@ -73,7 +75,7 @@
    <summary>補足: 消し方</summary>
 
    - `migrate/old-lines.txt` の行と、行全体が同じ行を消す。手で直した行や、`--cmd cd` の zoxide・別の `EZA_OPTS` の eza のように少しでも違う行は残る（手順 4 で見る）
-   - yazi の `y()` は、`migrate/old-y.txt` の 7 行と、続く 7 行がすべて同じときだけ消す。`sed '/^function y() {$/,/^}$/d'` のような範囲の消し方は、閉じ括弧が見つからないと最後の行まで消すので使わない
+   - yazi の `y()` は、`migrate/old-y.txt` の形のどれかと、続く行がすべて同じときだけ消す。形は、setup-notes の yazi.md の 7 行（今の形と、2026-10-01 に比べ方を直す前の形）と、それぞれを LazyVim で保存した 8 行（保存のときに shfmt が整形した形）の 4 つ。`sed '/^function y() {$/,/^}$/d'` のような範囲の消し方は、閉じ括弧が見つからないと最後の行まで消すので使わない
    - 控えの `~/.bashrc.before-bash` から読み、`~/.bashrc` に書く。`~/.bashrc` のファイル自体（パーミッション）はそのまま
    - `touch` は、Git Bash で `~/.bashrc` がまだ無いときに空のファイルを作るため
    - 検証コンテナで、実機と同じ並び（Homebrew・`y()`・zoxide・`if … fi` の 3 行の WezTerm）の `~/.bashrc` に流した出力は、[付録](#付録-コンテナでの検証記録2026-09-30)にある
@@ -96,6 +98,7 @@
 
    - 古い形の WezTerm の行（`if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` から `fi` までの 3 行など）。`grep` は `fi` の行を出さないので、手順 6 で `fi` まで消す
    - 手で直した行（`alias ll="eza -l --icons"`、`eval "$(zoxide init bash --cmd cd)"` など）
+   - 手で直した `y()`。`grep` は関数の中の `yazi` を含む 2 行だけを出し、`function y() {` と `}` の行は出さないので、手順 6 で `}` まで消す
    - Homebrew のコマンドを使う行（`brew --prefix` で補完を読む行など）。手順 3 で消した `brew shellenv` の行の代わりに、手順 5 の 1 行が Homebrew の PATH を足すので、その 1 行より前では動かなくなる
    - WSL で、Windows 側のシェル統合を読む行（wezterm の docs/install.md の「WSL でもシェル統合を使う」）。WSL の `~/.config/wezterm` は無いので、この行は残す
    - 手順 3 から手順 6 までの間に新しく開いたシェルでは、残った行が `command not found` を出すことがある（検証コンテナで、手順 6 の前に残っていた `eval "$(zoxide init bash --cmd cd)"` が `zoxide: command not found` を出した。手順 6 で後ろへ移すと出なくなった）
@@ -129,7 +132,7 @@
 
 1. 手順 4 で行が出たときだけ、`~/.bashrc` をエディタで開き、この設定と重なる行を消して、残す行を末尾の 1 行より後ろへ移す。
 
-   - この設定が同じことをする行（README の[読むもの](../README.md#読むもの)の表）は消す。`if … fi` で囲んだ行は `fi` まで消す
+   - この設定が同じことをする行（README の[読むもの](../README.md#読むもの)の表）は消す。`if … fi` で囲んだ行は `fi` まで、`y()` は `function y() {` から `}` まで消す
    - この設定と違う形で使いたい行（`--cmd cd` の zoxide、手で直した `alias ll` など）は、消さずに、手順 5 で足した末尾の 1 行より後ろへ移す
    - zoxide の行を残すときは、`--hook none` を足す（例: `eval "$(zoxide init bash --cmd cd --hook none)"`）
    - Homebrew のコマンドを使う行も、手順 5 の 1 行より後ろへ移す（Homebrew の PATH は、その 1 行で足される）
@@ -168,6 +171,7 @@
    ```
 
    - AlmaLinux 10 では、既にある `~/.bash_profile` の `/home/<USER>/.bash_profile:4:if [ -f ~/.bashrc ]; then` と `/home/<USER>/.bash_profile:5:    . ~/.bashrc` の 2 行が出る（何も作らない）
+   - Git for Windows が作った `~/.bash_profile` のある Git Bash では、`/c/Users/<WIN_USER>/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc` の 1 行が出る（何も作らない）
    - ログインシェルの設定ファイルが 1 つも無いホスト（新しい Git Bash）では、作った 2 行が出る
    - 既にあるファイルが何も出さなければ、そのファイルは `~/.bashrc` を読んでいない。エディタで `if [ -f ~/.bashrc ]; then . ~/.bashrc; fi` を足す
 
@@ -176,6 +180,7 @@
 
    - WezTerm や Git Bash のショートカットは、bash をログインシェル（`-l`）で起動する。ログインシェルは `~/.bash_profile`・`~/.bash_login`・`~/.profile` の最初に見つかった 1 つだけを読み、`~/.bashrc` は読まない
    - Git for Windows は、`~/.bashrc` があって 3 つとも無いと、`~/.bashrc` を読む `~/.bash_profile` を作り、`WARNING: Found ~/.bashrc but no ~/.bash_profile, ~/.bash_login or ~/.profile.` と赤く表示する（`/etc/profile.d/bash_profile.sh`）。この手順は、それを先に作っておくもの
+     - 検証した PC（Git for Windows 2.55.0）で、`~/.bashrc` だけがあるホームのログインシェルを開くと、この表示が出て、`# generated by Git for Windows` で始まる 3 行の `~/.bash_profile` ができた。この手順で作った後は出なかった
    - AlmaLinux 10 の `~/.bash_profile`（`/etc/skel` から）は、`~/.bashrc` を読む
 
    </details>
@@ -198,13 +203,14 @@
 
    - 1 行目が `1` なら、対話のシェルでこの設定が最後まで読まれている
    - 2〜4 行目は、このホストに入っているツールの分だけ出る（README の[読むもの](../README.md#読むもの)）。eza があれば `ll`・`la`・`lt`、yazi があれば `function`（`y`）、zoxide があれば `function`（`z`）
+   - Git Bash では、eza が無くても `alias ll='ls -l'` が出る（Git for Windows の `/etc/profile.d/aliases.sh` のもので、この設定のものではない）。`alias gdu` は出ない（scoop の gdu は `gdu` の名前で入る）
    - 最後が `0` なら、非対話のシェル（`ssh <HOST> <コマンド>`・scp・rsync）で何も出力しない
    - 1 行目が `読まれていない` なら、手順 5・8 を見直す
 
    <details>
-   <summary>補足: 検証コンテナでの出力</summary>
+   <summary>補足: 検証での出力</summary>
 
-   Homebrew で zoxide・yazi・eza・bat・neovim・gdu・starship を入れたユーザーの、開き直した対話のシェル（`script` の擬似端末）での出力（プロンプトは省いた）:
+   検証コンテナで、Homebrew で zoxide・yazi・eza・bat・neovim・gdu・starship を入れたユーザーの、開き直した対話のシェル（`script` の擬似端末）での出力（プロンプトは省いた）:
 
    ```
    1
@@ -220,6 +226,21 @@
    ```
 
    - `DOCKER_HOST` は、podman の API ソケット（setup-notes の [podman.md 手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
+
+   Windows 11 の PC の Git Bash（scoop で neovim・yazi・zoxide を入れた PC）で、開き直したログインシェル（画面を出さない `wezterm-mux-server` のペイン）での出力:
+
+   ```
+   1
+   alias ll='ls -l'
+   alias vi='nvim'
+   function
+   function
+   EDITOR=nvim DOCKER_HOST=
+   0
+   ```
+
+   - 同じ PC で eza・bat・gdu・starship も足すと、`alias ll='ls -l'` の代わりに `la`・`ll`・`lt` の eza の 3 行が出た。`alias gdu` は出なかった
+   - Git Bash には `XDG_RUNTIME_DIR` が無いので、`DOCKER_HOST` は入らない
 
    </details>
 
@@ -308,7 +329,7 @@
    ```
 
    - `No such file or directory` と出る
-   - [手順 8](#実施手順) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[手順 8](#実施手順) の補足。試していない）
+   - [手順 8](#実施手順) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[手順 8](#実施手順) の補足）
    - 開いている端末には、この設定の関数やフックが残る。開き直すと消える
 
 ---
@@ -319,29 +340,42 @@
 
 - **目的**: いろいろなホストで同じ bash の設定を使う。setup-notes の手順書と wezterm の手順書がホストごとに `~/.bashrc` へ書いていた行を、このリポジトリの `bashrc` 1 つにまとめ、`~/.bashrc` からは 1 行で読む
 - **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
-- **状態**: **x86_64 のコンテナでのみ検証済み（2026-09-30）。実機・Windows 11 の Git Bash・WSL では本実行していない**
-  - 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
-  - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
-  - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
-  - 確認したこと
-    - 未導入の判定、clone（`core.autocrlf=true` でも LF）、clone に失敗したときの手順 3 の `中断:`
-    - 元の手順書の行の消し方: 実機と同じ並びの `~/.bashrc`（ホストだけの行つき）、今の手順書の行をすべて持つ `~/.bashrc`、`/etc/skel` のままの `~/.bashrc`、`~/.bashrc` の無いホーム（Git Bash の代わり）
-    - 手順 6 で残す行を後ろへ移す形（Homebrew のコマンドを使う行、`--hook none` を足した `--cmd cd` の zoxide）と、手順 7 の確かめ
-    - 移行の前後のシェルの比較（エイリアス・関数・`PATH`・環境変数・`PROMPT_COMMAND`）
-    - 読み込みの 1 行と 2 度貼ったとき、`~/.bash_profile` の有無、開き直したログインシェルでの読み込み
-    - 非対話のシェルで何も出さないこと（`bash -c`・`ssh` のコマンド・scp・sftp・rsync）、`set -u`（非対話の前半と、対話の後半）
-    - 更新（新しいコミットを入れた fast-forward）、ロールバック（手元だけのコミットと stash が見えることも）
-    - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（Homebrew・zoxide・yazi・eza・gdu・bat・Neovim・starship）
-  - **確認していないこと**: Windows 11 の Git Bash（`awk`・`~/.bash_profile` の生成・起動の時間・`y()` が Windows のパスを受け取るところ）、WSL、実機（AlmaLinux 10）と aarch64、非公開のリポジトリの認証（検証コンテナは手元の bare リポジトリから clone した）、インターネットに出られないホストでの更新、端末の画面（プロンプトへのジャンプなど）、podman のソケットがあるときの `DOCKER_HOST`
+- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。AlmaLinux 10 の実機・WSL では本実行していない**
+  - AlmaLinux 10: 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
+    - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
+    - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
+    - 確認したこと
+      - 未導入の判定、clone（`core.autocrlf=true` でも LF）、clone に失敗したときの手順 3 の `中断:`
+      - 元の手順書の行の消し方: 実機と同じ並びの `~/.bashrc`（ホストだけの行つき）、今の手順書の行をすべて持つ `~/.bashrc`、`/etc/skel` のままの `~/.bashrc`、`~/.bashrc` の無いホーム（Git Bash の代わり）
+      - 手順 6 で残す行を後ろへ移す形（Homebrew のコマンドを使う行、`--hook none` を足した `--cmd cd` の zoxide）と、手順 7 の確かめ
+      - 移行の前後のシェルの比較（エイリアス・関数・`PATH`・環境変数・`PROMPT_COMMAND`）
+      - 読み込みの 1 行と 2 度貼ったとき、`~/.bash_profile` の有無、開き直したログインシェルでの読み込み
+      - 非対話のシェルで何も出さないこと（`bash -c`・`ssh` のコマンド・scp・sftp・rsync）、`set -u`（非対話の前半と、対話の後半）
+      - 更新（新しいコミットを入れた fast-forward）、ロールバック（手元だけのコミットと stash が見えることも）
+      - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（Homebrew・zoxide・yazi・eza・gdu・bat・Neovim・starship）
+  - Windows 11: 下表の PC の Git Bash で、**この文書の bash のコードブロックを抜き出したもの**を、画面を出さない WezTerm の端末（`wezterm-mux-server` のペイン）のログインシェル（`bash -i -l`。WezTerm の既定の起動と同じ）に、括弧付き貼り付けで貼って流した（[付録](#付録-windows-11-の-git-bash-での検証記録2026-10-01)）
+    - 手順 9 は、ペインを閉じて新しいペインを開いた
+    - `HOME` は使い捨てのディレクトリにした（その PC の `~/.bashrc` と `~/.bash_profile` の写し、ドットファイルの無いホーム、空白と日本語を含むホーム）
+    - 確認したこと
+      - 手順 1〜5・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5（その PC の `~/.bashrc` の写しは、元と同じ中身に戻った）
+      - 非公開のリポジトリの HTTPS の clone と pull（認証は gh の資格情報。手順 2 の補足）、`core.autocrlf=true` の clone で LF
+      - Git Bash の awk・`git diff --no-index`・`sed -i`・読み取り専用のファイルを含む `rm -rf`。移行の awk が、LazyVim で整形された `y()` を消さないことを見つけて直した
+      - `~/.bash_profile` の無いホームで Git for Windows が出す `WARNING:` と、それが作る `~/.bash_profile`
+      - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（starship の有無の両方）、`--hook none` の zoxide、`y()`（本物の yazi を端末で動かした）
+      - 非対話のシェル（sshd の起動のしかたを真似た `bash -c`）で何も出さないこと、`set -u`、起動の時間と `command -v` の時間
+      - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（eza・bat）
+      - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
+    - 2026-10-01 の後半に、その PC の本物の `~/.bashrc` に導入した。利用者の WezTerm の GUI に新しい窓を開いて手順 1〜5・8 を貼り、開き直した窓で手順 10 と、cwd の引き継ぎ・`z`・`y` を確かめた
+  - **確認していないこと**: WSL、実機（AlmaLinux 10）と aarch64、Git Credential Manager でのサインイン、LAN の別の PC からの ssh、インターネットに出られないホストでの更新、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった）、podman のソケットがあるときの `DOCKER_HOST`
 
-| 項目 | 検証コンテナ |
-|---|---|
-| 実施日 | 2026-09-30 |
-| OS | AlmaLinux 10.2 (Lavender Lion) / x86_64（`almalinux:10`、Docker 29.3.1、`--network host`） |
-| bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` |
-| Homebrew | 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） |
-| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） |
-| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） |
+| 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） |
+|---|---|---|
+| 実施日 | 2026-09-30 | 2026-10-01 |
+| OS | AlmaLinux 10.2 (Lavender Lion) / x86_64（`almalinux:10`、Docker 29.3.1、`--network host`） | Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64 |
+| bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` | Git for Windows 2.55.0.windows.5 の `5.3.15(2)-release`（MINGW64）/ `2.55.0.windows.5` / GNU Awk 5.4.1 |
+| ツール | Homebrew 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） | scoop の neovim 0.12.5・yazi 26.9.1・zoxide 0.9.9。starship 1.26.0・eza 0.23.5・bat 0.26.1・gdu 5.37.0 は、scoop の manifest の URL から一時的な場所に落とし（ハッシュも照合）、scoop と同じ shim で呼んだ |
+| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） | WezTerm 20260905-153129-092dcf70。ryo-aoki-pc/wezterm の `main`（`826037f`）と、ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` |
+| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） | OpenSSH for Windows 9.5p2（`DefaultShell` は Git Bash、`Subsystem sftp sftp-server.exe`）。クライアントは同じ PC の WSL 2.7.13.0 の AlmaLinux 10.2（OpenSSH 9.9p1。LAN の IP あて） |
 
 > [!NOTE]
 > 出力例の値は `<USER>` / `<WIN_USER>` / `<HOST>` などのプレースホルダで書いてある。ツールの版は実行日によって変わる。
@@ -390,12 +424,18 @@
 
 - **非対話のシェルでも `~/.bashrc` は読まれる**
   - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-openssh-server.md の Git Bash）
-  - `bashrc` の前半（PATH と環境変数）はそこでも効き、後半（エイリアス・関数・プロンプト）は読まない。何も出力しない（出力すると scp・rsync が壊れる）
+    - Git Bash は、`bash -c` のときに環境変数 `SSH_CLIENT` があり、`SHLVL` が無ければ読んだ（Windows 11 の PC で、sshd の起動のしかたを真似て確かめた。`SSH_CLIENT` を外すと読まなかった）
+    - Windows の sshd（`DefaultShell` が Git Bash）では、sftp と scp（SFTP の方式）の `sftp-server.exe` も、`ssh <HOST> <コマンド>` と同じく `bash.exe` の下で動いた。sftp でも `~/.bashrc` が読まれる
+  - `bashrc` の前半（PATH と環境変数）はそこでも効き、後半（エイリアス・関数・プロンプト）は読まない。何も出力しない（出力すると scp・sftp・rsync が壊れる）
+- **Windows の sshd（`DefaultShell` が Git Bash）でも、非対話のシェルでは外部コマンドを動かさない**
+  - Windows の前半は `command -v` などの組み込みだけで済む（Homebrew が無い）。SSH のセッションで scoop の shim が起動できない状態（setup-notes の windows-openssh-server.md の「scoop のツールを SSH のセッションで使う」）でも、`ssh <HOST> <コマンド>`・scp・sftp に何も出さない
+  - 検証した PC の sshd で、自分で作ったジャンクションを通る shim（SSH のセッションでは起動できない）を PATH の先頭に置いて確かめた。`~/.bashrc` に zoxide の初期化を直に書いていたときは、`Shim: Could not create process …` が毎回出た（scp・sftp の転送は通ったが、エラーが出続けた）
+  - 対話の SSH のセッションでは、zoxide などの初期化が scoop の shim を通る。shim が起動できない状態では、ログインのたびに shim のエラーが出て、`z` が無くなる（ほかは使える）。その任意節を行う
 - **ツールを入れた直後のシェルには効かない**
   - 開いているシェルは、開いたときにあったツールの分だけ読んでいる。そのシェルで使うなら `. ~/.bashrc` で読み直す（検証コンテナで、開いたシェルに zoxide を入れて読み直し、`z` が警告無しで動いた）
   - starship だけは、端末を開き直す。読み直すと WezTerm のシェル統合より後ろに読まれ、WezTerm のフックが 2 回ずつ動いた（`false` の後に `D;1` と `D;0` が続けて送られた。README の[読む順番](../README.md#読む順番)）
 - **starship を使うホストでは、wezterm の設定も新しくする**
-  - WezTerm のシェル統合の `PS0` が starship の `PS0` を壊す問題を、ryo-aoki-pc/wezterm で直した。古い `~/.config/wezterm` のままだと、コマンドの出力の前に `${STARSHIP_START_TIME:0:0}` の文字が出る
+  - WezTerm のシェル統合の `PS0` が starship の `PS0` を壊す問題を、ryo-aoki-pc/wezterm で直した。古い `~/.config/wezterm` のままだと、コマンドの出力の前に `${STARSHIP_START_TIME:0:0}` の文字が出る（Windows の WezTerm の画面では `STARSHIP_START_TIME:0:0}` と見えた）
 - **トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、この設定に書かない**。ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く
 - **root のシェルは対象外**
   - root の `~/.bashrc` にこの 1 行を足すと、Homebrew のユーザーが持つコマンドを root で動かす。root で Homebrew のコマンドを使うなら、setup-notes の [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)
@@ -481,3 +521,129 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 - インターネットに出られないホストでの更新
 - podman のソケットがあるときの `DOCKER_HOST`（ソケットのある systemd のユーザーのセッションは作っていない）
 - 端末の画面（プロンプトへのジャンプ・出力のコピー）
+
+---
+
+### 付録: Windows 11 の Git Bash での検証記録（2026-10-01）
+
+前の付録の未確認事項のうち、Windows 11 の Git Bash での実行を、この設定を常用する Windows 11 の PC で確かめた。その PC の `~/.bashrc`・`~/.bash_profile`・zoxide のデータベースには書いていない。
+
+**環境**:
+
+- Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64。setup-notes の windows-openssh-server.md を通した PC（sshd が動いていて、`DefaultShell` は Git Bash）
+- Git for Windows 2.55.0.windows.5（`C:\Program Files\Git`、bash 5.3.15、`MSYSTEM=MINGW64`、`core.autocrlf=false`）
+- WezTerm 20260905-153129-092dcf70。シェル統合は、WezTerm の GUI と同じく `WEZTERM_SHELL_INTEGRATION`（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`。ryo-aoki-pc/wezterm の `main` の `826037f`）で渡した
+- ツールは[対象と検証環境](#対象と検証環境)の表
+- その PC の `~/.bashrc` は、LazyVim で整形された `y()` の 8 行・`[ -n "$WEZTERM_SHELL_INTEGRATION" ] && . "$WEZTERM_SHELL_INTEGRATION"`・`eval "$(zoxide init bash)"` の 10 行。`~/.bash_profile` は Git for Windows が作った 3 行
+
+**流し方**:
+
+- 利用者の WezTerm の GUI とは別のソケットで `wezterm-mux-server` を動かし、`wezterm cli spawn` で開いたペイン（ConPTY。画面は出さない）に、`HOME` を使い捨てのディレクトリにしたログインシェル（`bash -i -l`）を開いた
+- この文書の bash のコードブロックを機械的に抜き出し（折り畳みの中は除き、リストの字下げを外す）、`wezterm cli send-text` で括弧付き貼り付けとして貼ってから Enter を送り、`wezterm cli get-text` で画面を読んだ
+- 手順 9 は、ペインを閉じて、同じ `HOME` で新しいペインを開いた
+- 手順 2 の後に、手順書の外で `git -C ~/.config/bash checkout -q <検証のブランチ>` を打った（`main` にはまだこの設定が無い）。更新の前には `git -C ~/.config/bash reset -q --hard HEAD~1` で 1 つ古いコミットに戻した
+- 認証は、手順 2 の補足のとおり、gh の資格情報を環境変数でそのペインにだけ渡した
+- zoxide のデータベースは `_ZO_DATA_DIR` で一時的な場所にした（Windows の zoxide は `HOME` ではなく `%LOCALAPPDATA%\zoxide` に書く）
+- Git の `/etc/profile` は、環境変数 `ORIGINAL_PATH` があるとそれで `PATH` を組み立て直すので、ペインでは外した（WezTerm から起動した bash には無い。検証の bash には親の Git Bash から入っていた）
+
+| ホーム（実施前） | 流した手順 | 結果 |
+|---|---|---|
+| w1（その PC の `~/.bashrc` と `~/.bash_profile` の写し） | 手順 1〜5・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5 | 手順 1 は `ls` の `No such file or directory` だけ。手順 2 は `Cloning into 'C:/…/.config/bash'...` から `Resolving deltas: 100% (17/17), done.` まで。手順 3 は `bash -n: OK`、手順 4 の `git diff` は 10 行すべてを `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした）。手順 5 は読み込みの 1 行と `bash -n: OK`。手順 8 は `/c/…/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`。手順 10 は手順 10 の補足の 7 行。更新は `Updating e44c6e6..3870660`・`Fast-forward` と、新しいコミットの 1 行。ロールバックの手順 1 は `0`、手順 2 は 10 行を `+` で出し、手順 3 は `bash -n: OK` で、`~/.bashrc` はその PC の `~/.bashrc` と同じ中身に戻った（`cmp` で一致）。手順 4 は `## <ブランチ>...origin/<ブランチ>` の 1 行だけ、手順 5 は `No such file or directory`（`.git` の読み取り専用のファイルも消えた） |
+| g1（ドットファイルが 1 つも無い。新しい Git Bash のホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `ls` と `grep` の 2 つの `No such file or directory`。手順 3 で空の `~/.bashrc` ができ、手順 4 は何も出さなかった。手順 8 は作った 2 行を出した。開き直したログインシェルに `WARNING:` は出ず、手順 10 は w1 と同じ |
+| s1（g1 と同じで、パスに空白と日本語を含む `…/新しい ホーム`） | 手順 1〜5・8・10 | g1 と同じ |
+| a1（`~/.bashrc` は読み込みの 1 行、`~/.bash_profile` は手順 8 の 2 行。starship・eza・bat・gdu も PATH に置いた） | 手順 10 | ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` では、手順 10 の補足のとおり eza の 3 行を含む出力。`main` の `shell/wezterm.sh` では、出力の前ごとに `STARSHIP_START_TIME:0:0}` が出た |
+
+**手順書の外で確かめたこと**:
+
+| 確かめたこと | 結果 |
+|---|---|
+| 直す前の版（`e44c6e6`）の手順 3・4（その PC の `~/.bashrc` の写し） | 手順 3 は WezTerm と zoxide の 2 行だけを消し、`y()` の 8 行は残った。手順 4 の `grep` は `y()` の中の 2 行（`tmp="$(mktemp …`・`command yazi …`）だけを出した。この `y()` は、setup-notes の yazi.md の 7 行を `shfmt -i 2 -ln bash`（shfmt 3.14.1）に通したものと 1 バイトも違わなかった（LazyVim は `~/.bashrc` を保存するときに shfmt で整形する） |
+| 直した `remove-old-lines.awk` を直接（12 通りの入力。`old-y.txt` が 4 つの形になった後） | 4 つの形の `y()` はどれも消え（ファイルの末尾で改行が無くても。その PC の `~/.bashrc` の写しは 10 行すべてが消えた）、1 行を手で直したもの・閉じ括弧の無いもの・余分な `}`・空行は残った。前の付録の入力では、直す前の awk と同じ出力。`gawk --posix` でも同じ |
+| 対話のシェル（`bash -i` にコマンドを 1 行ずつ流し込み、生の出力を読んだ） | `false` の後は `D;1`、`cd d1/share; cd ~` の後の `z share` は警告無しで移り、`. ~/.bashrc` の前後で `PROMPT_COMMAND`（`__wezterm_prompt_command;__wz_mouse_off;__zoxide_hook`）と `PS0` は同じ。starship もあると `PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;starship_precmd;__zoxide_hook` で、同じく `D;1`・警告無し・読み直しても変わらない。`main` の `shell/wezterm.sh` では `${STARSHIP_START_TIME:0:0}` がコマンドごとに出て、#26 の版では出なかった |
+| `--hook none` の zoxide（`eval "$(zoxide init bash --cmd cd --hook none)"` を読み込みの 1 行の後ろに） | `type -t cd z zi cdi` はすべて `function`、`PROMPT_COMMAND` の `__zoxide_hook` は読み直しても 1 つ、`cd a/share` → `cd ~/b` → `cd share` で `a/share` に移り、警告は出なかった。`--hook none` を付けなくても、Git Bash（文字列の `PROMPT_COMMAND`）ではフックは 1 つのままだった |
+| `y()`（本物の yazi 26.9.1 を端末で動かした。比べ方を直す前の `!=` の形） | `y d1` → `share` に入って `q` で、シェルが `d1/share` へ移った。空白と日本語を含むディレクトリも同じ。yazi は cwd-file に `C:\Users\…\d1\share` の形で書いた。動かずに `q` で閉じると `OLDPWD` が今の場所に変わり、`Q` では変わらなかった |
+| `y()`（比べ方を `-ef` に直した形。setup-notes の yazi.md と合わせて直した） | `Documents` → `Desktop` と移ってから `y` → 動かずに `q` で、`PWD` は `Desktop`、`OLDPWD` は `Documents` のまま（`cd -` で `Documents` へ戻れる）。中へ入って `q`・`Q`・空白と日本語を含むディレクトリは、直す前と同じだった。`/tmp/yazi-cwd.*` は残らなかった。Git Bash の `test` の `-ef` は、`C:\Users\<WIN_USER>\Desktop` と `/c/Users/<WIN_USER>/Desktop` を同じ、別のディレクトリを違うと判定した |
+| sshd の起動のしかたを真似た `bash -c`（`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を、`SSH_CLIENT` を付け、`SHLVL` を外して起動） | `~/.bashrc` を読んだ（`SSH_CLIENT` を外すと読まなかった）。この設定は `true` で 0 バイト。`EDITOR=nvim`・`VISUAL=nvim` が入り、`y`・`z`・`alias vi`・`__bash_config_loaded` は無かった。全部のツールがあると `MANPAGER` も入った |
+| 起動できない scoop の shim（向き先の無い shim を `zoxide`・`nvim`・`yazi` の名前で PATH の先頭に置いた。SSH のセッションで起きる状態の代わり） | sshd を真似た `bash -c true` で、その PC の `~/.bashrc` の写しは `Shim: Could not create process with command '"…"  init bash'.` など 181 バイトを出し、この設定は 0 バイトだった |
+| `set -u` | `bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok`、`bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1` |
+| `command -v` の 1 回の時間（200 回の平均。PATH は 37 要素、ログインシェルでは 44 要素） | 見つからないとき 1.95〜2.28 ms、scoop の shim で見つかるとき 1.65〜1.88 ms、`/mingw64/bin` で見つかるとき 0.2 ms。組み込みの `declare -F` は 0.01 ms |
+| 開いたシェルの PATH に、後から eza と bat の shim を置いて `. ~/.bashrc` | `alias ll la lt` が eza の 3 つになり、`MANPAGER` が入り、`ll` が eza で動いた |
+| `git -c core.autocrlf=true clone`（HTTPS。gh の資格情報） | `git ls-files --eol` は 8 つとも `i/lf    w/lf`、`bashrc` などの CR は 0 個、`git status --short` は空 |
+| Git Credential Manager | GitHub の資格情報が無かった（`GCM_TRACE` で `Found 0 accounts`）。`GCM_INTERACTIVE=never` にすると、git は代わりに `git-askpass.exe`（ユーザー名を聞く窓）を起動した（`GIT_TRACE` で確かめ、打ち切った。プロセスは残らなかった） |
+| shellcheck 0.11.0（Mason の Windows 版。`-s bash bashrc`） | 0 件 |
+
+起動の時間（ms。平均 / 中央値。30 周。場合を 1 回ずつ順に回し、1 周目は捨てた）:
+
+| `~/.bashrc` | ツール | ログインシェル（`bash -i -l -c exit`） | 対話（`bash -i -c exit`） | sshd を真似た非対話（`bash -c true`） |
+|---|---|---|---|---|
+| 空 | その PC のもの | 226.8 / 224.7 | 130.0 / 129.2 | 50.0 / 49.2 |
+| その PC の `~/.bashrc`（`y()`・WezTerm・zoxide） | その PC のもの | 326.9 / 330.4 | 229.9 / 226.2 | 157.1 / 159.1 |
+| この設定 | その PC のもの | 364.7 / 360.9 | 240.2 / 237.7 | 54.7 / 54.8 |
+| 空 | 全部 | 222.5 / 222.3 | 127.7 / 127.5 | 49.4 / 49.5 |
+| 元の手順書の行をすべて（Homebrew を除く。starship が最後） | 全部 | 544.9 / 542.8 | 450.3 / 443.0 | 400.9 / 403.1 |
+| この設定 | 全部 | 583.9 / 579.8 | 468.8 / 464.4 | 55.9 / 55.1 |
+
+- 「その PC のもの」は neovim・yazi・zoxide、「全部」はそれに starship・eza・bat・gdu を足したもの
+- 別の時間に、ログインシェルと対話の 4 行だけを 40 周測り直すと、この設定は直に書いた `~/.bashrc` より 11〜15 ms 長かった（全体は 100 ms ほど遅く出た）。差は測るたびに揺れた
+- `PS4` に時刻を出した `set -x` で行ごとに見ると、増えた分は `command -v` の 8 回（1 回 2〜3 ms）だった。starship の初期化（約 250 ms）と zoxide の初期化（約 90 ms。`cygpath` を含む）は、直に書いたときと同じ
+
+**実際の sshd での確かめ**（利用者の許可を得て、同じ PC の WSL の AlmaLinux 10.2 の鍵（その PC の sshd に登録済み）で、LAN の IP あてにつないだ）:
+
+- 本物の `~/.bashrc` は変えず、sshd が起動した Git Bash の中で、使い捨ての `HOME` の bash をもう一段起動した（`env -u SHLVL HOME=<使い捨て> bash -c <コマンド>`。`SSH_CLIENT` は受け継がれ、`SHLVL` を外すので、sshd が起動したときと同じく `~/.bashrc` を読む）
+  - `scp -O` と scp（SFTP の方式）は、`-S` に、遠くのコマンドをこの形で包む ssh のラッパーを渡した（SFTP の方式では、`sftp-server.exe` を同じ形で起動した）。sftp は、`-s` に同じ形のコマンドを渡した
+  - 対話の ssh は、`ssh <HOST>` でコマンドなしに入り（本物の `~/.bashrc`）、`exec env HOME=<使い捨て> … bash -i` で入れ替えた。確かめた値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くのシェルから Windows 側のファイルに書いた。zoxide のデータベースも一時的な場所にした
+- SSH のセッションで shim が起動できない状態は、自分のユーザーで作ったジャンクション（`New-Item -ItemType Junction`。所有者は `<WIN_USER>`）を通る scoop の shim で作った。SSH でなければ動き、SSH のセッションでは `Shim: Could not create process …` で失敗した（scoop の zoxide は、管理者が作り直したジャンクションを通るので、SSH でも動いた）
+
+| 確かめたこと | 結果 |
+|---|---|
+| `ssh <HOST> true`（本物の `~/.bashrc`） | 0 バイト。bash は `5.3.15(2)-release`・`MINGW64`・`SHLVL=1` で、`SSH_CLIENT` があった |
+| 使い捨ての HOME の `bash -c true`（この設定） | 0 バイト。`EDITOR=nvim`、`__bash_config_loaded`・`y`・`z` は無く、`PROMPT_COMMAND` は空 |
+| 起動できない shim を PATH の先頭に置き、zoxide の初期化を直に書いた `~/.bashrc` | `Shim: Could not create process … init bash'.` など 336 バイト |
+| 同じ shim で、この設定 | 0 バイト |
+| `scp -O`（200 KB を送って、受け取る） | この設定は、shim の有無にかかわらず中身が一致し、エラーの出力も無かった。zoxide の初期化を直に書いた形は、中身は一致したが、shim のエラーが毎回出た |
+| scp（SFTP の方式） | `scp -O` と同じ |
+| sftp の put と get | この設定（`-s` で `sftp-server.exe` を使い捨ての HOME の bash から起動）も、本物の `~/.bashrc` も、中身が一致した。Windows の sftp-server の絶対パスは `/C:/…` の形（`C:/…` は今のディレクトリからの相対になった） |
+| sftp と `ssh <HOST> sleep 20` の間の Windows のプロセス | `sftp-server.exe` も `sleep.exe` も、`bash.exe ← bash.exe ← sshd.exe ← sshd.exe` の下で動いた |
+| 対話の ssh（この設定） | 起動の出力は無かった。`__bash_config_loaded` は `1`、`y`・`z` は `function`、`alias vi='nvim'`、`PROMPT_COMMAND` は `__wz_mouse_off;__zoxide_hook`（SSH では `TERM_PROGRAM` が届かないので、WezTerm の統合は迷子のマウス報告よけだけ）。`cd Documents` → `cd Desktop` の後の `z Docu` で `Documents` へ移り、`false` の後は `rc=1`。`y` → 動かずに `q` で、`OLDPWD` は `Desktop` のまま |
+| 対話の ssh（この設定。起動できない zoxide の shim） | 起動時に shim のエラーが 2 行出た。`__bash_config_loaded` は `1`、`y` は `function`、`z` は無く（`bash: z: command not found`）、`PROMPT_COMMAND` は `__wz_mouse_off`。`y` は使えた |
+
+- 検証の方法に関わった、Windows の sshd の振る舞い:
+  - 擬似端末を頼んで（`ssh -tt <HOST> <コマンド>`）コマンドを渡すと、`echo "B: …"` は何も出さず、`env -u SHLVL FOO=bar bash -c '…'` は引数の無い `env` のように環境変数の一覧を出した（最初の語だけが動いたように見えた）。コマンドなしの `ssh -tt <HOST>` は普通に入れた
+  - 対話のセッションに 585 文字の 1 行を一度に打つと、次の入力が届くまで遠くの bash に渡らなかった（約 370 文字の行はすぐに渡った）
+- 検証の後に、取り残された SSH のセッションの bash を止め、sshd のセッションが残っていないことを確かめた
+
+**その PC の本物の `~/.bashrc` への導入**（利用者の依頼で。2026-10-01）:
+
+- 利用者の WezTerm の GUI に、`wezterm cli spawn --new-window` で新しい窓を開いた（既定のシェルの Git Bash のログインシェル。その時点の本物の `~/.bashrc` で起動した）。手順 1〜5・8 のブロックを括弧付き貼り付けで貼った
+  - 手順 2 の前に、gh の資格情報をそのシェルにだけ渡す 1 行（手順 2 の補足）を打ち、手順 2 の後に `git -C ~/.config/bash checkout -q <検証のブランチ>` を打った（`main` にまだこの設定が無いため。マージした後は `main` に切り替える）
+  - 書き換える前の `~/.bashrc` と `~/.bash_profile` は、手順 3 の控えとは別にも控えた
+- 手順 9 は、導入の窓を閉じて新しい窓を開いた（前から開いていた窓は、開き直していない）
+- `wezterm cli` でペインに打つときは、必ず `--pane-id` で新しく開いたペインを指した（付けないと、GUI で選ばれているペインに送られる）
+
+| 手順 | 結果 |
+|---|---|
+| 1 | `ls` の `No such file or directory` だけ |
+| 2 | `Cloning into 'C:/Users/<WIN_USER>/.config/bash'...` から `Resolving deltas: 100% (29/29), done.` まで |
+| 3 | `bash -n: OK`。控えの `~/.bashrc.before-bash` は、書き換える前の `~/.bashrc` と同じ中身（sha256 が一致） |
+| 4 | `git diff` は 10 行すべて（LazyVim で整形された `y()`・古い形の WezTerm の行・zoxide の行）を `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした） |
+| 5 | 読み込みの 1 行と `bash -n: OK`。`~/.bashrc` はこの 1 行だけになった |
+| 8 | `/c/Users/<WIN_USER>/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`（何も作らない） |
+| 10（開き直した窓） | 手順 10 の補足の、Windows の 7 行と同じ。`PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;__zoxide_hook`。WezTerm の統合は、GUI が渡す `WEZTERM_SHELL_INTEGRATION` から読まれた |
+
+開き直した窓で確かめたこと（`wezterm cli` で打ち、GUI の WezTerm の状態を読んだ）:
+
+| 確かめたこと | 結果 |
+|---|---|
+| `cd ~/Documents` の後の、GUI のペインのディレクトリ | `wezterm cli list` で `file:///C:/Users/<WIN_USER>/Documents`、タイトルは `MINGW64:/c/Users/<WIN_USER>/Documents` |
+| そのペインからの分割（`wezterm cli split-pane`。Ctrl+Shift+D と同じく、今のペインのディレクトリで開く経路） | 新しいペインは `Documents` で開いた。`wezterm cli spawn` で開いたタブはホームで開いた（キー操作の新しいタブとは別の経路） |
+| `z wez` | 本物の zoxide のデータベースで、`~/.config/wezterm` へ移った |
+| `y`（scoop の yazi 26.9.1。利用者の yazi の設定のまま） | `Desktop` → `Documents` と移ってから `y` → 動かずに `q` で、`OLDPWD` は `Desktop` のまま。`y ~/.config` → `q` で `~/.config` へ移った。`/tmp/yazi-cwd.*` は残らなかった |
+
+- 画面の撮影と、キー操作（Ctrl+Shift+Alt+↑/↓ のプロンプトへのジャンプ・Ctrl+Shift+Alt+C の出力のコピー）は、Windows の画面がロックされていて試せなかった（前面の窓が無く、ロック画面が動いていた）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
+
+#### 未確認事項（Windows 11）
+
+- LAN の別の PC からの ssh（同じ PC の WSL から、LAN の IP あてにつないだ）
+- Git Credential Manager でのサインイン（ブラウザ）と、`gh auth setup-git` を実際に書いたとき（同じ指定を環境変数で渡した）
+- WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。OSC 133 は生の出力で見た。Windows の画面がロックされていて試せなかった）
+- scoop の git（PortableGit）、mintty・Windows Terminal で開いた Git Bash

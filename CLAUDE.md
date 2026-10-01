@@ -30,13 +30,28 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（README の「読む順番」の表の作り方）
   - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
 - AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/homebrew.md）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
+- Windows 11 の Git Bash で試すときは、`HOME` を使い捨てのディレクトリにする（その PC の `~/.bashrc` には書かない。docs/install.md の Windows の付録）
+  - Git Bash には `script` が無い。擬似端末の代わりに、`wezterm-mux-server` を別のソケット（`unix_domains` の `socket_path`。長いパスは `SUN_LEN` で断られる）で動かし、`wezterm cli spawn`・`send-text`・`get-text` でペインを操作する。`wezterm cli` には必ず `WEZTERM_UNIX_SOCKET` で検証のソケットを渡す（WezTerm の中では、利用者の GUI を指している）
+  - `wezterm cli spawn` は、呼んだ側の環境変数をペインに引き継ぐ。`MSYS_NO_PATHCONV` などを付けて呼んだら、ペインの中で外す（付いたままだと、yazi の `--cwd-file=/tmp/…` が変換されず、`C:\tmp` に書かれる）
+  - 生の出力を見るだけなら、`bash -i` にコマンドを流し込み、stdout と stderr を 1 つのファイルに受ける（プロンプトと OSC 133 がそのまま残る）
+  - zoxide は `HOME` ではなく `%LOCALAPPDATA%\zoxide` にデータベースを書くので、`_ZO_DATA_DIR` を一時的な場所にする
+  - Git の `/etc/profile` は、環境変数 `ORIGINAL_PATH` があるとそれで `PATH` を組み立て直す。Claude Code などの Git Bash から起動したログインシェルで PATH を足すなら、`ORIGINAL_PATH` を外す
+  - sshd の非対話は、`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を `SSH_CLIENT` を付け、`SHLVL` を外して起動すると真似られる（`~/.bashrc` を読む）
+  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる。setup-notes の windows-openssh-server.md）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
+    - `scp -O`・scp は `-S` に遠くのコマンドを包むラッパーを、sftp は `-s` に同じ形のコマンド（`/` を含むとサブシステムではなくコマンドになる）を渡す。Windows の sshd は `sftp-server.exe` も bash から起動する
+    - 対話は、`ssh <HOST>` でコマンドなしに入り、`exec env HOME=<使い捨て> … bash -i` に入れ替える（`ssh -tt <HOST> <コマンド>` は、最初の語しか動かなかった）。1 行が長い（585 文字）と次の入力まで渡らなかったので、パスは変数に入れて短くする。値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くでファイルに書く
+    - SSH のセッションで scoop の shim が起動できない状態は、自分のユーザーで作ったジャンクションを通る shim で作れる（SSH でなければ動く）
+    - 後で、取り残された sshd のセッションの bash が無いかを見る
+  - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
+    - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
+  - 非公開のリポジトリの HTTPS は、Git Credential Manager に資格情報が無いとサインインの窓が開く。`GIT_CONFIG_COUNT` などで `credential.helper` を空にし、`https://github.com` だけ `!gh auth git-credential` にして、そのコマンドにだけ gh の資格情報を渡す
 
 ## 構成
 
 - `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
 - `migrate/` — 導入の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
   - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
-  - `old-y.txt` — yazi の `y()` の 7 行（並びがすべて同じときだけ消す）
+  - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
   - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
 - `docs/install.md` — 導入・更新・ロールバックの手順書
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
@@ -45,6 +60,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 
 - `bashrc` に読むものを足した・変えた → README の「読むもの」の表、`docs/install.md` の手順 10 とその補足の出力
 - 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
+  - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
 - 読む順番を変えた → README の「読む順番」の表を実測で直す
 - 導入のしかた（置き場所・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
@@ -55,6 +71,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - 前半には、非対話のシェルでも要るもの（PATH と `export` する環境変数）だけを置く。エイリアス・関数・プロンプトの初期化は後半に置く（非対話のシェルで `eval "$(zoxide init bash)"` などを動かさない）
 - **判定は `if …; then …; fi` で書く**。`[ … ] && …` は、偽のときに `$?` を 1 のまま残す。ファイルの最後の `$?` は最初のプロンプトの前のコマンドの終了コードとして扱われ、WezTerm のシェル統合が OSC 133 の `D;1` を送る
 - ツールの有無は `command -v <コマンド> >/dev/null 2>&1`（組み込みで fork しない）
+  - ただし PATH を順に探すので、Git Bash では 1 回に約 2ms かかる（Windows 11 の PC の 37 要素の PATH。見つからないときがいちばん長い）。同じコマンドを何度も確かめる形は増やさない
 - `set -u` でも読めるよう、未設定かもしれない変数は `${変数-}` で参照する
 - 関数の中から読まない・読ませない（読み込むものが関数の外で `declare` を使うと、その関数のローカル変数になる。2026-09-30 の `brew shellenv`・starship 1.26.0・`shell/wezterm.sh`・zoxide 0.10.0 の初期化には無く、検証コンテナで関数の中から読んでも動いたが、上がったときに壊れないように）
 - ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
@@ -63,7 +80,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
   - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。docs/install.md 手順 6）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
-- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は setup-notes の yazi.md の手順 3 と同じ文字列にする（`migrate/old-y.txt` とも同じ）
+- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は setup-notes の yazi.md の手順 3 と同じ文字列にする（`migrate/old-y.txt` の 1 つ目の形とも同じ）
 
 ## docs/install.md の書き方
 

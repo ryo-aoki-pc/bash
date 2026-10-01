@@ -67,12 +67,14 @@ if command -v gdu-go >/dev/null 2>&1; then
 fi
 
 # yazi を閉じたときに、そのディレクトリへ移る y（docs/yazi.md 手順 3）
+# 移ったかは、文字列ではなく同じディレクトリか（-ef）で比べる（Git Bash では yazi が C:\… の形で書き、
+# $PWD の /c/… と文字列では一致しないので、動かずに閉じても cd し直して cd - の戻り先が変わる）
 if command -v yazi >/dev/null 2>&1; then
 	function y() {
 		local tmp cwd; tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
 		command yazi "$@" --cwd-file="$tmp"
 		IFS= read -r -d '' cwd < "$tmp"
-		[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd" || builtin true
+		! [ "$cwd" -ef "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd" || builtin true
 		command rm -f -- "$tmp"
 	}
 fi
