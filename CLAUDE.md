@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## このリポジトリは何か
 
-いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。非公開のリポジトリ。
+いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。非公開のリポジトリで、SSH で clone する（`git@github.com:ryo-aoki-pc/bash.git`。2026-10-01 に HTTPS から変えた）。
 
 - 読むもの・読む順番とその実測・移行で消す行の説明は `README.md`（参照用）
 - 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
@@ -44,7 +44,11 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
     - 後で、取り残された sshd のセッションの bash が無いかを見る
   - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
     - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
-  - 非公開のリポジトリの HTTPS は、Git Credential Manager に資格情報が無いとサインインの窓が開く。`GIT_CONFIG_COUNT` などで `credential.helper` を空にし、`https://github.com` だけ `!gh auth git-credential` にして、そのコマンドにだけ gh の資格情報を渡す
+- 手順 2・更新の SSH の git を試すときは、本物の `~/.ssh/known_hosts` に書かない（docs/install.md の SSH の付録）
+  - Git Bash の ssh は `HOME` の `.ssh` を見るので、使い捨ての `HOME` には鍵が無い。`GIT_SSH_COMMAND='ssh -i <本物の鍵> -o IdentitiesOnly=yes'` をそのペインにだけ渡す。`known_hosts` を使い捨ての `HOME` のまま空にしておくと、初めてつなぐホストの問いを試せる
+  - AlmaLinux（WSL を含む）の ssh は、`HOME` ではなく passwd のホームの `~/.ssh` を見る。`GIT_SSH_COMMAND` で `-o UserKnownHostsFile=<一時ファイル>` を渡す
+  - 問いに答えるには端末が要る。Git Bash は `wezterm-mux-server` のペイン、AlmaLinux は擬似端末（Python の `pty`）で動かす
+  - 前の版の HTTPS の clone では、Git Credential Manager に資格情報が無いとサインインの窓が開いた。HTTPS を試すなら、`GIT_CONFIG_COUNT` などで `credential.helper` を空にし、`https://github.com` だけ `!gh auth git-credential` にして、そのコマンドにだけ gh の資格情報を渡す
 
 ## 構成
 
@@ -63,7 +67,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
 - 読む順番を変えた → README の「読む順番」の表を実測で直す
-- 導入のしかた（置き場所・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
+- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
 
 ## コードの注意
 
@@ -93,7 +97,7 @@ setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の CLAUD
   - 箇条書きは 1 項目 1 事実で、末尾に「。」を付けない。理由・実測・出力例は折り畳みへ
   - 条件付きの手順は 1 行の説明に条件を書き、判定する手順の箇条書きに「〜なら、手順 N は飛ばす」
   - コマンドの無い操作（エディタで直す、端末を開き直す）も独立した手順にし、次にコマンドを貼る手順の直前に「**次の手順は、〜してから貼る**」を置く
-  - 対話のあるコマンド（非公開のリポジトリの `git clone` は認証を聞くことがある）は、その手順の最後のコマンドにする
+  - 対話のあるコマンド（SSH の `git clone` は、初めて github.com につなぐホストでホスト鍵を聞く）は、その手順の最後のコマンドにする
   - `<...>` を含むコマンドはブロックに置かず、箇条書きのインラインコードにする。出力例の値は `<USER>` / `<HOST>` などのプレースホルダで書く
 - 手順の後ろに `## 更新`・`## ロールバック`（リード → 番号付きリスト → `---`。節ごとに 1 から数える）、最後に `## 補足`（対象と検証環境・実施前の状態・選択した方針・完了時点の状態・注意点・参照・付録）
 - 手順の参照は、`## 実施手順` の中では「手順 N」、ほかの節からは `[手順 N](#実施手順)`、その節の中は「この節の手順 N」。手順を分けたりまとめたりしたら番号を付け替える（README と、元の手順書の箇条書きの番号も）

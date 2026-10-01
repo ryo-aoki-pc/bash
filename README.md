@@ -2,7 +2,7 @@
 
 いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）と、Windows 11 の Git Bash で同じものを使う。
 
-- 各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行で読む
+- 各ホストの `~/.config/bash` に SSH で clone し（`git@github.com:ryo-aoki-pc/bash.git`。非公開のリポジトリ）、`~/.bashrc` の末尾の 1 行で読む
 - ホストによって入っているツールが違うので、どの設定も、そのコマンドがあるかをシェルを開くたびに確かめ、無ければ何もしない。ツールを後から入れても、次に開いた端末から効く
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）
 
