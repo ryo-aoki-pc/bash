@@ -17,7 +17,7 @@
 - 手順の後: 以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は x86_64 のコンテナでのみ検証した**（画面の代わりに `script` の擬似端末で対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流した**（その PC の `~/.bashrc` には書いていない）。**AlmaLinux 10 の実機・WSL では試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は x86_64 のコンテナでのみ検証した**（画面の代わりに `script` の擬似端末で対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**（WezTerm の GUI の画面とキー操作は、まだ試していない）。**AlmaLinux 10 の実機・WSL では試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -340,7 +340,7 @@
 
 - **目的**: いろいろなホストで同じ bash の設定を使う。setup-notes の手順書と wezterm の手順書がホストごとに `~/.bashrc` へ書いていた行を、このリポジトリの `bashrc` 1 つにまとめ、`~/.bashrc` からは 1 行で読む
 - **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
-- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流した（2026-10-01）。AlmaLinux 10 の実機・WSL では本実行していない**
+- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。AlmaLinux 10 の実機・WSL では本実行していない**
   - AlmaLinux 10: 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
     - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
     - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
@@ -365,7 +365,8 @@
       - 非対話のシェル（sshd の起動のしかたを真似た `bash -c`）で何も出さないこと、`set -u`、起動の時間と `command -v` の時間
       - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（eza・bat）
       - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
-  - **確認していないこと**: WSL、実機（AlmaLinux 10）と aarch64、Git Credential Manager でのサインイン、その PC の本物の `~/.bashrc` への導入（sshd の確かめは、本物の `~/.bashrc` の上で使い捨ての `HOME` の bash を起動した）、LAN の別の PC からの ssh、インターネットに出られないホストでの更新、端末の画面（プロンプトへのジャンプなど。WezTerm の GUI では見ていない）、podman のソケットがあるときの `DOCKER_HOST`
+    - 2026-10-01 の後半に、その PC の本物の `~/.bashrc` に導入した。利用者の WezTerm の GUI に新しい窓を開いて手順 1〜5・8 を貼り、開き直した窓で手順 10 と、cwd の引き継ぎ・`z`・`y` を確かめた
+  - **確認していないこと**: WSL、実機（AlmaLinux 10）と aarch64、Git Credential Manager でのサインイン、LAN の別の PC からの ssh、インターネットに出られないホストでの更新、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった）、podman のソケットがあるときの `DOCKER_HOST`
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） |
 |---|---|---|
@@ -611,9 +612,38 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
   - 対話のセッションに 585 文字の 1 行を一度に打つと、次の入力が届くまで遠くの bash に渡らなかった（約 370 文字の行はすぐに渡った）
 - 検証の後に、取り残された SSH のセッションの bash を止め、sshd のセッションが残っていないことを確かめた
 
+**その PC の本物の `~/.bashrc` への導入**（利用者の依頼で。2026-10-01）:
+
+- 利用者の WezTerm の GUI に、`wezterm cli spawn --new-window` で新しい窓を開いた（既定のシェルの Git Bash のログインシェル。その時点の本物の `~/.bashrc` で起動した）。手順 1〜5・8 のブロックを括弧付き貼り付けで貼った
+  - 手順 2 の前に、gh の資格情報をそのシェルにだけ渡す 1 行（手順 2 の補足）を打ち、手順 2 の後に `git -C ~/.config/bash checkout -q <検証のブランチ>` を打った（`main` にまだこの設定が無いため。マージした後は `main` に切り替える）
+  - 書き換える前の `~/.bashrc` と `~/.bash_profile` は、手順 3 の控えとは別にも控えた
+- 手順 9 は、導入の窓を閉じて新しい窓を開いた（前から開いていた窓は、開き直していない）
+- `wezterm cli` でペインに打つときは、必ず `--pane-id` で新しく開いたペインを指した（付けないと、GUI で選ばれているペインに送られる）
+
+| 手順 | 結果 |
+|---|---|
+| 1 | `ls` の `No such file or directory` だけ |
+| 2 | `Cloning into 'C:/Users/<WIN_USER>/.config/bash'...` から `Resolving deltas: 100% (29/29), done.` まで |
+| 3 | `bash -n: OK`。控えの `~/.bashrc.before-bash` は、書き換える前の `~/.bashrc` と同じ中身（sha256 が一致） |
+| 4 | `git diff` は 10 行すべて（LazyVim で整形された `y()`・古い形の WezTerm の行・zoxide の行）を `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした） |
+| 5 | 読み込みの 1 行と `bash -n: OK`。`~/.bashrc` はこの 1 行だけになった |
+| 8 | `/c/Users/<WIN_USER>/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`（何も作らない） |
+| 10（開き直した窓） | 手順 10 の補足の、Windows の 7 行と同じ。`PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;__zoxide_hook`。WezTerm の統合は、GUI が渡す `WEZTERM_SHELL_INTEGRATION` から読まれた |
+
+開き直した窓で確かめたこと（`wezterm cli` で打ち、GUI の WezTerm の状態を読んだ）:
+
+| 確かめたこと | 結果 |
+|---|---|
+| `cd ~/Documents` の後の、GUI のペインのディレクトリ | `wezterm cli list` で `file:///C:/Users/<WIN_USER>/Documents`、タイトルは `MINGW64:/c/Users/<WIN_USER>/Documents` |
+| そのペインからの分割（`wezterm cli split-pane`。Ctrl+Shift+D と同じく、今のペインのディレクトリで開く経路） | 新しいペインは `Documents` で開いた。`wezterm cli spawn` で開いたタブはホームで開いた（キー操作の新しいタブとは別の経路） |
+| `z wez` | 本物の zoxide のデータベースで、`~/.config/wezterm` へ移った |
+| `y`（scoop の yazi 26.9.1。利用者の yazi の設定のまま） | `Desktop` → `Documents` と移ってから `y` → 動かずに `q` で、`OLDPWD` は `Desktop` のまま。`y ~/.config` → `q` で `~/.config` へ移った。`/tmp/yazi-cwd.*` は残らなかった |
+
+- 画面の撮影と、キー操作（Ctrl+Shift+Alt+↑/↓ のプロンプトへのジャンプ・Ctrl+Shift+Alt+C の出力のコピー）は、Windows の画面がロックされていて試せなかった（前面の窓が無く、ロック画面が動いていた）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
+
 #### 未確認事項（Windows 11）
 
 - LAN の別の PC からの ssh（同じ PC の WSL から、LAN の IP あてにつないだ）
 - Git Credential Manager でのサインイン（ブラウザ）と、`gh auth setup-git` を実際に書いたとき（同じ指定を環境変数で渡した）
-- その PC の本物の `~/.bashrc` への導入、WezTerm の GUI の画面（プロンプトへのジャンプ・出力のコピー。OSC 133 は生の出力で見た）
+- WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。OSC 133 は生の出力で見た。Windows の画面がロックされていて試せなかった）
 - scoop の git（PortableGit）、mintty・Windows Terminal で開いた Git Bash

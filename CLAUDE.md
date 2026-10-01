@@ -42,6 +42,8 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
     - 対話は、`ssh <HOST>` でコマンドなしに入り、`exec env HOME=<使い捨て> … bash -i` に入れ替える（`ssh -tt <HOST> <コマンド>` は、最初の語しか動かなかった）。1 行が長い（585 文字）と次の入力まで渡らなかったので、パスは変数に入れて短くする。値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くでファイルに書く
     - SSH のセッションで scoop の shim が起動できない状態は、自分のユーザーで作ったジャンクションを通る shim で作れる（SSH でなければ動く）
     - 後で、取り残された sshd のセッションの bash が無いかを見る
+  - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
+    - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
   - 非公開のリポジトリの HTTPS は、Git Credential Manager に資格情報が無いとサインインの窓が開く。`GIT_CONFIG_COUNT` などで `credential.helper` を空にし、`https://github.com` だけ `!gh auth git-credential` にして、そのコマンドにだけ gh の資格情報を渡す
 
 ## 構成
