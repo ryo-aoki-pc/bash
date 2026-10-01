@@ -47,7 +47,10 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 - WezTerm は `WEZTERM_SHELL_INTEGRATION` を Windows の形のパス（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`）で渡す。Git Bash はそのまま読める
 - zoxide の Windows 版は、プロンプトのたびに `cygpath -w` を外部コマンドで動かす（zoxide の作り。`~/.bashrc` に初期化を直に書いていたときと同じ）
 - ツールの有無を確かめる `command -v` は、PATH を順に探すので 1 回に約 2ms かかる（検証した PC の 37 要素の PATH。この設定は 8 回）。対話のシェルの起動は、`~/.bashrc` に直に書いていたときより 10〜40ms 長い（測るたびに揺れた）
-- 非対話のシェル（`ssh <ホスト> <コマンド>`・scp）では外部コマンドを 1 つも動かさないので、`~/.bashrc` に zoxide の初期化を直に書いていたときより約 100ms 短い。SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない
+- 非対話のシェル（`ssh <ホスト> <コマンド>`・scp・sftp）では外部コマンドを 1 つも動かさないので、`~/.bashrc` に zoxide の初期化を直に書いていたときより約 100ms 短い
+  - Windows の sshd（`DefaultShell` が Git Bash）は、sftp と scp（SFTP の方式）の `sftp-server.exe` も bash から起動するので、sftp でも `~/.bashrc` が読まれる
+  - SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない（その PC の sshd に WSL からつないで確かめた）
+  - 対話の SSH のセッションでは、その状態だと zoxide の初期化が shim のエラーを出し、`z` が無くなる（ほかは使える）。その任意節を行う
 
 ## 読む順番
 

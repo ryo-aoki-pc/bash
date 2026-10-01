@@ -37,6 +37,11 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - zoxide は `HOME` ではなく `%LOCALAPPDATA%\zoxide` にデータベースを書くので、`_ZO_DATA_DIR` を一時的な場所にする
   - Git の `/etc/profile` は、環境変数 `ORIGINAL_PATH` があるとそれで `PATH` を組み立て直す。Claude Code などの Git Bash から起動したログインシェルで PATH を足すなら、`ORIGINAL_PATH` を外す
   - sshd の非対話は、`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を `SSH_CLIENT` を付け、`SHLVL` を外して起動すると真似られる（`~/.bashrc` を読む）
+  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる。setup-notes の windows-openssh-server.md）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
+    - `scp -O`・scp は `-S` に遠くのコマンドを包むラッパーを、sftp は `-s` に同じ形のコマンド（`/` を含むとサブシステムではなくコマンドになる）を渡す。Windows の sshd は `sftp-server.exe` も bash から起動する
+    - 対話は、`ssh <HOST>` でコマンドなしに入り、`exec env HOME=<使い捨て> … bash -i` に入れ替える（`ssh -tt <HOST> <コマンド>` は、最初の語しか動かなかった）。1 行が長い（585 文字）と次の入力まで渡らなかったので、パスは変数に入れて短くする。値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くでファイルに書く
+    - SSH のセッションで scoop の shim が起動できない状態は、自分のユーザーで作ったジャンクションを通る shim で作れる（SSH でなければ動く）
+    - 後で、取り残された sshd のセッションの bash が無いかを見る
   - 非公開のリポジトリの HTTPS は、Git Credential Manager に資格情報が無いとサインインの窓が開く。`GIT_CONFIG_COUNT` などで `credential.helper` を空にし、`https://github.com` だけ `!gh auth git-credential` にして、そのコマンドにだけ gh の資格情報を渡す
 
 ## 構成

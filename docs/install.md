@@ -364,7 +364,8 @@
       - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（starship の有無の両方）、`--hook none` の zoxide、`y()`（本物の yazi を端末で動かした）
       - 非対話のシェル（sshd の起動のしかたを真似た `bash -c`）で何も出さないこと、`set -u`、起動の時間と `command -v` の時間
       - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（eza・bat）
-  - **確認していないこと**: WSL、実機（AlmaLinux 10）と aarch64、Windows の sshd への実際の接続（scp・sftp。その PC から入れる鍵が無く、sshd の起動のしかたを真似た）、Git Credential Manager でのサインイン、その PC の本物の `~/.bashrc` への導入、インターネットに出られないホストでの更新、端末の画面（プロンプトへのジャンプなど。WezTerm の GUI では見ていない）、podman のソケットがあるときの `DOCKER_HOST`
+      - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
+  - **確認していないこと**: WSL、実機（AlmaLinux 10）と aarch64、Git Credential Manager でのサインイン、その PC の本物の `~/.bashrc` への導入（sshd の確かめは、本物の `~/.bashrc` の上で使い捨ての `HOME` の bash を起動した）、LAN の別の PC からの ssh、インターネットに出られないホストでの更新、端末の画面（プロンプトへのジャンプなど。WezTerm の GUI では見ていない）、podman のソケットがあるときの `DOCKER_HOST`
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） |
 |---|---|---|
@@ -373,7 +374,7 @@
 | bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` | Git for Windows 2.55.0.windows.5 の `5.3.15(2)-release`（MINGW64）/ `2.55.0.windows.5` / GNU Awk 5.4.1 |
 | ツール | Homebrew 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） | scoop の neovim 0.12.5・yazi 26.9.1・zoxide 0.9.9。starship 1.26.0・eza 0.23.5・bat 0.26.1・gdu 5.37.0 は、scoop の manifest の URL から一時的な場所に落とし（ハッシュも照合）、scoop と同じ shim で呼んだ |
 | WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） | WezTerm 20260905-153129-092dcf70。ryo-aoki-pc/wezterm の `main`（`826037f`）と、ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` |
-| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） | OpenSSH for Windows 9.5p2（`DefaultShell` は Git Bash）。つながず、起動のしかたを真似た |
+| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） | OpenSSH for Windows 9.5p2（`DefaultShell` は Git Bash、`Subsystem sftp sftp-server.exe`）。クライアントは同じ PC の WSL 2.7.13.0 の AlmaLinux 10.2（OpenSSH 9.9p1。LAN の IP あて） |
 
 > [!NOTE]
 > 出力例の値は `<USER>` / `<WIN_USER>` / `<HOST>` などのプレースホルダで書いてある。ツールの版は実行日によって変わる。
@@ -423,10 +424,12 @@
 - **非対話のシェルでも `~/.bashrc` は読まれる**
   - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-openssh-server.md の Git Bash）
     - Git Bash は、`bash -c` のときに環境変数 `SSH_CLIENT` があり、`SHLVL` が無ければ読んだ（Windows 11 の PC で、sshd の起動のしかたを真似て確かめた。`SSH_CLIENT` を外すと読まなかった）
-  - `bashrc` の前半（PATH と環境変数）はそこでも効き、後半（エイリアス・関数・プロンプト）は読まない。何も出力しない（出力すると scp・rsync が壊れる）
+    - Windows の sshd（`DefaultShell` が Git Bash）では、sftp と scp（SFTP の方式）の `sftp-server.exe` も、`ssh <HOST> <コマンド>` と同じく `bash.exe` の下で動いた。sftp でも `~/.bashrc` が読まれる
+  - `bashrc` の前半（PATH と環境変数）はそこでも効き、後半（エイリアス・関数・プロンプト）は読まない。何も出力しない（出力すると scp・sftp・rsync が壊れる）
 - **Windows の sshd（`DefaultShell` が Git Bash）でも、非対話のシェルでは外部コマンドを動かさない**
-  - Windows の前半は `command -v` などの組み込みだけで済む（Homebrew が無い）。SSH のセッションで scoop の shim が起動できない状態（setup-notes の windows-openssh-server.md の「scoop のツールを SSH のセッションで使う」）でも、`ssh <HOST> <コマンド>` に何も出さない（検証した PC で、起動できない shim を置いて確かめた。`~/.bashrc` に zoxide の初期化を直に書いていたときは、`Shim: Could not create process …` が毎回出た）
-  - 対話の SSH のセッションでは、zoxide などの初期化が scoop の shim を通る。shim が起動できない状態なら、その任意節を行う
+  - Windows の前半は `command -v` などの組み込みだけで済む（Homebrew が無い）。SSH のセッションで scoop の shim が起動できない状態（setup-notes の windows-openssh-server.md の「scoop のツールを SSH のセッションで使う」）でも、`ssh <HOST> <コマンド>`・scp・sftp に何も出さない
+  - 検証した PC の sshd で、自分で作ったジャンクションを通る shim（SSH のセッションでは起動できない）を PATH の先頭に置いて確かめた。`~/.bashrc` に zoxide の初期化を直に書いていたときは、`Shim: Could not create process …` が毎回出た（scp・sftp の転送は通ったが、エラーが出続けた）
+  - 対話の SSH のセッションでは、zoxide などの初期化が scoop の shim を通る。shim が起動できない状態では、ログインのたびに shim のエラーが出て、`z` が無くなる（ほかは使える）。その任意節を行う
 - **ツールを入れた直後のシェルには効かない**
   - 開いているシェルは、開いたときにあったツールの分だけ読んでいる。そのシェルで使うなら `. ~/.bashrc` で読み直す（検証コンテナで、開いたシェルに zoxide を入れて読み直し、`z` が警告無しで動いた）
   - starship だけは、端末を開き直す。読み直すと WezTerm のシェル統合より後ろに読まれ、WezTerm のフックが 2 回ずつ動いた（`false` の後に `D;1` と `D;0` が続けて送られた。README の[読む順番](../README.md#読む順番)）
@@ -583,9 +586,34 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 - 別の時間に、ログインシェルと対話の 4 行だけを 40 周測り直すと、この設定は直に書いた `~/.bashrc` より 11〜15 ms 長かった（全体は 100 ms ほど遅く出た）。差は測るたびに揺れた
 - `PS4` に時刻を出した `set -x` で行ごとに見ると、増えた分は `command -v` の 8 回（1 回 2〜3 ms）だった。starship の初期化（約 250 ms）と zoxide の初期化（約 90 ms。`cygpath` を含む）は、直に書いたときと同じ
 
+**実際の sshd での確かめ**（利用者の許可を得て、同じ PC の WSL の AlmaLinux 10.2 の鍵（その PC の sshd に登録済み）で、LAN の IP あてにつないだ）:
+
+- 本物の `~/.bashrc` は変えず、sshd が起動した Git Bash の中で、使い捨ての `HOME` の bash をもう一段起動した（`env -u SHLVL HOME=<使い捨て> bash -c <コマンド>`。`SSH_CLIENT` は受け継がれ、`SHLVL` を外すので、sshd が起動したときと同じく `~/.bashrc` を読む）
+  - `scp -O` と scp（SFTP の方式）は、`-S` に、遠くのコマンドをこの形で包む ssh のラッパーを渡した（SFTP の方式では、`sftp-server.exe` を同じ形で起動した）。sftp は、`-s` に同じ形のコマンドを渡した
+  - 対話の ssh は、`ssh <HOST>` でコマンドなしに入り（本物の `~/.bashrc`）、`exec env HOME=<使い捨て> … bash -i` で入れ替えた。確かめた値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くのシェルから Windows 側のファイルに書いた。zoxide のデータベースも一時的な場所にした
+- SSH のセッションで shim が起動できない状態は、自分のユーザーで作ったジャンクション（`New-Item -ItemType Junction`。所有者は `<WIN_USER>`）を通る scoop の shim で作った。SSH でなければ動き、SSH のセッションでは `Shim: Could not create process …` で失敗した（scoop の zoxide は、管理者が作り直したジャンクションを通るので、SSH でも動いた）
+
+| 確かめたこと | 結果 |
+|---|---|
+| `ssh <HOST> true`（本物の `~/.bashrc`） | 0 バイト。bash は `5.3.15(2)-release`・`MINGW64`・`SHLVL=1` で、`SSH_CLIENT` があった |
+| 使い捨ての HOME の `bash -c true`（この設定） | 0 バイト。`EDITOR=nvim`、`__bash_config_loaded`・`y`・`z` は無く、`PROMPT_COMMAND` は空 |
+| 起動できない shim を PATH の先頭に置き、zoxide の初期化を直に書いた `~/.bashrc` | `Shim: Could not create process … init bash'.` など 336 バイト |
+| 同じ shim で、この設定 | 0 バイト |
+| `scp -O`（200 KB を送って、受け取る） | この設定は、shim の有無にかかわらず中身が一致し、エラーの出力も無かった。zoxide の初期化を直に書いた形は、中身は一致したが、shim のエラーが毎回出た |
+| scp（SFTP の方式） | `scp -O` と同じ |
+| sftp の put と get | この設定（`-s` で `sftp-server.exe` を使い捨ての HOME の bash から起動）も、本物の `~/.bashrc` も、中身が一致した。Windows の sftp-server の絶対パスは `/C:/…` の形（`C:/…` は今のディレクトリからの相対になった） |
+| sftp と `ssh <HOST> sleep 20` の間の Windows のプロセス | `sftp-server.exe` も `sleep.exe` も、`bash.exe ← bash.exe ← sshd.exe ← sshd.exe` の下で動いた |
+| 対話の ssh（この設定） | 起動の出力は無かった。`__bash_config_loaded` は `1`、`y`・`z` は `function`、`alias vi='nvim'`、`PROMPT_COMMAND` は `__wz_mouse_off;__zoxide_hook`（SSH では `TERM_PROGRAM` が届かないので、WezTerm の統合は迷子のマウス報告よけだけ）。`cd Documents` → `cd Desktop` の後の `z Docu` で `Documents` へ移り、`false` の後は `rc=1`。`y` → 動かずに `q` で、`OLDPWD` は `Desktop` のまま |
+| 対話の ssh（この設定。起動できない zoxide の shim） | 起動時に shim のエラーが 2 行出た。`__bash_config_loaded` は `1`、`y` は `function`、`z` は無く（`bash: z: command not found`）、`PROMPT_COMMAND` は `__wz_mouse_off`。`y` は使えた |
+
+- 検証の方法に関わった、Windows の sshd の振る舞い:
+  - 擬似端末を頼んで（`ssh -tt <HOST> <コマンド>`）コマンドを渡すと、`echo "B: …"` は何も出さず、`env -u SHLVL FOO=bar bash -c '…'` は引数の無い `env` のように環境変数の一覧を出した（最初の語だけが動いたように見えた）。コマンドなしの `ssh -tt <HOST>` は普通に入れた
+  - 対話のセッションに 585 文字の 1 行を一度に打つと、次の入力が届くまで遠くの bash に渡らなかった（約 370 文字の行はすぐに渡った）
+- 検証の後に、取り残された SSH のセッションの bash を止め、sshd のセッションが残っていないことを確かめた
+
 #### 未確認事項（Windows 11）
 
-- Windows の sshd への実際の接続（`ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）。その PC から入れる鍵が無く、sshd の起動のしかたを真似た
+- LAN の別の PC からの ssh（同じ PC の WSL から、LAN の IP あてにつないだ）
 - Git Credential Manager でのサインイン（ブラウザ）と、`gh auth setup-git` を実際に書いたとき（同じ指定を環境変数で渡した）
 - その PC の本物の `~/.bashrc` への導入、WezTerm の GUI の画面（プロンプトへのジャンプ・出力のコピー。OSC 133 は生の出力で見た）
 - scoop の git（PortableGit）、mintty・Windows Terminal で開いた Git Bash
