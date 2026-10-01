@@ -19,7 +19,7 @@
 - 手順の後: 以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は x86_64 のコンテナでのみ検証した**（画面の代わりに `script` の擬似端末で対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**（WezTerm の GUI の画面とキー操作は、まだ試していない）。**AlmaLinux 10 の実機では試していない**（WSL では、SSH の clone の手順 2 と[更新](#更新)だけを流した）。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH の clone の手順 2 と[更新](#更新)だけを流した）。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -217,6 +217,7 @@
    - 1 行目が `1` なら、対話のシェルでこの設定が最後まで読まれている
    - 2〜4 行目は、このホストに入っているツールの分だけ出る（README の[読むもの](../README.md#読むもの)）。eza があれば `ll`・`la`・`lt`、yazi があれば `function`（`y`）、zoxide があれば `function`（`z`）
    - Git Bash では、eza が無くても `alias ll='ls -l'` が出る（Git for Windows の `/etc/profile.d/aliases.sh` のもので、この設定のものではない）。`alias gdu` は出ない（scoop の gdu は `gdu` の名前で入る）
+   - AlmaLinux 10 でも、eza が無いと `alias ll='ls -l --color=auto'` が出る（coreutils-common の `/etc/profile.d/colorls.sh` のもので、この設定のものではない）
    - 最後が `0` なら、非対話のシェル（`ssh <HOST> <コマンド>`・scp・rsync）で何も出力しない
    - 1 行目が `読まれていない` なら、手順 5・8 を見直す
 
@@ -239,6 +240,21 @@
    ```
 
    - `DOCKER_HOST` は、podman の API ソケット（setup-notes の [podman.md 手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
+
+   AlmaLinux 10 の実機（Raspberry Pi 5。Homebrew で zoxide・yazi・neovim を入れたホスト）で、開き直したログインシェル（tmux のペイン）での出力:
+
+   ```
+   1
+   alias ll='ls -l --color=auto'
+   alias vi='nvim'
+   function
+   function
+   EDITOR=nvim DOCKER_HOST=
+   0
+   ```
+
+   - `alias ll` は `/etc/profile.d/colorls.sh` のもの（eza が無いので、この設定の `ll` は無い）
+   - podman の API ソケットを一時的に起動して（`systemctl --user start podman.socket`）開き直すと、`EDITOR=nvim DOCKER_HOST=unix:///run/user/<UID>/podman/podman.sock` になった
 
    Windows 11 の PC の Git Bash（scoop で neovim・yazi・zoxide を入れた PC）で、開き直したログインシェル（画面を出さない `wezterm-mux-server` のペイン）での出力:
 
@@ -354,7 +370,7 @@
 
 - **目的**: いろいろなホストで同じ bash の設定を使う。setup-notes の手順書と wezterm の手順書がホストごとに `~/.bashrc` へ書いていた行を、このリポジトリの `bashrc` 1 つにまとめ、`~/.bashrc` からは 1 行で読む
 - **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
-- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。clone を SSH に変えた後、手順 2 と[更新](#更新)を、その PC の Git Bash と WSL の AlmaLinux 10 で流し直した（2026-10-01）。インターネットに出られないホストだけは HTTPS のままにした（トンネル越しには試していない）。AlmaLinux 10 の実機では本実行していない**
+- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。clone を SSH に変えた後、手順 2 と[更新](#更新)を、その PC の Git Bash と WSL の AlmaLinux 10 で流し直した（2026-10-01）。AlmaLinux 10 の aarch64 の実機（Raspberry Pi 5）の本物の `~/.bashrc` に導入した（2026-10-02）。インターネットに出られないホストだけは HTTPS のままにした（トンネル越しには試していない）**
   - AlmaLinux 10: 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
     - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
     - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
@@ -381,17 +397,25 @@
       - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
     - 2026-10-01 の後半に、その PC の本物の `~/.bashrc` に導入した。利用者の WezTerm の GUI に新しい窓を開いて手順 1〜5・8 を貼り、開き直した窓で手順 10 と、cwd の引き継ぎ・`z`・`y` を確かめた。clone を SSH に変えた後、その PC の `~/.config/bash` も SSH に切り替えた（[更新](#更新)の手順 1 の箇条書き）
   - WSL の AlmaLinux 10（同じ PC の WSL）: 手順 2 と[更新](#更新)の手順 1・2 だけを、`HOME` を使い捨てのディレクトリにして流した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）
-  - **確認していないこと**: WSL での手順 2・更新以外、実機（AlmaLinux 10）と aarch64、鍵を作って GitHub に登録するところとパスフレーズのある鍵、LAN の別の PC からの ssh、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull、そのホストでの gh のログイン）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった）、podman のソケットがあるときの `DOCKER_HOST`
+  - AlmaLinux 10 の実機（下表の Raspberry Pi 5）: 利用者の依頼で、その本物の `~/.bashrc` に導入し、導入を残した（[付録](#付録-almalinux-10-の実機aarch64への導入2026-10-02)）
+    - **この文書の bash のコードブロックを抜き出したもの**を、利用者の tmux とは別のソケットの tmux のペインのログインシェルに、括弧付き貼り付けで貼って流した。手順 9 は、tmux のセッションを閉じて開き直した
+    - 確認したこと
+      - 手順 1〜5・8・10、[更新](#更新)の手順 1・2（元の手順書の 9 行を消す移行、SSH の clone）
+      - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（COPR の WezTerm の公式のシェル統合がある形。WezTerm の GUI・ssh・tmux の 3 つの端末の形）と、導入の前後のシェルの状態の比較
+      - `y()`（本物の yazi）と `z`
+      - 非対話のシェルで何も出さないこと（`bash -c`、自分のユーザーで 127.0.0.1 に立てた sshd 越しの `ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）、対話の ssh、`set -u`
+      - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
+  - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、鍵を作って GitHub に登録するところとパスフレーズのある鍵、LAN の別の PC からの ssh、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull、そのホストでの gh のログイン）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
 
-| 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） |
-|---|---|---|
-| 実施日 | 2026-09-30 | 2026-10-01 |
-| OS | AlmaLinux 10.2 (Lavender Lion) / x86_64（`almalinux:10`、Docker 29.3.1、`--network host`） | Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64 |
-| bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` | Git for Windows 2.55.0.windows.5 の `5.3.15(2)-release`（MINGW64）/ `2.55.0.windows.5` / GNU Awk 5.4.1 |
-| ツール | Homebrew 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） | scoop の neovim 0.12.5・yazi 26.9.1・zoxide 0.9.9。starship 1.26.0・eza 0.23.5・bat 0.26.1・gdu 5.37.0 は、scoop の manifest の URL から一時的な場所に落とし（ハッシュも照合）、scoop と同じ shim で呼んだ |
-| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） | WezTerm 20260905-153129-092dcf70。ryo-aoki-pc/wezterm の `main`（`826037f`）と、ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` |
-| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） | OpenSSH for Windows 9.5p2（`DefaultShell` は Git Bash、`Subsystem sftp sftp-server.exe`）。クライアントは同じ PC の WSL 2.7.13.0 の AlmaLinux 10.2（OpenSSH 9.9p1。LAN の IP あて） |
-| GitHub への ssh（手順 2・更新） | 試していない（clone は bare リポジトリで代えた） | Git for Windows の `OpenSSH_10.5p1`。同じ PC の WSL の AlmaLinux 10.2 の `openssh-clients-9.9p1-27.el10_2.alma.1` と `git-core-2.52.0-1.el10` |
+| 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） | AlmaLinux 10 の実機（Raspberry Pi 5） |
+|---|---|---|---|
+| 実施日 | 2026-09-30 | 2026-10-01 | 2026-10-02 |
+| OS | AlmaLinux 10.2 (Lavender Lion) / x86_64（`almalinux:10`、Docker 29.3.1、`--network host`） | Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64 | AlmaLinux 10.2 (Lavender Lion) / aarch64（Raspberry Pi 5 Model B Rev 1.0、カーネル `6.12.96-20260724.v8.1.el10`、SELinux は Enforcing） |
+| bash / git / gawk | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10` | Git for Windows 2.55.0.windows.5 の `5.3.15(2)-release`（MINGW64）/ `2.55.0.windows.5` / GNU Awk 5.4.1 | `bash-5.2.26-6.el10` / `git-2.52.0-1.el10` / `gawk-5.3.0-6.el10_2.1` |
+| ツール | Homebrew 7.0.7（zoxide 0.10.0・yazi 26.9.1・eza 0.23.5・bat 0.26.1・neovim 0.12.5_1・gdu 5.37.0・starship 1.26.0） | scoop の neovim 0.12.5・yazi 26.9.1・zoxide 0.9.9。starship 1.26.0・eza 0.23.5・bat 0.26.1・gdu 5.37.0 は、scoop の manifest の URL から一時的な場所に落とし（ハッシュも照合）、scoop と同じ shim で呼んだ | Homebrew 7.0.7（zoxide 0.10.0・yazi 26.9.1・neovim 0.12.5_1）。eza・bat・gdu・starship は無い |
+| WezTerm の設定 | ryo-aoki-pc/wezterm の `main`（`826037f`）に、`PS0`・`PS1` の印を BEL で終える直し（README の[読む順番](../README.md#読む順番)）を足したもの（1 回目は `PS0` だけ） | WezTerm 20260905-153129-092dcf70。ryo-aoki-pc/wezterm の `main`（`826037f`）と、ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` | ryo-aoki-pc/wezterm の `main`（`826037f`）。COPR（`wezfurlong/wezterm-nightly`）の `wezterm-20260929_043349_cab25161` の公式のシェル統合（`/etc/profile.d/wezterm.sh`）もある |
+| sshd | `openssh-server-9.9p1-27.el10_2.alma.1`（検証環境だけ 127.0.0.1 の 2222 番） | OpenSSH for Windows 9.5p2（`DefaultShell` は Git Bash、`Subsystem sftp sftp-server.exe`）。クライアントは同じ PC の WSL 2.7.13.0 の AlmaLinux 10.2（OpenSSH 9.9p1。LAN の IP あて） | `openssh-server-9.9p1-27.el10_2.alma.1`。検証は、自分のユーザーで 127.0.0.1 の 2222 番に立てた sshd（`UsePAM no`。システムの sshd とは別） |
+| GitHub への ssh（手順 2・更新） | 試していない（clone は bare リポジトリで代えた） | Git for Windows の `OpenSSH_10.5p1`。同じ PC の WSL の AlmaLinux 10.2 の `openssh-clients-9.9p1-27.el10_2.alma.1` と `git-core-2.52.0-1.el10` | `openssh-clients-9.9p1-27.el10_2.alma.1`。鍵は GitHub に登録済みで、GitHub のホスト鍵は `~/.ssh/known_hosts` に前からあった |
 
 > [!NOTE]
 > 出力例の値は `<USER>` / `<WIN_USER>` / `<HOST>` などのプレースホルダで書いてある。ツールの版は実行日によって変わる。
@@ -711,3 +735,76 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 - 鍵を作って GitHub に登録するところ、パスフレーズのある鍵（検証した 2 つの鍵には無かった）
 - AlmaLinux 10 の実機（WSL では手順 2 と更新だけ）
 - インターネットに出られないホストでの、トンネル越しの HTTPS の clone と pull、そのホストでの gh のログイン（`https_proxy` を入れた `gh auth login`）
+
+---
+
+### 付録: AlmaLinux 10 の実機（aarch64）への導入（2026-10-02）
+
+前の付録の未確認事項のうち、AlmaLinux 10 の実機と aarch64 を、利用者の依頼で、Raspberry Pi 5 の本物の `~/.bashrc` に導入して確かめた。導入は残した（[完了時点の状態](#完了時点の状態)のとおり）。
+
+**環境**:
+
+- Raspberry Pi 5 Model B Rev 1.0（4 コア・8 GB）、AlmaLinux 10.2 / aarch64。版は[対象と検証環境](#対象と検証環境)の表
+- 利用者は、別の PC から ssh で入り、tmux の中で使っている（GNOME の画面もあるが、検証では使っていない）
+- COPR の WezTerm の公式のシェル統合（`/etc/profile.d/wezterm.sh`。bash-preexec を含む）は、`TERM_PROGRAM` を見ずに、どの対話のシェルでも読まれる。ryo-aoki-pc/wezterm の `shell/wezterm.sh` は、公式の統合が先に読まれていると、迷子のマウス報告よけ（`__wz_mouse_off`）だけを足して抜ける
+- 導入前の `~/.bashrc` は、`/etc/skel` の 25 行の後ろに、`eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"`・`eval "$(zoxide init bash --cmd z)"`・比べ方を直す前（`!=`）の 7 行の `y()` の 9 行。`~/.bash_profile` は `/etc/skel` のもの
+- `~/.ssh/id_ed25519`（パスフレーズ無し）は GitHub に登録してあり、`~/.ssh/known_hosts` には GitHub の 3 つの鍵が前からあった
+
+**流し方**:
+
+- 書き換える前の `~/.bashrc` と `~/.bash_profile` は、手順 3 の控えとは別にも控え、`~/.ssh/known_hosts` と zoxide のデータベースの sha256 を控えた
+- この文書の bash のコードブロックを機械的に抜き出し（折り畳みの中は除き、リストの字下げを外す）、利用者の tmux とは別のソケット（`tmux -L`）の tmux のペインのログインシェルに、`load-buffer` と `paste-buffer -p`（括弧付き貼り付け）で貼ってから Enter を送った。ペインの環境変数は、`env -i` で ssh で入ったときの形（`HOME`・`PATH`・`LANG`・`XDG_RUNTIME_DIR` など）にした
+- 出力は `pipe-pane` で生のまま受けて読んだ。このホストの tmux（`tmux-3.3a-13.20230918gitb202a2f.el10`）は、`capture-pane` でサーバーが SIGABRT で落ちた（この設定を読まない `bash --norc` のペインでも同じだった）ので、画面は読んでいない
+- 手順 9 は、tmux のセッションを閉じて、新しく開いた
+- 対話のシェルの生の出力は、導入の前と後に、`script -q -E never -O <ログ> -c 'bash -il'` の擬似端末へ同じコマンドを間を空けて流し込んで比べた（WezTerm の GUI の形 `TERM=xterm-256color TERM_PROGRAM=WezTerm` と、ssh の形 `TERM_PROGRAM` 無し）
+- zoxide のデータベースは `_ZO_DATA_DIR` で一時的な場所にした
+- ssh は、システムの sshd を使わなかった（`~/.ssh/authorized_keys` にこのホスト自身の鍵が無く、足さなかった）。自分のユーザーで `/usr/sbin/sshd` を 127.0.0.1 の 2222 番に立て（使い捨てのホスト鍵とクライアントの鍵、`UsePAM no`・`StrictModes no`・`Subsystem sftp /usr/libexec/openssh/sftp-server`）、ssh には `-F /dev/null` と使い捨ての `known_hosts` を渡した。PAM を通らないので、そのセッションには `XDG_RUNTIME_DIR` が無い
+
+| 手順 | 結果 |
+|---|---|
+| 1 | `ls` の `No such file or directory` だけ |
+| 2 | `Cloning into '/home/<USER>/.config/bash'...` から `Resolving deltas: 100% (35/35), done.` まで。ホスト鍵の問いは出ず、`known_hosts` は前後で同じ中身だった。`git ls-files --eol` は 8 つとも `i/lf w/lf` |
+| 3 | `bash -n: OK`。控えの `~/.bashrc.before-bash` は、書き換える前の `~/.bashrc` と同じ中身（`cmp` で一致） |
+| 4 | `git diff` は 26〜34 行目の 9 行（Homebrew・zoxide・`y()`）を `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした） |
+| 5 | 読み込みの 1 行と `bash -n: OK` |
+| 8 | `/home/<USER>/.bash_profile:4:if [ -f ~/.bashrc ]; then` と `/home/<USER>/.bash_profile:5:    . ~/.bashrc`（何も作らない）。終了コードは 2 だった（無い `~/.bash_login`・`~/.profile` を `grep` が開けないため） |
+| 10（開き直したペイン） | 手順 10 の補足の、AlmaLinux 10 の実機の 7 行 |
+| [更新](#更新)の 1・2 | `Already up to date.` と、`a69a10e (HEAD -> main, origin/main, origin/HEAD) 導入の clone を SSH にする (#3)` の 1 行 |
+
+手順書の外で確かめたこと:
+
+| 確かめたこと | 結果 |
+|---|---|
+| 非対話（CLAUDE.md の「よく使うコマンド」） | `bash -c '. ~/.config/bash/bashrc'`・`bash -c '. ~/.bashrc'`・sshd の起動のしかたを真似た `bash -c true`（`SSH_CLIENT` を付け、`SHLVL` 無し）は 0 バイト。`bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok`、`bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1` |
+| 対話のシェルの生の出力（`script` の擬似端末。WezTerm の GUI の形と ssh の形） | 導入の前も後も、`false` の後は `D;1`（COPR の統合が送る。`D` は重ならない）。`cd /usr/share` → `cd` → `z share` は警告無しで `/usr/share` へ移った。`. ~/.bashrc` の前後で `PROMPT_COMMAND` は同じ（導入の後は `([0]=$'__bp_precmd_invoke_cmd\n__wz_mouse_off;:;__zoxide_hook' [1]="__bp_interactive_mode")`）で、`PS0` は無い。制御文字を印に置き換えて比べると、導入の前と後のログは同じで、違いはプロンプトごとのマウス報告の解除（`__wz_mouse_off`）だけだった（起動して最初のコマンドに `C` が無いのも、導入の前と同じ） |
+| 導入の前後のシェルの状態（`alias`・`declare -F`・`PATH`・`EDITOR`・`VISUAL`・`MANPAGER`・`DOCKER_HOST`・`y` の中身） | 違いは、`alias vi='nvim'`、`EDITOR`・`VISUAL` が `nvim`、`__wz_mouse_off`・`__wz_eat_mouse_report`、`__bash_config_loaded=1`、`y` の比べ方（`!=` から `-ef`）だけ。`PATH` は同じ |
+| tmux のペイン（`TERM=tmux-256color`・`TERM_PROGRAM=tmux`） | `false` の後は `D;1`、読み直しても `PROMPT_COMMAND` は同じ、`z Docu` で `~/Documents` へ移り、警告は出なかった |
+| `y`（Homebrew の yazi 26.9.1。利用者の yazi の設定のまま、tmux のペインで動かした） | `Documents` → `Desktop` と移ってから `y` → 動かずに `q` で、`PWD` は `Desktop`、`OLDPWD` は `Documents` のまま。`y ~/.config` → `q` で `~/.config` へ移った。`/tmp/yazi-cwd.*` は残らなかった |
+| 立てた sshd 越しの `ssh <HOST> true` | 出力は 0 バイト |
+| 立てた sshd 越しの `ssh <HOST> <コマンド>` | `SHLVL=1`・`SSH_CLIENT` のある bash が `~/.bashrc` を読み、Homebrew の PATH（`brew`・`nvim`・`zoxide`）と `EDITOR=nvim` が入り、`y`・`z`・`alias vi`・`__bash_config_loaded` は無く、`PROMPT_COMMAND` は空 |
+| scp（SFTP の方式）・`scp -O`・sftp（`-b` で put と get） | 200 KB の乱数のファイルを往復し、中身（sha256）が一致し、エラーの出力は無かった。sshd のログでは、scp（SFTP の方式）の 2 回と sftp は `subsystem 'sftp'` のセッション（`sftp-server` も bash から起動され、`~/.bashrc` を読む）、`scp -O` はコマンドのセッションだった |
+| 対話の ssh（tmux のペインから。ログインシェル） | 起動の出力は無かった。手順 10 のブロックは、開き直したペインと同じ 7 行。`false` の後は `D;1`、読み直しても `PROMPT_COMMAND` は同じ、`z share` は警告無しで移った |
+| podman のソケット（`systemctl --user start podman.socket` で一時的に起動した） | `bash -c '. ~/.bashrc'`・sshd を真似た `bash -c`・開き直したペインで、`DOCKER_HOST=unix:///run/user/<UID>/podman/podman.sock`。先に `DOCKER_HOST` を入れると変えず、`XDG_RUNTIME_DIR` が無いと入らなかった。出力は 0 バイトのまま。podman.service は起動されなかった |
+| podman のソケットを止めた後（`systemctl --user stop podman.socket`） | ソケットのファイルは `/run/user/<UID>/podman/` に残り（unit に `RemoveOnStop` が無い）、その後に開いたシェルにも `DOCKER_HOST` が入った（つなぐと `Connection refused`）。検証の後に、そのファイルとディレクトリを消して、起動する前の状態に戻した |
+
+起動の時間（ms。平均 / 中央値。20 回。場合を 1 回ずつ順に回し、1 周目は捨てた。端末を付けず、`env -i` の環境で起動した）:
+
+| `~/.bashrc` | ログインシェル（`bash -i -l -c exit`） | 対話（`bash -i -c exit`） | sshd を真似た非対話（`bash -c true`） |
+|---|---|---|---|
+| `/etc/skel` のまま（使い捨ての `HOME`） | 87.7 / 87.6 | 77.5 / 77.0 | 52.5 / 52.1 |
+| 導入前の `~/.bashrc`（1 回目） | 100.4 / 100.8 | 90.8 / 91.2 | 66.6 / 66.5 |
+| 導入前の `~/.bashrc`（2 回目。使い捨ての `HOME` に写した） | 105.2 / 105.0 | 93.6 / 94.1 | 68.5 / 68.1 |
+| この設定（1 回目） | 106.8 / 107.3 | 96.2 / 95.7 | 63.3 / 63.5 |
+| この設定（2 回目） | 106.2 / 106.6 | 96.2 / 96.3 | 63.4 / 62.9 |
+
+- ログインシェルと対話は、導入前より 1〜6 ms 長く（測るたびに揺れた）、非対話は 3〜5 ms 短かった（非対話では zoxide を初期化しないため）
+- 検証の後に、tmux のサーバー・立てた sshd・podman.socket を止め、取り残されたプロセスと tmux のソケットが無いことを確かめた。`~/.ssh/known_hosts`・`~/.bash_profile`・zoxide のデータベースは、前後で同じ中身だった
+- 利用者がその前から開いていた tmux のセッションのシェルは、開き直していない（古い `y`・`z` のまま）
+
+#### 未確認事項（AlmaLinux 10 の実機）
+
+- WezTerm の GUI の画面とキー操作（このホストの GNOME の画面では試していない。OSC 133 は生の出力で見た）
+- システムの sshd（PAM を通る）越しの ssh・scp・sftp、LAN の別の PC からの ssh、rsync（このホストに無い）
+- 初めて github.com につなぐホストでの手順 2 の問い（このホストの `known_hosts` には前からあった。WSL では確かめた）
+- 手順 6・7（エディタで直す行が無かった）、[ロールバック](#ロールバック)（導入を残した）
+- starship・eza・bat・gdu があるとき（このホストに無い）

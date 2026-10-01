@@ -31,6 +31,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 | zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [zoxide.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/zoxide.md) 手順 6（`--cmd z`） |
 
 - `ls` や `cat` は置き換えない（元の手順書と同じ）
+- eza が無いと、`ll` は AlmaLinux 10 の `alias ll='ls -l --color=auto'`（coreutils-common の `/etc/profile.d/colorls.sh`）のまま（この設定のものではない。Git Bash は[下](#windows-11-の-git-bash-での違い)）
 - 対話のシェルで最後まで読むと、`__bash_config_loaded=1` が入る（確かめる用）
 
 ### Windows 11 の Git Bash での違い
@@ -77,6 +78,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
   - starship は、初期化のたびに `PS0` に自分を足す
   - zoxide は、`PROMPT_COMMAND` が配列のとき（AlmaLinux 10）、先頭しか見ないので、初期化のたびにフックを足す
 - AlmaLinux 10 の COPR の WezTerm が入れる公式のシェル統合（`/etc/profile.d/wezterm.sh`。bash-preexec を含む）があるときも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（上流の `wezterm.sh` を置いた模擬）
+  - AlmaLinux 10 の aarch64 の実機（COPR の WezTerm 20260929。starship は無く、WezTerm → zoxide の並び）でも、`D;1`・警告無し・読み直しても変わらなかった（2026-10-02。[docs/install.md の付録](docs/install.md#付録-almalinux-10-の実機aarch64への導入2026-10-02)）。ryo-aoki-pc/wezterm の `shell/wezterm.sh` は、公式の統合が先に読まれていると、迷子のマウス報告よけだけを足して抜ける
 - Windows 11 の Git Bash（bash 5.3。`PROMPT_COMMAND` は何も無いところから始まる）でも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（2026-10-01。starship 1.26.0・zoxide 0.9.9。starship 無しでも同じ）
   - WezTerm の `PS0` を直す前の `shell/wezterm.sh`（ryo-aoki-pc/wezterm の main）では、表の 4 行目と同じく出力の前に余計な文字が出た。生の出力は `${STARSHIP_START_TIME:0:0}` で、WezTerm の画面では先頭の `${` がエスケープの続きとして読まれ、`STARSHIP_START_TIME:0:0}` と見えた
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
