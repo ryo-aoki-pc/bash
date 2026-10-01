@@ -74,7 +74,9 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
-- `migrate/old-y.txt`: yazi の `y()` の 7 行（7 行の並びがすべて同じときだけ消す）
+- `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 2 つの形がある
+  - setup-notes の yazi.md 手順 3 の 7 行
+  - それを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` がこの形だった）
 - `migrate/remove-old-lines.awk`: 上の 2 つを使って消す awk
 
 ## 設定を足すとき
@@ -99,7 +101,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 ├── bashrc                        # ~/.bashrc から読む本体
 ├── migrate/
 │   ├── old-lines.txt             # 移行で消す行（1 行ずつ）
-│   ├── old-y.txt                 # 移行で消す y() の 7 行
+│   ├── old-y.txt                 # 移行で消す y()（空行で区切った 2 つの形）
 │   └── remove-old-lines.awk      # 上の 2 つで ~/.bashrc の控えから消す
 ├── docs/install.md               # 導入・更新・ロールバックの手順書
 ├── .gitattributes                # 改行を LF に固定（core.autocrlf=true の git でも CRLF にしない）
