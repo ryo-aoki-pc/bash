@@ -43,8 +43,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 - `alias gdu=gdu-go` は入らない（scoop の gdu は `gdu` の名前で入る）
 - `ll` は、eza が無いと Git for Windows の `alias ll='ls -l'`（`/etc/profile.d/aliases.sh`。ログインシェルだけ）のまま。eza があれば、この設定の `ll` が上書きする
 - `y` は、yazi が書く Windows の形のパス（`C:\Users\…`）へ `cd` する（空白や日本語を含むパスにも移れた）
-  - 動かずに `q` で閉じても、そのパスを `$PWD`（`/c/Users/…`）と違うとみなして同じ場所へ `cd` し直すので、`cd -` の戻り先が今の場所になる。元の場所のままで終えるなら `Q`
-  - `y()` の本体は setup-notes の yazi.md と同じ文字列にしてあるので、ここでは直さない
+  - 移ったかは、`$PWD`（`/c/Users/…`）と文字列で比べず、同じディレクトリか（`-ef`）で比べる。公式の文字列の比べ方では、動かずに `q` で閉じても同じ場所へ `cd` し直し、`cd -` の戻り先が今の場所になっていた（2026-10-01 に setup-notes の yazi.md と合わせて直した）
 - WezTerm は `WEZTERM_SHELL_INTEGRATION` を Windows の形のパス（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`）で渡す。Git Bash はそのまま読める
 - zoxide の Windows 版は、プロンプトのたびに `cygpath -w` を外部コマンドで動かす（zoxide の作り。`~/.bashrc` に初期化を直に書いていたときと同じ）
 - ツールの有無を確かめる `command -v` は、PATH を順に探すので 1 回に約 2ms かかる（検証した PC の 37 要素の PATH。この設定は 8 回）。対話のシェルの起動は、`~/.bashrc` に直に書いていたときより 10〜40ms 長い（測るたびに揺れた）
@@ -93,9 +92,9 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
-- `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 2 つの形がある
-  - setup-notes の yazi.md 手順 3 の 7 行
-  - それを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` がこの形だった）
+- `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 4 つの形がある
+  - setup-notes の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
+  - それぞれを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` は、直す前の形のこれだった）
 - `migrate/remove-old-lines.awk`: 上の 2 つを使って消す awk
 
 ## 設定を足すとき
@@ -120,7 +119,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 ├── bashrc                        # ~/.bashrc から読む本体
 ├── migrate/
 │   ├── old-lines.txt             # 移行で消す行（1 行ずつ）
-│   ├── old-y.txt                 # 移行で消す y()（空行で区切った 2 つの形）
+│   ├── old-y.txt                 # 移行で消す y()（空行で区切った 4 つの形）
 │   └── remove-old-lines.awk      # 上の 2 つで ~/.bashrc の控えから消す
 ├── docs/install.md               # 導入・更新・ロールバックの手順書
 ├── .gitattributes                # 改行を LF に固定（core.autocrlf=true の git でも CRLF にしない）

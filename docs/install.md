@@ -75,7 +75,7 @@
    <summary>補足: 消し方</summary>
 
    - `migrate/old-lines.txt` の行と、行全体が同じ行を消す。手で直した行や、`--cmd cd` の zoxide・別の `EZA_OPTS` の eza のように少しでも違う行は残る（手順 4 で見る）
-   - yazi の `y()` は、`migrate/old-y.txt` の形のどれかと、続く行がすべて同じときだけ消す。形は、setup-notes の yazi.md の 7 行と、それを LazyVim で保存した 8 行（保存のときに shfmt が整形した形）の 2 つ。`sed '/^function y() {$/,/^}$/d'` のような範囲の消し方は、閉じ括弧が見つからないと最後の行まで消すので使わない
+   - yazi の `y()` は、`migrate/old-y.txt` の形のどれかと、続く行がすべて同じときだけ消す。形は、setup-notes の yazi.md の 7 行（今の形と、2026-10-01 に比べ方を直す前の形）と、それぞれを LazyVim で保存した 8 行（保存のときに shfmt が整形した形）の 4 つ。`sed '/^function y() {$/,/^}$/d'` のような範囲の消し方は、閉じ括弧が見つからないと最後の行まで消すので使わない
    - 控えの `~/.bashrc.before-bash` から読み、`~/.bashrc` に書く。`~/.bashrc` のファイル自体（パーミッション）はそのまま
    - `touch` は、Git Bash で `~/.bashrc` がまだ無いときに空のファイルを作るため
    - 検証コンテナで、実機と同じ並び（Homebrew・`y()`・zoxide・`if … fi` の 3 行の WezTerm）の `~/.bashrc` に流した出力は、[付録](#付録-コンテナでの検証記録2026-09-30)にある
@@ -554,10 +554,11 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 | 確かめたこと | 結果 |
 |---|---|
 | 直す前の版（`e44c6e6`）の手順 3・4（その PC の `~/.bashrc` の写し） | 手順 3 は WezTerm と zoxide の 2 行だけを消し、`y()` の 8 行は残った。手順 4 の `grep` は `y()` の中の 2 行（`tmp="$(mktemp …`・`command yazi …`）だけを出した。この `y()` は、setup-notes の yazi.md の 7 行を `shfmt -i 2 -ln bash`（shfmt 3.14.1）に通したものと 1 バイトも違わなかった（LazyVim は `~/.bashrc` を保存するときに shfmt で整形する） |
-| 直した `remove-old-lines.awk` を直接（10 通りの入力） | 2 つの形の `y()` はどちらも消え（ファイルの末尾で改行が無くても）、1 行を手で直したもの・閉じ括弧の無いもの・余分な `}`・空行は残った。前の付録の入力では、直す前の awk と同じ出力。`gawk --posix` でも同じ |
+| 直した `remove-old-lines.awk` を直接（12 通りの入力。`old-y.txt` が 4 つの形になった後） | 4 つの形の `y()` はどれも消え（ファイルの末尾で改行が無くても。その PC の `~/.bashrc` の写しは 10 行すべてが消えた）、1 行を手で直したもの・閉じ括弧の無いもの・余分な `}`・空行は残った。前の付録の入力では、直す前の awk と同じ出力。`gawk --posix` でも同じ |
 | 対話のシェル（`bash -i` にコマンドを 1 行ずつ流し込み、生の出力を読んだ） | `false` の後は `D;1`、`cd d1/share; cd ~` の後の `z share` は警告無しで移り、`. ~/.bashrc` の前後で `PROMPT_COMMAND`（`__wezterm_prompt_command;__wz_mouse_off;__zoxide_hook`）と `PS0` は同じ。starship もあると `PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;starship_precmd;__zoxide_hook` で、同じく `D;1`・警告無し・読み直しても変わらない。`main` の `shell/wezterm.sh` では `${STARSHIP_START_TIME:0:0}` がコマンドごとに出て、#26 の版では出なかった |
 | `--hook none` の zoxide（`eval "$(zoxide init bash --cmd cd --hook none)"` を読み込みの 1 行の後ろに） | `type -t cd z zi cdi` はすべて `function`、`PROMPT_COMMAND` の `__zoxide_hook` は読み直しても 1 つ、`cd a/share` → `cd ~/b` → `cd share` で `a/share` に移り、警告は出なかった。`--hook none` を付けなくても、Git Bash（文字列の `PROMPT_COMMAND`）ではフックは 1 つのままだった |
-| `y()`（本物の yazi 26.9.1 を端末で動かした） | `y d1` → `share` に入って `q` で、シェルが `d1/share` へ移った。空白と日本語を含むディレクトリも同じ。yazi は cwd-file に `C:\Users\…\d1\share` の形で書いた。動かずに `q` で閉じると `OLDPWD` が今の場所に変わり、`Q` では変わらなかった（README の [Windows 11 の Git Bash での違い](../README.md#windows-11-の-git-bash-での違い)） |
+| `y()`（本物の yazi 26.9.1 を端末で動かした。比べ方を直す前の `!=` の形） | `y d1` → `share` に入って `q` で、シェルが `d1/share` へ移った。空白と日本語を含むディレクトリも同じ。yazi は cwd-file に `C:\Users\…\d1\share` の形で書いた。動かずに `q` で閉じると `OLDPWD` が今の場所に変わり、`Q` では変わらなかった |
+| `y()`（比べ方を `-ef` に直した形。setup-notes の yazi.md と合わせて直した） | `Documents` → `Desktop` と移ってから `y` → 動かずに `q` で、`PWD` は `Desktop`、`OLDPWD` は `Documents` のまま（`cd -` で `Documents` へ戻れる）。中へ入って `q`・`Q`・空白と日本語を含むディレクトリは、直す前と同じだった。`/tmp/yazi-cwd.*` は残らなかった。Git Bash の `test` の `-ef` は、`C:\Users\<WIN_USER>\Desktop` と `/c/Users/<WIN_USER>/Desktop` を同じ、別のディレクトリを違うと判定した |
 | sshd の起動のしかたを真似た `bash -c`（`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を、`SSH_CLIENT` を付け、`SHLVL` を外して起動） | `~/.bashrc` を読んだ（`SSH_CLIENT` を外すと読まなかった）。この設定は `true` で 0 バイト。`EDITOR=nvim`・`VISUAL=nvim` が入り、`y`・`z`・`alias vi`・`__bash_config_loaded` は無かった。全部のツールがあると `MANPAGER` も入った |
 | 起動できない scoop の shim（向き先の無い shim を `zoxide`・`nvim`・`yazi` の名前で PATH の先頭に置いた。SSH のセッションで起きる状態の代わり） | sshd を真似た `bash -c true` で、その PC の `~/.bashrc` の写しは `Shim: Could not create process with command '"…"  init bash'.` など 181 バイトを出し、この設定は 0 バイトだった |
 | `set -u` | `bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok`、`bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1` |
