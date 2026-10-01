@@ -33,6 +33,23 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 - `ls` や `cat` は置き換えない（元の手順書と同じ）
 - 対話のシェルで最後まで読むと、`__bash_config_loaded=1` が入る（確かめる用）
 
+### Windows 11 の Git Bash での違い
+
+Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確かめた、AlmaLinux 10 との違い（2026-10-01。[docs/install.md の付録](docs/install.md#付録-windows-11-の-git-bash-での検証記録2026-10-01)）:
+
+- Homebrew の行は何もしない（`/home/linuxbrew` が無い）
+- `MANPAGER` は bat があれば入るが、Git Bash には `man` が無いので使われない
+- `DOCKER_HOST` は入らない（Git Bash に `XDG_RUNTIME_DIR` が無い）。Windows の podman はこの設定の対象外
+- `alias gdu=gdu-go` は入らない（scoop の gdu は `gdu` の名前で入る）
+- `ll` は、eza が無いと Git for Windows の `alias ll='ls -l'`（`/etc/profile.d/aliases.sh`。ログインシェルだけ）のまま。eza があれば、この設定の `ll` が上書きする
+- `y` は、yazi が書く Windows の形のパス（`C:\Users\…`）へ `cd` する（空白や日本語を含むパスにも移れた）
+  - 動かずに `q` で閉じても、そのパスを `$PWD`（`/c/Users/…`）と違うとみなして同じ場所へ `cd` し直すので、`cd -` の戻り先が今の場所になる。元の場所のままで終えるなら `Q`
+  - `y()` の本体は setup-notes の yazi.md と同じ文字列にしてあるので、ここでは直さない
+- WezTerm は `WEZTERM_SHELL_INTEGRATION` を Windows の形のパス（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`）で渡す。Git Bash はそのまま読める
+- zoxide の Windows 版は、プロンプトのたびに `cygpath -w` を外部コマンドで動かす（zoxide の作り。`~/.bashrc` に初期化を直に書いていたときと同じ）
+- ツールの有無を確かめる `command -v` は、PATH を順に探すので 1 回に約 2ms かかる（検証した PC の 37 要素の PATH。この設定は 8 回）。対話のシェルの起動は、`~/.bashrc` に直に書いていたときより 10〜40ms 長い（測るたびに揺れた）
+- 非対話のシェル（`ssh <ホスト> <コマンド>`・scp）では外部コマンドを 1 つも動かさないので、`~/.bashrc` に zoxide の初期化を直に書いていたときより約 100ms 短い。SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない
+
 ## 読む順番
 
 プロンプトに関わる 3 つは、**starship → WezTerm のシェル統合 → zoxide** の順に読む。3 つとも `PROMPT_COMMAND` や `PS0` に自分の処理を足すので、順番で結果が変わる。
@@ -58,6 +75,8 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
   - starship は、初期化のたびに `PS0` に自分を足す
   - zoxide は、`PROMPT_COMMAND` が配列のとき（AlmaLinux 10）、先頭しか見ないので、初期化のたびにフックを足す
 - AlmaLinux 10 の COPR の WezTerm が入れる公式のシェル統合（`/etc/profile.d/wezterm.sh`。bash-preexec を含む）があるときも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（上流の `wezterm.sh` を置いた模擬）
+- Windows 11 の Git Bash（bash 5.3。`PROMPT_COMMAND` は何も無いところから始まる）でも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（2026-10-01。starship 1.26.0・zoxide 0.9.9。starship 無しでも同じ）
+  - WezTerm の `PS0` を直す前の `shell/wezterm.sh`（ryo-aoki-pc/wezterm の main）では、表の 4 行目と同じく出力の前に余計な文字が出た。生の出力は `${STARSHIP_START_TIME:0:0}` で、WezTerm の画面では先頭の `${` がエスケープの続きとして読まれ、`STARSHIP_START_TIME:0:0}` と見えた
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
 
 ## ホストだけの設定
@@ -65,7 +84,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 - `~/.bashrc` の、読み込みの 1 行より後ろに書く（この設定の後に読まれ、上書きできる）
 - 例: `GITLAB_TOKEN`（LazyVimStarter の docs/setup.md）、WSL で Windows 側の WezTerm のシェル統合を読む行（ryo-aoki-pc/wezterm の docs/install.md の WSL の節）
 - Homebrew のコマンドを使う行（`brew --prefix` で補完を読む行など）も後ろに書く。Homebrew の PATH は、読み込みの 1 行で足される
-- zoxide を別の形（`--cmd cd` など）でも使うなら、`--hook none` を付けて後ろに書く（例: `eval "$(zoxide init bash --cmd cd --hook none)"`）。付けないと、AlmaLinux 10（配列の `PROMPT_COMMAND`）ではフックが 2 つになる。`z` はこの設定が定義する
+- zoxide を別の形（`--cmd cd` など）でも使うなら、`--hook none` を付けて後ろに書く（例: `eval "$(zoxide init bash --cmd cd --hook none)"`）。付けないと、AlmaLinux 10（配列の `PROMPT_COMMAND`）ではフックが 2 つになる（Git Bash の文字列の `PROMPT_COMMAND` では 1 つのままだった）。`z` はこの設定が定義する
 - トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、このリポジトリに書かない
 
 ## 移行で消す行
