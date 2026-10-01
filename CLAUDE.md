@@ -30,6 +30,10 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（README の「読む順番」の表の作り方）
   - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
 - AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/homebrew.md）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
+- AlmaLinux 10 の実機で試すときは、利用者の tmux とは別のソケット（`tmux -L <名前>`）のペインに、`load-buffer`・`paste-buffer -p` で貼る。出力は `pipe-pane` で生のまま受ける（AlmaLinux 10 の `tmux-3.3a-13.20230918git…` は、`capture-pane` でサーバーが SIGABRT で落ちた）
+  - zoxide の本物のデータベースに書かないよう、`_ZO_DATA_DIR` を一時的な場所にする
+  - ssh・scp・sftp は、自分のユーザーで `/usr/sbin/sshd` を 127.0.0.1 の別のポートに立てて通す（使い捨てのホスト鍵とクライアントの鍵、`UsePAM no`・`StrictModes no`。`~/.ssh/authorized_keys` は変えない）。PAM を通らないので `XDG_RUNTIME_DIR` は無い。対話の ssh に `_ZO_DATA_DIR` を渡すなら、その sshd に `AcceptEnv`、ssh に `-o SetEnv=…` を足す
+  - podman.socket を一時的に起動したら、止めた後に `/run/user/<UID>/podman/podman.sock` を消す（unit に `RemoveOnStop` が無く、残ったファイルで `DOCKER_HOST` が入り続ける）
 - Windows 11 の Git Bash で試すときは、`HOME` を使い捨てのディレクトリにする（その PC の `~/.bashrc` には書かない。docs/install.md の Windows の付録）
   - Git Bash には `script` が無い。擬似端末の代わりに、`wezterm-mux-server` を別のソケット（`unix_domains` の `socket_path`。長いパスは `SUN_LEN` で断られる）で動かし、`wezterm cli spawn`・`send-text`・`get-text` でペインを操作する。`wezterm cli` には必ず `WEZTERM_UNIX_SOCKET` で検証のソケットを渡す（WezTerm の中では、利用者の GUI を指している）
   - `wezterm cli spawn` は、呼んだ側の環境変数をペインに引き継ぐ。`MSYS_NO_PATHCONV` などを付けて呼んだら、ペインの中で外す（付いたままだと、yazi の `--cwd-file=/tmp/…` が変換されず、`C:\tmp` に書かれる）
