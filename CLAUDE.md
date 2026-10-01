@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## このリポジトリは何か
 
-いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。非公開のリポジトリで、SSH で clone する（`git@github.com:ryo-aoki-pc/bash.git`。2026-10-01 に HTTPS から変えた）。
+いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。非公開のリポジトリで、SSH で clone する（`git@github.com:ryo-aoki-pc/bash.git`。2026-10-01 に HTTPS から変えた）。インターネットに出られないホストだけは HTTPS のまま（SSH の git は setup-notes の ssh-socks-tunnel.md のトンネルを通らない）。
 
 - 読むもの・読む順番とその実測・移行で消す行の説明は `README.md`（参照用）
 - 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
