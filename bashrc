@@ -50,6 +50,14 @@ case $- in
 *) return 0 ;;
 esac
 
+# 履歴と shopt（setup-notes の docs/bash-settings.md 手順 3）。ツールの有無によらず入れる
+# histappend は AlmaLinux 10 の /etc/bashrc が対話のシェルに入れているが、Git Bash の既定は off なのでここでも入れる
+HISTSIZE=100000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth
+shopt -s histappend
+shopt -s autocd cdspell dirspell globstar
+
 if command -v nvim >/dev/null 2>&1; then
 	alias vi=nvim
 fi
@@ -77,6 +85,32 @@ if command -v yazi >/dev/null 2>&1; then
 		! [ "$cwd" -ef "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd" || builtin true
 		command rm -f -- "$tmp"
 	}
+fi
+
+# Homebrew で入れたコマンドの補完（docs/bash-settings.md 手順 4）
+# Homebrew は補完を etc/bash_completion.d に置き、bash-completion の遅延読み込み（XDG_DATA_DIRS の下）では見つからない。
+# fzf より前に読む（fzf は bat などの既にある補完を包んで ** の補完を足す。後ろだと元に戻ってしまう）
+if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then
+	for __f in "${HOMEBREW_PREFIX}"/etc/bash_completion.d/*; do
+		# shellcheck source=/dev/null
+		if [ -r "$__f" ]; then . "$__f"; fi
+	done
+	unset __f
+fi
+
+# fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と ** の補完（docs/fzf.md 手順 3）
+# PROMPT_COMMAND・PS0・PS1 には触らないので、下のプロンプトのフックの並びには入らない。読み直しても二重にならない
+if command -v fzf >/dev/null 2>&1; then
+	eval "$(fzf --bash)"
+	# 候補を fd に、Ctrl+T のプレビューを bat にする（docs/fzf.md「fd と bat を候補とプレビューに使う」）
+	if command -v fd >/dev/null 2>&1; then
+		export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+		export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+		export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+	fi
+	if command -v bat >/dev/null 2>&1; then
+		export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
+	fi
 fi
 
 # --- プロンプトのフック（PROMPT_COMMAND を触るので、この順に読む。理由は README） ---
