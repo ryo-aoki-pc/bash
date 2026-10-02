@@ -14,3 +14,13 @@ eval "$(starship init bash)"
 [ -n "$WEZTERM_SHELL_INTEGRATION" ] && . "$WEZTERM_SHELL_INTEGRATION"
 eval "$(zoxide init bash --cmd z)"
 eval "$(zoxide init bash)"
+HISTSIZE=100000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth
+shopt -s autocd cdspell dirspell globstar
+if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then for __f in "${HOMEBREW_PREFIX}"/etc/bash_completion.d/*; do if [ -r "$__f" ]; then . "$__f"; fi; done; unset __f; fi
+eval "$(fzf --bash)"
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"

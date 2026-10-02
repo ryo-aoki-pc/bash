@@ -99,7 +99,7 @@
 
    ```bash
    git --no-pager diff --no-index ~/.bashrc.before-bash ~/.bashrc
-   grep -n -i -E 'brew|zoxide|starship|yazi|eza|gdu-go|MANPAGER|nvim|DOCKER_HOST|wezterm' ~/.bashrc
+   grep -n -i -E 'brew|zoxide|starship|yazi|eza|gdu-go|MANPAGER|nvim|DOCKER_HOST|wezterm|HIST|shopt|bash_completion|fzf|FZF_' ~/.bashrc
    ```
 
    - `git diff` の `-` で始まる行が、手順 3 で消した行
@@ -211,10 +211,15 @@
    alias | grep -E "^alias (ll|la|lt|vi|gdu)="
    type -t y z
    echo "EDITOR=${EDITOR-} DOCKER_HOST=${DOCKER_HOST-}"
+   echo "HISTSIZE=${HISTSIZE} $(shopt -p autocd globstar | tr '\n' ' ')"
+   bind -X
+   complete -p brew bat 2>/dev/null
    bash -c '. ~/.bashrc' 2>&1 | wc -c
    ```
 
    - 1 行目が `1` なら、対話のシェルでこの設定が最後まで読まれている
+   - `HISTSIZE=100000 shopt -s autocd shopt -s globstar` は、どのホストでも出る（履歴と `shopt`）
+   - `bind -X` は、fzf があれば `"\C-r": "__fzf_history__"` と `"\C-t": "fzf-file-widget"` の 2 行。`complete -p` は、Homebrew の bat があれば `complete -F _fzf_path_completion bat`（fzf が無ければ `_bat`）と `brew` の行
    - 2〜4 行目は、このホストに入っているツールの分だけ出る（README の[読むもの](../README.md#読むもの)）。eza があれば `ll`・`la`・`lt`、yazi があれば `function`（`y`）、zoxide があれば `function`（`z`）
    - Git Bash では、eza が無くても `alias ll='ls -l'` が出る（Git for Windows の `/etc/profile.d/aliases.sh` のもので、この設定のものではない）。`alias gdu` は出ない（scoop の gdu は `gdu` の名前で入る）
    - AlmaLinux 10 でも、eza が無いと `alias ll='ls -l --color=auto'` が出る（coreutils-common の `/etc/profile.d/colorls.sh` のもので、この設定のものではない）
@@ -240,6 +245,7 @@
    ```
 
    - `DOCKER_HOST` は、podman の API ソケット（setup-notes の [podman.md 手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
+   - 上の 3 つの出力は、2026-10-02 に足した `HISTSIZE` / `bind -X` / `complete -p` の 3 行より前のもの。その 3 行の出力は、[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)の x86_64 のコンテナのものだけがある
 
    AlmaLinux 10 の実機（Raspberry Pi 5。Homebrew で zoxide・yazi・neovim を入れたホスト）で、開き直したログインシェル（tmux のペイン）での出力:
 
@@ -405,6 +411,7 @@
       - `y()`（本物の yazi）と `z`
       - 非対話のシェルで何も出さないこと（`bash -c`、自分のユーザーで 127.0.0.1 に立てた sshd 越しの `ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）、対話の ssh、`set -u`
       - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
+  - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナだけで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）
   - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、鍵を作って GitHub に登録するところとパスフレーズのある鍵、LAN の別の PC からの ssh、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull、そのホストでの gh のログイン）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） | AlmaLinux 10 の実機（Raspberry Pi 5） |
@@ -808,3 +815,27 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 - 初めて github.com につなぐホストでの手順 2 の問い（このホストの `known_hosts` には前からあった。WSL では確かめた）
 - 手順 6・7（エディタで直す行が無かった）、[ロールバック](#ロールバック)（導入を残した）
 - starship・eza・bat・gdu があるとき（このホストに無い）
+
+---
+
+### 付録: 履歴・shopt・Homebrew の補完・fzf を足したときの検証記録（2026-10-02）
+
+setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bash-settings.md) と [fzf.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/fzf.md) を足したときに、`bashrc` に履歴と `shopt`・Homebrew の補完・fzf（`FZF_*` を含む）を足した。**x86_64 のコンテナだけで確かめた**（Git Bash と実機は未確認）。
+
+**環境**: AlmaLinux 10.2 の `quay.io/almalinuxorg/10-init`（Docker 29.6.2、`--privileged`・`--network host`。systemd と sshd）。Homebrew 7.0.7 に fzf 0.74.4・fd 10.5.0・bat 0.26.1・eza 0.23.5・zoxide 0.10.0・starship 1.26.0・shellcheck 0.11.0。bash-completion 2.11（BaseOS）。`~/.config/wezterm` は無し。
+
+**確かめたこと**:
+
+- `bash -n bashrc` と `shellcheck -s bash bashrc` が通る
+- 移行の awk: `/etc/skel` の `~/.bashrc` に、setup-notes の `brew shellenv`・bash-settings.md の 5 行・fzf.md の 5 行を足したもの（36 行）から、その 11 行だけが消えて `/etc/skel` と同じ 25 行になった
+- 非対話: `bash -c '. ~/.bashrc' 2>&1 | wc -c` が `0`、`ssh <HOST> true` の出力が 0 バイト。`bash -u -c` は `ok`、`bash --norc -u -i -c` は `ok-1`
+- 対話（SSH でログインした bash を tmux のペインで）: 手順 10 の出力は `1`、eza の 3 つのエイリアス、`function`（`z`）、`HISTSIZE=100000 shopt -s autocd shopt -s globstar`、`bind -X` の 2 行、`complete -o bashdefault -o default -F _brew brew` と `complete -F _fzf_path_completion bat`、最後に `0`
+- fzf は `PROMPT_COMMAND` に触らない: `declare -p PROMPT_COMMAND` は、`. ~/.bashrc` を 2 回読み直す前後とも `([0]="starship_precmd" [1]="__zoxide_hook")`。`bind -X | sort | uniq -d` は空のまま 2 行
+- Homebrew の補完を fzf より前に読む形で、`bat --the<Tab>` は `--theme --theme-dark --theme-light` の一覧、`bat **<Tab>` は fzf の画面、`git checko<Tab>` は `checkout`、`eza --gi<Tab>` は `--git` の 4 候補の一覧
+- 対話のシェルの起動（`bash -ic true`）は 81 ミリ秒（starship と zoxide の初期化を含む。足す前は測っていない）
+
+#### 未確認事項（2026-10-02 に足した行）
+
+- Windows 11 の Git Bash（scoop の fzf・fd・bat。`fzf --bash` が Git Bash で動くか）
+- AlmaLinux 10 の実機（Raspberry Pi 5 を含む）と、Homebrew の補完を全部読むことによる起動の時間の増え方
+- `~/.inputrc` は setup-notes の bash-settings.md 手順 5 のまま（この設定の対象外）
