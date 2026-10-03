@@ -5,12 +5,9 @@
 > [!IMPORTANT]
 > - **自分のユーザーのシェルで貼る**。`sudo -i` した root のシェルでは貼らない（root の `~/.bashrc` は対象外。[注意点](#注意点)）
 > - **Windows 11 では、Git for Windows の Git Bash に同じブロックを貼る**。WSL は Linux のホストとして、WSL のシェルで別に通す（`/mnt/c` の clone は使わない）
-> - **前提**: git が入っていて、このホストの SSH の鍵が GitHub に登録してあること（この設定は非公開のリポジトリで、SSH で clone する）
->   - git: AlmaLinux 10 は setup-notes の [git.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/git.md)、Windows 11 は [Git for Windows](https://gitforwindows.org/)（Git Bash の `ssh` を使う）
->   - 鍵: `~/.ssh/id_ed25519` など（Git Bash では `C:\Users\<WIN_USER>\.ssh`）の公開鍵を、GitHub の Settings → SSH and GPG keys に登録する（[GitHub の説明](https://docs.github.com/ja/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)。鍵を作るところと登録は、この手順書では試していない）
->   - `ssh -T git@github.com` が `Hi ryo-aoki-pc! You've successfully authenticated, but GitHub does not provide shell access.` と出せば、登録できている
->   - **インターネットに出られないホストだけは、HTTPS で clone する**（SSH の git は、setup-notes の [ssh-socks-tunnel.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md) のトンネルを通らない）。鍵の登録の代わりに、そのトンネルと、git の HTTPS の認証（setup-notes の [gh.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gh.md) の `gh auth login` で、git の認証も gh に任せる）が要る
-> - **手順 2 は、問いが出ることがある**（初めて github.com につなぐホストのホスト鍵。HTTPS で clone するホストでは git の認証）。clone が終わってから手順 3 を貼る
+> - **前提**: git が入っていること（公開のリポジトリを HTTPS で clone する。GitHub の鍵や認証は要らない）
+>   - git: AlmaLinux 10 は setup-notes の [git.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/git.md)、Windows 11 は [Git for Windows](https://gitforwindows.org/)
+>   - **インターネットに出られないホストは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る**（HTTPS の git は `ALL_PROXY` を読む）
 > - **手順 6 はエディタで直す操作、手順 9 は端末を開き直す操作**。手順 10 は、開き直した端末で貼る
 
 - 上から順にコードブロックを貼る
@@ -19,7 +16,7 @@
 - 手順の後: 以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH の clone の手順 2 と[更新](#更新)だけを流した）。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](#更新)だけを流した）。**2026-10-03 に clone を HTTPS に変えた後は、手順 2 と更新を x86_64 のコンテナで流しただけ**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -35,34 +32,29 @@
 1. この設定を `~/.config/bash` に clone する。
 
    ```bash
-   git clone git@github.com:ryo-aoki-pc/bash.git ~/.config/bash
+   git clone https://github.com/ryo-aoki-pc/bash.git ~/.config/bash
    ```
 
    - `Cloning into '/home/<USER>/.config/bash'...` と出る（Git Bash では `Cloning into 'C:/Users/<WIN_USER>/.config/bash'...`）
-   - 初めて github.com につなぐホストでは、続けて `The authenticity of host 'github.com (<IP>)' can't be established.` と ED25519 の指紋が出て、`Are you sure you want to continue connecting (yes/no/[fingerprint])?` と聞かれる
-     - 指紋が `SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`（GitHub が[公開している](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints) ED25519 の指紋）なら、`yes` と打つ。`Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.` と出て、clone が進む
-     - 違えば、`no` と打って止める（`Host key verification failed.` と出る）
-   - `git@github.com: Permission denied (publickey).` と出たら、このホストの鍵が GitHub に登録されていない。[前提](#実施手順)の登録を済ませてから貼り直す
-   - インターネットに出られないホストでは、上のブロックの代わりに、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで `git clone https://github.com/ryo-aoki-pc/bash.git ~/.config/bash` を貼る（HTTPS のまま使う。トンネル越しには試していない。この手順の補足）
-     - git の認証が無いと、`Username for 'https://github.com':` と聞かれる。`Ctrl+C` で止め、[前提](#実施手順)の認証を済ませてから貼り直す
+   - 問いは出ない（公開のリポジトリなので、認証は要らない）
+   - インターネットに出られないホストでは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。この手順の補足）
    - 止まったときは `~/.config/bash` は残らないので、そのまま貼り直せる
-   - **次の手順は、clone が終わってから貼る**（問いが出ている間に貼ると、答えとして食われる）
 
    <details>
-   <summary>補足: <code>~/.config/bash</code> に置く理由と、SSH・HTTPS の clone</summary>
+   <summary>補足: <code>~/.config/bash</code> に置く理由と、HTTPS の clone</summary>
 
    - ほかの自分用の設定（`~/.config/wezterm`・`~/.config/yazi`・`~/.config/lazygit`・`~/.config/nvim`）と同じく、ツールの名前の付いたディレクトリにまとめる
    - `~/.bashrc` の 1 行（手順 5）と、手順 3 の `awk` は、この置き場所を決め打ちにしている。別の場所に置くなら、両方を書き換える
    - Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
    - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナと、Windows 11 の Git for Windows 2.55.0 で `git -c core.autocrlf=true clone` して確かめた）
-   - SSH の git は、GitHub に登録した鍵で認証する。Git Credential Manager や gh の資格情報は使わない
-   - 答えたホスト鍵は `~/.ssh/known_hosts` に残り、[更新](#更新)の pull では聞かれない
-   - 指紋の行の形は ssh の版で違う。Git for Windows 2.55.0 の OpenSSH 10.5p1 は `ED25519 key fingerprint is: SHA256:…`、AlmaLinux 10.2 の OpenSSH 9.9p1 は `ED25519 key fingerprint is SHA256:….` と出した。どちらも ED25519 の鍵を出した（AlmaLinux 10 の暗号ポリシーは既定の `DEFAULT`）
-   - インターネットに出られないホストを HTTPS のままにするのは、SSH の git が `ALL_PROXY` を読まず、トンネルを通らないため（利用者の選択）
-     - この PC で、待ち受けの無いプロキシ（`socks5h://127.0.0.1:9`）を `ALL_PROXY` に入れると、SSH の git はプロキシを使わずに通り、HTTPS の git は `Failed to connect to github.com:443 over proxy 127.0.0.1` で失敗した
-     - HTTPS の git がトンネルを通ることは、setup-notes の ssh-socks-tunnel.md 手順 3 の補足が、公開のリポジトリで確かめている。この非公開のリポジトリをトンネル越しに clone・pull するところは試していない
-   - gh（2.102.0）は `ALL_PROXY` を読まず、`https_proxy`（`HTTPS_PROXY`）を読んだ（この PC で、待ち受けの無いプロキシで確かめた）。インターネットに出られないホストで `gh auth login` するなら、トンネルのシェルで `https_proxy` にも `ALL_PROXY` と同じ値を入れる（試していない）
-   - HTTPS で git の認証が無いと、AlmaLinux 10.2 の git 2.52.0 は `Cloning into '…/.config/bash'...` の後に `Username for 'https://github.com':` と聞いた。`Ctrl+C` で止めると、`~/.config/bash` は残らなかった
+   - 2026-10-03 にこのリポジトリを公開し、clone を HTTPS に変えた（利用者の選択）
+     - 認証は要らない。SSH の鍵・Git Credential Manager・gh の資格情報は使わない
+     - x86_64 の AlmaLinux 10 のコンテナで、git の認証の設定の無いユーザーが、問いを出させない `GIT_TERMINAL_PROMPT=0` を付けて clone できた（`~/.ssh` も作られなかった）
+     - 非公開だった間は、2026-10-01 までは HTTPS（gh の資格情報）、その後は SSH（GitHub に登録した鍵）で clone していた（記録は付録）
+   - インターネットに出られないホストも、同じ URL で clone する。HTTPS の git は `ALL_PROXY` を読み、SSH の git は読まない
+     - Windows 11 の PC で、待ち受けの無いプロキシ（`socks5h://127.0.0.1:9`）を `ALL_PROXY` に入れると、SSH の git はプロキシを使わずに通り、HTTPS の git は `Failed to connect to github.com:443 over proxy 127.0.0.1` で失敗した
+     - HTTPS の git がトンネルを通ることは、setup-notes の ssh-socks-tunnel.md 手順 3 の補足が、公開のリポジトリで確かめている。このリポジトリをトンネル越しに clone・pull するところは試していない
+   - 止まったときに `~/.config/bash` が残らないことは、非公開だったときに、HTTPS で認証を聞かれたところを `Ctrl+C` で止めて確かめた（AlmaLinux 10.2 の git 2.52.0）
 
    </details>
 
@@ -285,26 +277,18 @@
 
 - この設定を新しくする。ツールを入れたり外したりしたときは、何もしなくてよい（開き直した端末から効く）
 
-1. 設定のリポジトリを pull する。
+1. origin を HTTPS にそろえて、設定のリポジトリを pull する。
 
    ```bash
+   git -C ~/.config/bash remote set-url origin https://github.com/ryo-aoki-pc/bash.git
    git -C ~/.config/bash pull --ff-only
-   ```
-
-   - 新しいコミットが無ければ、`Already up to date.` と出る
-   - `git@github.com: Permission denied (publickey).` と出たら、このホストの鍵が GitHub に登録されていない（[前提](#実施手順)）
-   - インターネットに出られるホストで、HTTPS で clone したもの（`git -C ~/.config/bash remote -v` が `https://github.com/…` を出す。前の版の手順）は、先に `git -C ~/.config/bash remote set-url origin git@github.com:ryo-aoki-pc/bash.git` で SSH に切り替える。切り替えた後の初めての pull は、[手順 2](#実施手順) と同じくホスト鍵を聞かれることがある
-   - インターネットに出られないホストは、HTTPS のまま、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（HTTPS の git は `ALL_PROXY` を読む。トンネル越しには試していない。[手順 2](#実施手順) の補足）
-   - 手元で変えたファイルがあって pull が止まったら、`git -C ~/.config/bash status` で見る
-   - **次の手順は、pull が終わってから貼る**（問いが出ている間に貼ると、答えとして食われる）
-
-1. 取り込んだコミットを確かめる。
-
-   ```bash
    git -C ~/.config/bash log -1 --oneline
    ```
 
-   - いちばん新しいコミットが 1 行出る
+   - 新しいコミットが無ければ `Already up to date.` と出て、最後にいちばん新しいコミットが 1 行出る
+   - `set-url` は、HTTPS で clone したホストでは何も変えない。SSH で clone したホスト（2026-10-01〜10-03 の版の手順）を HTTPS にそろえる
+   - インターネットに出られないホストは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。[手順 2](#実施手順) の補足）
+   - 手元で変えたファイルがあって pull が止まったら、`git -C ~/.config/bash status` で見る
    - 開いている端末には効かない。[手順 9](#実施手順) と同じく開き直す
 
 ---
@@ -376,7 +360,7 @@
 
 - **目的**: いろいろなホストで同じ bash の設定を使う。setup-notes の手順書と wezterm の手順書がホストごとに `~/.bashrc` へ書いていた行を、このリポジトリの `bashrc` 1 つにまとめ、`~/.bashrc` からは 1 行で読む
 - **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
-- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。clone を SSH に変えた後、手順 2 と[更新](#更新)を、その PC の Git Bash と WSL の AlmaLinux 10 で流し直した（2026-10-01）。AlmaLinux 10 の aarch64 の実機（Raspberry Pi 5）の本物の `~/.bashrc` に導入した（2026-10-02）。インターネットに出られないホストだけは HTTPS のままにした（トンネル越しには試していない）**
+- **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。clone を SSH に変えた後、手順 2 と[更新](#更新)を、その PC の Git Bash と WSL の AlmaLinux 10 で流し直した（2026-10-01）。AlmaLinux 10 の aarch64 の実機（Raspberry Pi 5）の本物の `~/.bashrc` に導入した（2026-10-02）。2026-10-03 にこのリポジトリを公開して clone を HTTPS に変え、手順 2 と[更新](#更新)を x86_64 のコンテナで流し直した**
   - AlmaLinux 10: 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
     - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
     - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
@@ -393,7 +377,7 @@
     - 手順 9 は、ペインを閉じて新しいペインを開いた
     - `HOME` は使い捨てのディレクトリにした（その PC の `~/.bashrc` と `~/.bash_profile` の写し、ドットファイルの無いホーム、空白と日本語を含むホーム）
     - 確認したこと
-      - 手順 1〜5・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5（その PC の `~/.bashrc` の写しは、元と同じ中身に戻った）
+      - 手順 1〜5・8・10、[更新](#更新)の手順 1 の pull と log、[ロールバック](#ロールバック)の手順 1〜5（その PC の `~/.bashrc` の写しは、元と同じ中身に戻った）
       - 非公開のリポジトリの clone と pull。はじめは HTTPS（認証は gh の資格情報）で流し、clone を SSH に変えた後に、手順 2（初めてつなぐときの問いに `yes` と `no`）と更新を SSH で流し直した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）。`core.autocrlf=true` の clone で LF
       - Git Bash の awk・`git diff --no-index`・`sed -i`・読み取り専用のファイルを含む `rm -rf`。移行の awk が、LazyVim で整形された `y()` を消さないことを見つけて直した
       - `~/.bash_profile` の無いホームで Git for Windows が出す `WARNING:` と、それが作る `~/.bash_profile`
@@ -402,17 +386,19 @@
       - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（eza・bat）
       - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
     - 2026-10-01 の後半に、その PC の本物の `~/.bashrc` に導入した。利用者の WezTerm の GUI に新しい窓を開いて手順 1〜5・8 を貼り、開き直した窓で手順 10 と、cwd の引き継ぎ・`z`・`y` を確かめた。clone を SSH に変えた後、その PC の `~/.config/bash` も SSH に切り替えた（[更新](#更新)の手順 1 の箇条書き）
-  - WSL の AlmaLinux 10（同じ PC の WSL）: 手順 2 と[更新](#更新)の手順 1・2 だけを、`HOME` を使い捨てのディレクトリにして流した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）
+  - WSL の AlmaLinux 10（同じ PC の WSL）: 手順 2 と[更新](#更新)の手順 1 の pull と log だけを、`HOME` を使い捨てのディレクトリにして流した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）
   - AlmaLinux 10 の実機（下表の Raspberry Pi 5）: 利用者の依頼で、その本物の `~/.bashrc` に導入し、導入を残した（[付録](#付録-almalinux-10-の実機aarch64への導入2026-10-02)）
     - **この文書の bash のコードブロックを抜き出したもの**を、利用者の tmux とは別のソケットの tmux のペインのログインシェルに、括弧付き貼り付けで貼って流した。手順 9 は、tmux のセッションを閉じて開き直した
     - 確認したこと
-      - 手順 1〜5・8・10、[更新](#更新)の手順 1・2（元の手順書の 9 行を消す移行、SSH の clone）
+      - 手順 1〜5・8・10、[更新](#更新)の手順 1 の pull と log（元の手順書の 9 行を消す移行、SSH の clone）
       - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（COPR の WezTerm の公式のシェル統合がある形。WezTerm の GUI・ssh・tmux の 3 つの端末の形）と、導入の前後のシェルの状態の比較
       - `y()`（本物の yazi）と `z`
       - 非対話のシェルで何も出さないこと（`bash -c`、自分のユーザーで 127.0.0.1 に立てた sshd 越しの `ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）、対話の ssh、`set -u`
       - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
+  - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-に変えたときの検証記録2026-10-03)）
+    - 確認したこと: 問いを出させない `GIT_TERMINAL_PROMPT=0` で clone と pull が通る、LF、SSH で clone したホストの代わり（`origin` を `git@github.com:…` にした clone）が更新で HTTPS になって pull できる
   - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナだけで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）
-  - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、鍵を作って GitHub に登録するところとパスフレーズのある鍵、LAN の別の PC からの ssh、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull、そのホストでの gh のログイン）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
+  - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、LAN の別の PC からの ssh、HTTPS の clone と更新の、Windows 11 の Git Bash と実機での実行、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） | AlmaLinux 10 の実機（Raspberry Pi 5） |
 |---|---|---|---|
@@ -452,8 +438,10 @@
   - OS の既定の中身と、ホストだけの行（`GITLAB_TOKEN` など）は `~/.bashrc` に残す。ホストだけの行は、読み込みの 1 行より後ろに書く
 - **`bashrc` は 1 つのファイルにした**（`conf.d/` に分けない）
   - 項目が約 10 個で、読む順番を 1 か所で見られる。ファイルの並びの順（ロケール）や、NTFS でファイルを開く回数を気にしなくてよい
-- **非公開のリポジトリを、SSH で clone する**（どちらも利用者の選択。SSH は 2026-10-01 に HTTPS から変えた）。clone と pull に、GitHub に登録した SSH の鍵が要る（Git Credential Manager・gh の資格情報は使わない）
-  - インターネットに出られないホストだけは、HTTPS のまま（利用者の選択）。SSH の git は setup-notes の ssh-socks-tunnel.md のトンネル（`ALL_PROXY`）を通らず、HTTPS の git は `ALL_PROXY` を読む。そのホストでは、git の HTTPS の認証（gh など）が要る
+- **公開のリポジトリを、HTTPS で clone する**（2026-10-03 に公開し、利用者の選択で SSH から変えた）。clone と pull に認証は要らない
+  - HTTPS の git は setup-notes の ssh-socks-tunnel.md のトンネル（`ALL_PROXY`）を通るので、インターネットに出られないホストも同じ URL にした（SSH の git は通らない）
+  - このリポジトリへ push するには、別に認証（gh など）が要る。この手順書では push しない
+  - 非公開だった間は、HTTPS（gh の資格情報）、2026-10-01 からは SSH（GitHub に登録した鍵）で clone していた（記録は付録）
 - **プロンプトの 3 つ（starship・WezTerm・zoxide）は、この順に読む**。setup-notes の starship.md と ryo-aoki-pc/wezterm の手順書も、同じ並びに直した（2026-09-30。前は starship を最後に置いていた）。理由と実測は README の[読む順番](../README.md#読む順番)
 - **元の手順書の行は、行全体が同じものだけを機械的に消し、ほかはエディタで直す**（手順 3・4・6・7）
 
@@ -461,8 +449,7 @@
 
 | 場所 | 中身 |
 |---|---|
-| `~/.config/bash` | このリポジトリの clone（`main`。`origin` は `git@github.com:ryo-aoki-pc/bash.git`。インターネットに出られないホストは `https://github.com/ryo-aoki-pc/bash.git`） |
-| `~/.ssh/known_hosts` | 手順 2 の問いに `yes` と答えたときだけ、GitHub のホスト鍵が足される（[ロールバック](#ロールバック)でも消さない） |
+| `~/.config/bash` | このリポジトリの clone（`main`。`origin` は `https://github.com/ryo-aoki-pc/bash.git`） |
 | `~/.bashrc` | 元の手順書の行が消え、末尾に `if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi` |
 | `~/.bashrc.before-bash` | 手順 3 の控え |
 | `~/.bash_profile` | 手順 8 で作ったときだけ（ログインシェルの設定ファイルが 1 つも無かったホスト） |
@@ -520,7 +507,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 | ユーザー（実施前の `~/.bashrc`） | 流した手順 | 結果 |
 |---|---|---|
-| m3（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、39〜41 行目 `if type brew &>/dev/null; then` で `brew --prefix` を使う 3 行、42 行目 `eval "$(zoxide init bash --cmd cd)"`、43 行目ダミーの `GITLAB_TOKEN`） | 手順 1〜5・6（awk）・7・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5 | 手順 3 は `bash -n: OK`。手順 4 の `git diff` は 26〜34 行目の 9 行を `-` で出し、`grep` は WezTerm の 2 行（`fi` は出ない）・Homebrew を使う 2 行・zoxide の行を出した。手順 4・5 を流したログインシェルは `zoxide: command not found` を出した（手順 4 の補足）。手順 7 は `bash -n: OK` と、読み込みの行（28 行目）の後ろに移した 29・30・32 行目。手順 10 は手順 10 の補足のとおり。更新は `Fast-forward` と `検証用のコミット` の 1 行。ロールバックの手順 1 は `0`、手順 2 は消した行と移した行を出し、手順 3 で実施前と同じ 43 行に戻った。手順 4 は `## …` の 1 行だけ、手順 5 は `No such file or directory` |
+| m3（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、39〜41 行目 `if type brew &>/dev/null; then` で `brew --prefix` を使う 3 行、42 行目 `eval "$(zoxide init bash --cmd cd)"`、43 行目ダミーの `GITLAB_TOKEN`） | 手順 1〜5・6（awk）・7・8・10、[更新](#更新)の手順 1 の pull と log、[ロールバック](#ロールバック)の手順 1〜5 | 手順 3 は `bash -n: OK`。手順 4 の `git diff` は 26〜34 行目の 9 行を `-` で出し、`grep` は WezTerm の 2 行（`fi` は出ない）・Homebrew を使う 2 行・zoxide の行を出した。手順 4・5 を流したログインシェルは `zoxide: command not found` を出した（手順 4 の補足）。手順 7 は `bash -n: OK` と、読み込みの行（28 行目）の後ろに移した 29・30・32 行目。手順 10 は手順 10 の補足のとおり。更新は `Fast-forward` と `検証用のコミット` の 1 行。ロールバックの手順 1 は `0`、手順 2 は消した行と移した行を出し、手順 3 で実施前と同じ 43 行に戻った。手順 4 は `## …` の 1 行だけ、手順 5 は `No such file or directory` |
 | m4（`/etc/skel` の後ろに、手順書が書く行をすべて、並びを直す前の手順書の並びで。starship が最後） | 手順 1〜5・8・10 | 手順 3 で 20 行がすべて消え、手順 4 の `grep` は何も出さなかった（手順 6・7 は飛ばした） |
 | n2（`/etc/skel` のまま） | 手順 1〜5・8・10 | 手順 4 は何も出さず、手順 10 は m4 と同じ |
 | g2（ホームにドットファイルが 1 つも無い。Git Bash の新しいホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `grep: /home/g2/.bashrc: No such file or directory` も出した。手順 3 で空の `~/.bashrc` ができた。手順 8 は 2 行の `~/.bash_profile` を作り、手順 10 のログインシェルはそこから `~/.bashrc` を読んだ（1 行目が `1`） |
@@ -597,7 +584,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 | ホーム（実施前） | 流した手順 | 結果 |
 |---|---|---|
-| w1（その PC の `~/.bashrc` と `~/.bash_profile` の写し） | 手順 1〜5・8・10、[更新](#更新)の手順 1・2、[ロールバック](#ロールバック)の手順 1〜5 | 手順 1 は `ls` の `No such file or directory` だけ。手順 2 は `Cloning into 'C:/…/.config/bash'...` から `Resolving deltas: 100% (17/17), done.` まで。手順 3 は `bash -n: OK`、手順 4 の `git diff` は 10 行すべてを `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした）。手順 5 は読み込みの 1 行と `bash -n: OK`。手順 8 は `/c/…/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`。手順 10 は手順 10 の補足の 7 行。更新は `Updating e44c6e6..3870660`・`Fast-forward` と、新しいコミットの 1 行。ロールバックの手順 1 は `0`、手順 2 は 10 行を `+` で出し、手順 3 は `bash -n: OK` で、`~/.bashrc` はその PC の `~/.bashrc` と同じ中身に戻った（`cmp` で一致）。手順 4 は `## <ブランチ>...origin/<ブランチ>` の 1 行だけ、手順 5 は `No such file or directory`（`.git` の読み取り専用のファイルも消えた） |
+| w1（その PC の `~/.bashrc` と `~/.bash_profile` の写し） | 手順 1〜5・8・10、[更新](#更新)の手順 1 の pull と log、[ロールバック](#ロールバック)の手順 1〜5 | 手順 1 は `ls` の `No such file or directory` だけ。手順 2 は `Cloning into 'C:/…/.config/bash'...` から `Resolving deltas: 100% (17/17), done.` まで。手順 3 は `bash -n: OK`、手順 4 の `git diff` は 10 行すべてを `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした）。手順 5 は読み込みの 1 行と `bash -n: OK`。手順 8 は `/c/…/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`。手順 10 は手順 10 の補足の 7 行。更新は `Updating e44c6e6..3870660`・`Fast-forward` と、新しいコミットの 1 行。ロールバックの手順 1 は `0`、手順 2 は 10 行を `+` で出し、手順 3 は `bash -n: OK` で、`~/.bashrc` はその PC の `~/.bashrc` と同じ中身に戻った（`cmp` で一致）。手順 4 は `## <ブランチ>...origin/<ブランチ>` の 1 行だけ、手順 5 は `No such file or directory`（`.git` の読み取り専用のファイルも消えた） |
 | g1（ドットファイルが 1 つも無い。新しい Git Bash のホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `ls` と `grep` の 2 つの `No such file or directory`。手順 3 で空の `~/.bashrc` ができ、手順 4 は何も出さなかった。手順 8 は作った 2 行を出した。開き直したログインシェルに `WARNING:` は出ず、手順 10 は w1 と同じ |
 | s1（g1 と同じで、パスに空白と日本語を含む `…/新しい ホーム`） | 手順 1〜5・8・10 | g1 と同じ |
 | a1（`~/.bashrc` は読み込みの 1 行、`~/.bash_profile` は手順 8 の 2 行。starship・eza・bat・gdu も PATH に置いた） | 手順 10 | ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` では、手順 10 の補足のとおり eza の 3 行を含む出力。`main` の `shell/wezterm.sh` では、出力の前ごとに `STARSHIP_START_TIME:0:0}` が出た |
@@ -710,7 +697,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 | ホーム（実施前） | 流した手順 | 結果 |
 |---|---|---|
-| sw1（その PC の導入前の `~/.bashrc` と `~/.bash_profile` の写し。前の付録の w1 と同じ） | 手順 1〜5・8・10、[更新](#更新)の手順 1・2 | 手順 2 は、`Cloning into 'C:/…/.config/bash'...` の後に `The authenticity of host 'github.com (20.27.177.113)' can't be established.`・`ED25519 key fingerprint is: SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`・`This key is not known by any other names.`・`Are you sure you want to continue connecting (yes/no/[fingerprint])?` と出た。`yes` と打つと `Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.` と出て、`Resolving deltas: 100% (32/32), done.` まで進んだ。`known_hosts` には、GitHub の ED25519・RSA・ECDSA の 3 行が入った（つないだ後に、ssh が残りの 2 つも足した）。`remote -v` は `git@github.com:ryo-aoki-pc/bash.git`。手順 3〜5・8・10 は、前の付録の w1 と同じ。更新は、1 つ古いコミットに戻してから流し、問い無しで `Fast-forward` と新しいコミットの 1 行 |
+| sw1（その PC の導入前の `~/.bashrc` と `~/.bash_profile` の写し。前の付録の w1 と同じ） | 手順 1〜5・8・10、[更新](#更新)の手順 1 の pull と log | 手順 2 は、`Cloning into 'C:/…/.config/bash'...` の後に `The authenticity of host 'github.com (20.27.177.113)' can't be established.`・`ED25519 key fingerprint is: SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`・`This key is not known by any other names.`・`Are you sure you want to continue connecting (yes/no/[fingerprint])?` と出た。`yes` と打つと `Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.` と出て、`Resolving deltas: 100% (32/32), done.` まで進んだ。`known_hosts` には、GitHub の ED25519・RSA・ECDSA の 3 行が入った（つないだ後に、ssh が残りの 2 つも足した）。`remote -v` は `git@github.com:ryo-aoki-pc/bash.git`。手順 3〜5・8・10 は、前の付録の w1 と同じ。更新は、1 つ古いコミットに戻してから流し、問い無しで `Fast-forward` と新しいコミットの 1 行 |
 | sw2（sw1 と同じ） | 手順 2（問いに `no`） | `Host key verification failed.` と `fatal: Could not read from remote repository.` で止まった。`known_hosts` は作られず、`~/.config/bash` も残らなかった |
 
 手順書の外で確かめたこと:
@@ -721,18 +708,18 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 | 何も待ち受けていないプロキシ（`ALL_PROXY=socks5h://127.0.0.1:9`）を付けた `git ls-remote` | SSH（`git@github.com:…`）は、プロキシを使わずに `HEAD` を返した。HTTPS（`https://github.com/…`）は `Failed to connect to github.com:443 over proxy 127.0.0.1 after 2064 ms` で失敗した |
 | 同じプロキシで `gh api user`（gh 2.102.0） | `ALL_PROXY` だけでは、プロキシを使わずに `ryo-aoki-pc` を返した。`https_proxy` と `HTTPS_PROXY` では、どちらも `proxyconnect tcp: dial tcp 127.0.0.1:9` で失敗した |
 | GitHub が公開する指紋 | `gh api meta` の `ssh_key_fingerprints` の `SHA256_ED25519` と、GitHub の説明のページの Ed25519 の指紋は、どちらも手順 2 で出た指紋と同じ |
-| その PC の本物の `~/.config/bash`（前の版の手順で、HTTPS で clone してあった） | `git -C ~/.config/bash remote set-url origin git@github.com:ryo-aoki-pc/bash.git` の後、更新の手順 1 は `Already up to date.`、手順 2 は `646dc60 …` の 1 行（その PC の `known_hosts` には、GitHub の鍵が前からあった） |
+| その PC の本物の `~/.config/bash`（前の版の手順で、HTTPS で clone してあった） | `git -C ~/.config/bash remote set-url origin git@github.com:ryo-aoki-pc/bash.git` の後、更新の手順 1 の pull は `Already up to date.`、log は `646dc60 …` の 1 行（その PC の `known_hosts` には、GitHub の鍵が前からあった） |
 
 **WSL の AlmaLinux 10.2**（同じ PC の WSL）:
 
 - ssh は `OpenSSH_9.9p1`、git は 2.52.0、暗号ポリシーは `DEFAULT`。鍵は、WSL のユーザーの `~/.ssh/id_ed25519`（GitHub に登録済みだった。パスフレーズ無し）
-- `HOME` を使い捨てのディレクトリにして、手順 2 と更新の手順 1・2 のブロックを `bash` に流した。手順 2 は擬似端末（Python の `pty`）で動かし、問いに `yes` と打った
+- `HOME` を使い捨てのディレクトリにして、手順 2 と更新の手順 1 の pull と log のブロックを `bash` に流した。手順 2 は擬似端末（Python の `pty`）で動かし、問いに `yes` と打った
 - AlmaLinux の ssh は、`HOME` ではなく passwd のホームの `~/.ssh` を見る。本物の `known_hosts` に書かないよう、`GIT_SSH_COMMAND='ssh -o UserKnownHostsFile=<一時ファイル> -o GlobalKnownHostsFile=/dev/null'` を渡した（本物の `known_hosts` は、前後で同じ中身だった）
 
 | 確かめたこと | 結果 |
 |---|---|
 | 手順 2 | `Cloning into '/tmp/…/home/.config/bash'...` の後に、Windows と同じ問いが出た。指紋の行だけ形が違い、`ED25519 key fingerprint is SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU.` だった。`yes` の後は Windows と同じ。`git ls-files --eol` は 8 つとも `i/lf w/lf` |
-| 更新の手順 1・2（1 つ古いコミットに戻してから） | `Updating da89849..646dc60`・`Fast-forward` と、`646dc60 …` の 1 行 |
+| 更新の手順 1 の pull と log（1 つ古いコミットに戻してから） | `Updating da89849..646dc60`・`Fast-forward` と、`646dc60 …` の 1 行 |
 | 空の `known_hosts` で `ssh -v -T git@github.com`（`BatchMode=yes` なので聞かずに止まる。鍵は使わない） | `kex: host key algorithm: ssh-ed25519`、`Host key verification failed.` |
 | `ssh -T git@github.com`（GitHub の鍵だけを入れた `known_hosts` で） | `Hi ryo-aoki-pc! You've successfully authenticated, but GitHub does not provide shell access.`、終了コード 1 |
 | HTTPS の clone（インターネットに出られないホストの形。git の認証の設定が無い使い捨ての `HOME`。擬似端末で問いに `Ctrl+C`。トンネルは使っていない） | `Cloning into '/tmp/…/home/.config/bash'...` の後に `Username for 'https://github.com':` と聞かれた。`Ctrl+C` で止まり、`~/.config/bash` は残らなかった（`~/.config` だけ残った） |
@@ -776,7 +763,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 | 5 | 読み込みの 1 行と `bash -n: OK` |
 | 8 | `/home/<USER>/.bash_profile:4:if [ -f ~/.bashrc ]; then` と `/home/<USER>/.bash_profile:5:    . ~/.bashrc`（何も作らない）。終了コードは 2 だった（無い `~/.bash_login`・`~/.profile` を `grep` が開けないため） |
 | 10（開き直したペイン） | 手順 10 の補足の、AlmaLinux 10 の実機の 7 行 |
-| [更新](#更新)の 1・2 | `Already up to date.` と、`a69a10e (HEAD -> main, origin/main, origin/HEAD) 導入の clone を SSH にする (#3)` の 1 行 |
+| [更新](#更新)の手順 1 の pull と log | `Already up to date.` と、`a69a10e (HEAD -> main, origin/main, origin/HEAD) 導入の clone を SSH にする (#3)` の 1 行 |
 
 手順書の外で確かめたこと:
 
@@ -839,3 +826,29 @@ setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/bl
 - Windows 11 の Git Bash（scoop の fzf・fd・bat。`fzf --bash` が Git Bash で動くか）
 - AlmaLinux 10 の実機（Raspberry Pi 5 を含む）と、Homebrew の補完を全部読むことによる起動の時間の増え方
 - `~/.inputrc` は setup-notes の bash-settings.md 手順 5 のまま（この設定の対象外）
+
+---
+
+### 付録: HTTPS の clone に変えたときの検証記録（2026-10-03）
+
+このリポジトリを公開した後に、手順 2 の clone を HTTPS に戻し、[更新](#更新)を 1 つの手順（`origin` を HTTPS にそろえる `set-url`・pull・log）にまとめた。そのブロックを、x86_64 のコンテナで流した。
+
+**環境**: `docker.io/library/almalinux:10`（AlmaLinux 10.2、x86_64。クラウドのホストの Docker 29.6.2、`--network host`）に `git-core-2.52.0-1.el10` を入れ、一般ユーザー（git の設定も `~/.ssh` も無い）の `bash` に、この文書のブロックを抜き出したものを流した。
+
+- 検証環境だけの変更: ホストの外向きの通信がプロキシ経由なので、そのユーザーに `https_proxy` を渡し、プロキシの CA を取り込んだ。dnf にもプロキシを入れ、AlmaLinux の repo ファイルは `mirrorlist=` を止めて `baseurl=` を使った
+- git に問いを出させないため、`GIT_TERMINAL_PROMPT=0` を付けた（認証を聞かれると、問わずに失敗する）
+- 同じ日に、認証無しの `curl` で `https://github.com/ryo-aoki-pc/bash.git/info/refs?service=git-upload-pack` が `200` を返すことも見た
+
+| 流したもの | 結果 |
+|---|---|
+| 手順 1 | `No such file or directory` と、`grep` の終了コード 1 |
+| 手順 2 | `Cloning into '/home/<USER>/.config/bash'...`、終了コード 0。`origin` は `https://github.com/ryo-aoki-pc/bash.git`。`git ls-files --eol` は 8 つとも `i/lf w/lf` |
+| [更新](#更新)の手順 1（1 つ古いコミットに戻してから） | `Updating d33bbca..926c3d7`・`Fast-forward` と、`926c3d7 …` の 1 行。`origin` は変わらない |
+| 更新の手順 1 をもう一度 | `Already up to date.` と、同じ 1 行 |
+| SSH で clone したホストの代わり（同じ clone の `origin` を `git@github.com:ryo-aoki-pc/bash.git` にし、1 つ古いコミットに戻した）に更新の手順 1 | `Updating d33bbca..926c3d7`・`Fast-forward` と、`926c3d7 …` の 1 行。`origin` は `https://github.com/ryo-aoki-pc/bash.git` になり、`status` は `## main...origin/main` だけ。`~/.ssh` は作られなかった |
+
+#### 未確認事項（HTTPS の clone）
+
+- Windows 11 の Git Bash（Git Credential Manager が問いを出さないこと）と、AlmaLinux 10 の実機・WSL での手順 2 と更新
+- SSH で clone してある実機の `~/.config/bash`（Raspberry Pi 5・Windows 11 の PC・WSL）で、更新の手順 1 が `origin` を HTTPS にすること
+- インターネットに出られないホストでの、トンネル越しの clone と pull

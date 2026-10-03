@@ -127,7 +127,7 @@ if [ -r "${WEZTERM_SHELL_INTEGRATION:=$HOME/.config/wezterm/shell/wezterm.sh}" ]
 	. "$WEZTERM_SHELL_INTEGRATION"
 fi
 
-# zoxide（docs/zoxide.md 手順 6）
+# zoxide（docs/zoxide.md 手順 3）
 # 読み直したときは初期化し直さない（AlmaLinux の /etc/bashrc は PROMPT_COMMAND を配列にし、
 # zoxide は配列の先頭しか見ないので、初期化のたびにフックを重ねて足す）
 # ~/.bashrc の読み込みの行より後ろで別の形（--cmd cd など）の zoxide を読むなら、--hook none を付ける
