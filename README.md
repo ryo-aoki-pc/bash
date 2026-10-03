@@ -2,7 +2,7 @@
 
 いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）と、Windows 11 の Git Bash で同じものを使う。
 
-- 各ホストの `~/.config/bash` に SSH で clone し（`git@github.com:ryo-aoki-pc/bash.git`。非公開のリポジトリ。インターネットに出られないホストだけ HTTPS）、`~/.bashrc` の末尾の 1 行で読む
+- 各ホストの `~/.config/bash` に HTTPS で clone し（`https://github.com/ryo-aoki-pc/bash.git`。公開のリポジトリなので認証は要らない）、`~/.bashrc` の末尾の 1 行で読む
 - ホストによって入っているツールが違うので、どの設定も、そのコマンドがあるかをシェルを開くたびに確かめ、無ければ何もしない。ツールを後から入れても、次に開いた端末から効く
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）
 
@@ -32,7 +32,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 | `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | fzf.md「fd と bat を候補とプレビューに使う」 |
 | starship | `starship` があり、まだ初期化していない | 後半 | [starship.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/starship.md) 手順 4・5 |
 | WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) 手順 6 |
-| zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [zoxide.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/zoxide.md) 手順 6（`--cmd z`） |
+| zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [zoxide.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/zoxide.md) 手順 3（`--cmd z`） |
 
 - `ls` や `cat` は置き換えない（元の手順書と同じ）
 - eza が無いと、`ll` は AlmaLinux 10 の `alias ll='ls -l --color=auto'`（coreutils-common の `/etc/profile.d/colorls.sh`）のまま（この設定のものではない。Git Bash は[下](#windows-11-の-git-bash-での違い)）
