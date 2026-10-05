@@ -3,6 +3,8 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 export EDITOR=nvim
 export VISUAL=nvim
 alias vi=nvim
+# setup-notes: neovim editor begin
+# setup-notes: neovim editor end
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
 alias ll="eza -l --git --group-directories-first"
@@ -26,3 +28,4 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
 case ":${PATH}:" in *:/home/linuxbrew/.linuxbrew/bin:*) ;; *) PATH="${PATH}:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" ;; esac
 export DOCKER_HOST=unix:///run/podman/podman.sock
+export DOCKER_HOST=unix:///run/podman/podman.sock # setup-notes: lazydocker root

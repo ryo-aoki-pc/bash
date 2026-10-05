@@ -125,7 +125,8 @@ root のシェル（docs/install.md の[root のシェルでも読む](docs/inst
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
   - bash-settings.md の `HISTSIZE` / `HISTFILESIZE` / `HISTCONTROL` / `shopt -s autocd …` の 4 行と Homebrew の補完の 1 行、fzf.md の `eval "$(fzf --bash)"` と `export FZF_…` の 4 行（2026-10-02）
-  - setup-notes が `/root/.bashrc` に書く 2 行（2026-10-05）: homebrew.md「root のシェルでも使う」の PATH の `case` の行と、lazydocker.md「root でも使う」の `export DOCKER_HOST=unix:///run/podman/podman.sock`
+  - setup-notes が `/root/.bashrc` に書く 2 行（2026-10-05）: homebrew.md「root のシェルでも使う」の PATH の `case` の行と、lazydocker.md「root でも使う」の `export DOCKER_HOST=unix:///run/podman/podman.sock`（末尾に `# setup-notes: lazydocker root` の目印が付いた形も含む）
+  - neovim.md が直接追記に付ける `# setup-notes: neovim editor begin` / `end` の目印も外す（2026-10-05）。元値の控え `~/.local/state/neovim-editor-before.bash` は消さない。この設定へ移行した後は、neovim.md の印付き部分のロールバックを使わず、この設定の `EDITOR`・`VISUAL`・`vi` を変更する
 - `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 4 つの形がある
   - setup-notes の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
   - それぞれを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` は、直す前の形のこれだった）
