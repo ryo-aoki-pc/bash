@@ -40,8 +40,15 @@ fi
 # Docker の API を使うツールに podman のソケットを教える（docs/podman.md「Docker 向けのツールから使う」）
 # ソケットがあるときだけ足す（podman.socket を有効にしていないホストや、
 # XDG_RUNTIME_DIR の無い sudo -iu のシェルでは足さない）
-if [ -z "${DOCKER_HOST-}" ] && [ -S "${XDG_RUNTIME_DIR-}/podman/podman.sock" ]; then
-	export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
+# root は、root のコンテナを扱うシステムの podman.socket のソケットにする（docs/lazydocker.md「root でも使う」）
+if [ -z "${DOCKER_HOST-}" ]; then
+	if [ "${EUID-}" = 0 ]; then
+		if [ -S /run/podman/podman.sock ]; then
+			export DOCKER_HOST=unix:///run/podman/podman.sock
+		fi
+	elif [ -S "${XDG_RUNTIME_DIR-}/podman/podman.sock" ]; then
+		export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
+	fi
 fi
 
 # --- 対話の bash だけ ---------------------------------------------------------

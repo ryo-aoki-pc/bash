@@ -5,12 +5,13 @@
 - 各ホストの `~/.config/bash` に HTTPS で clone し（`https://github.com/ryo-aoki-pc/bash.git`。公開のリポジトリなので認証は要らない）、`~/.bashrc` の末尾の 1 行で読む
 - ホストによって入っているツールが違うので、どの設定も、そのコマンドがあるかをシェルを開くたびに確かめ、無ければ何もしない。ツールを後から入れても、次に開いた端末から効く
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）
+- root のシェル（`sudo -i`・`su -`）でも読める。root は `/root/.config/bash` に自分の clone を作り、`/root/.bashrc` の同じ 1 行で読む（自分専用のマシンで、一般ユーザーを信用できるときだけ。[root のシェルでの違い](#root-のシェルでの違い)）
 
 ```bash
 if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 ```
 
-導入（既にある `~/.bashrc` の行の片付けを含む）は [docs/install.md](docs/install.md) にある。
+導入（既にある `~/.bashrc` の行の片付けを含む）は [docs/install.md](docs/install.md) にある（root のシェルは、その任意節「root のシェルでも読む」）。
 
 ## 読むもの
 
@@ -21,7 +22,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [homebrew.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md) 手順 3 |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)「既定のエディタにする」 |
 | `MANPAGER` を bat に | `bat` がある | 前半 | [bat.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bat.md)「ページャに使う」 |
-| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」 |
+| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」（root は [lazydocker.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md)「root でも使う」） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bash-settings.md) 手順 3（`histappend` は同書には無い。AlmaLinux 10 は `/etc/bashrc` が入れるが、Git Bash の既定は off） |
 | `alias vi=nvim` | `nvim` がある | 後半 | neovim.md「既定のエディタにする」 |
 | `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [eza.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/eza.md)「エイリアスを足す」（`EZA_OPTS` は既定の値） |
@@ -59,6 +60,24 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
   - Windows の sshd（`DefaultShell` が Git Bash）は、sftp と scp（SFTP の方式）の `sftp-server.exe` も bash から起動するので、sftp でも `~/.bashrc` が読まれる
   - SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない（その PC の sshd に WSL からつないで確かめた）
   - 対話の SSH のセッションでは、その状態だと zoxide の初期化が shim のエラーを出し、`z` が無くなる（ほかは使える）。その任意節を行う
+
+### root のシェルでの違い
+
+root のシェル（docs/install.md の[root のシェルでも読む](docs/install.md#root-のシェルでも読む任意)）で確かめたこと（2026-10-05、x86_64 のコンテナだけ。[docs/install.md の付録](docs/install.md#付録-root-のシェルでも読む節の検証記録2026-10-05)）:
+
+- root は、自分の clone（`/root/.config/bash`）を、`/root/.bashrc` の同じ 1 行で読む。更新は root のシェルでも pull する
+- 読むものは自分のユーザーと同じ。root のシェルを開くたびに、Homebrew の `brew`（`shellenv`）・`fzf`・starship・zoxide が root で動く
+  - 自分専用のマシンで、一般ユーザーを信用できるときだけ入れる（Homebrew のファイルは一般ユーザーが書き換えられる）
+- PATH の先頭が Homebrew。RPM と同じ名前のコマンドは、Homebrew 版が使われる（検証では `git`・`curl` は Homebrew に無く、`/bin` のもの）
+  - `brew shellenv` は root でも動くが、`brew install` などは `Running Homebrew as root is extremely dangerous …` で断られる
+- `DOCKER_HOST` は `/run/podman/podman.sock`（システムの `podman.socket` のソケットがあるとき）
+  - `su -`・`sudo -i`・`sudo -s` は root のソケットになる。`su`（`-` 無し）は自分のユーザーの `DOCKER_HOST` を引き継ぎ、そのままになる（空のときだけ入れるため）
+  - `podman.socket` を止めても、ソケットのファイルは再起動まで残り、その間は入る
+- zoxide のデータベースは root のもの（`/root/.local/share/zoxide`）
+- AlmaLinux 10 の `/root/.bashrc` の `cp`・`rm`・`mv` の `-i` のエイリアスは残る（この設定は変えない）
+- 非対話（`sudo -i <コマンド>`・`ssh root@<HOST> <コマンド>`）で何も出さない
+- setup-notes が `/root/.bashrc` に書く 2 行（homebrew.md・lazydocker.md の root の節）は、導入の手順 3 で消える（この設定が同じことをする。homebrew.md の行は PATH の末尾に足すが、この設定は先頭に足す）
+- Windows 11 の Git Bash では、`EUID` が 0 にならないので変わらないはず（確かめていない）
 
 ## 読む順番
 
@@ -106,6 +125,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
   - bash-settings.md の `HISTSIZE` / `HISTFILESIZE` / `HISTCONTROL` / `shopt -s autocd …` の 4 行と Homebrew の補完の 1 行、fzf.md の `eval "$(fzf --bash)"` と `export FZF_…` の 4 行（2026-10-02）
+  - setup-notes が `/root/.bashrc` に書く 2 行（2026-10-05）: homebrew.md「root のシェルでも使う」の PATH の `case` の行と、lazydocker.md「root でも使う」の `export DOCKER_HOST=unix:///run/podman/podman.sock`
 - `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 4 つの形がある
   - setup-notes の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
   - それぞれを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` は、直す前の形のこれだった）
@@ -123,7 +143,6 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 ## 対象外
 
 - macOS と zsh（Homebrew の場所も `/home/linuxbrew/.linuxbrew` 決め打ち）
-- root のシェル（Homebrew のユーザーが持つコマンドを root で動かすことになる）
 - MSYS2・QMK MSYS のホーム（Git Bash とホームが別）
 
 ## ファイル構成

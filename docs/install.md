@@ -3,7 +3,7 @@
 ## 実施手順
 
 > [!IMPORTANT]
-> - **自分のユーザーのシェルで貼る**。`sudo -i` した root のシェルでは貼らない（root の `~/.bashrc` は対象外。[注意点](#注意点)）
+> - **自分のユーザーのシェルで貼る**。root のシェルにも入れるなら、この手順の後で [root のシェルでも読む（任意）](#root-のシェルでも読む任意)を通す（一般ユーザーを信用できるホストだけ）
 > - **Windows 11 では、Git for Windows の Git Bash に同じブロックを貼る**。WSL は Linux のホストとして、WSL のシェルで別に通す（`/mnt/c` の clone は使わない）
 > - **前提**: git が入っていること（公開のリポジトリを HTTPS で clone する。GitHub の鍵や認証は要らない）
 >   - git: AlmaLinux 10 は setup-notes の [git.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/git.md)、Windows 11 は [Git for Windows](https://gitforwindows.org/)
@@ -13,10 +13,10 @@
 - 上から順にコードブロックを貼る
 - 各手順の末尾の「補足」（折り畳み）と後半の[補足](#補足)は、実行するだけなら読まなくてよい。折り畳みの中のブロックも貼らなくてよい
 - この設定が何をどの条件で読むかは [README](../README.md) にある
-- 手順の後: 以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
+- 手順の後: root のシェル（`sudo -i`・`su -`）でも読むなら [root のシェルでも読む（任意）](#root-のシェルでも読む任意)。以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](#更新)だけを流した）。**2026-10-03 に clone を HTTPS に変えた後は、手順 2 と更新を x86_64 のコンテナで流しただけ**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](#更新)だけを流した）。**2026-10-03 に clone を HTTPS に変えた後は、手順 2 と更新を x86_64 のコンテナで流しただけ**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**[root のシェルでも読む](#root-のシェルでも読む任意)の節は、x86_64 のコンテナでだけ流した**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -273,6 +273,111 @@
 
 ---
 
+## root のシェルでも読む（任意）
+
+- **root のシェル（`sudo -i`・`su -`）でこの設定を使わないなら、この節は不要**
+- root の `~/.config/bash`（`/root/.config/bash`）に root の clone を作り、root の `~/.bashrc`（`/root/.bashrc`）の末尾に同じ 1 行を足す
+- [実施手順](#実施手順)のブロックは `~` を使っているので、root のシェルでそのまま貼る
+- root でも、自分のユーザーと同じものを読む（`brew shellenv` で Homebrew が PATH の先頭、starship・zoxide・fzf・Homebrew の補完も）
+- `DOCKER_HOST` は、root のコンテナのソケット（`/run/podman/podman.sock`。setup-notes の [lazydocker.md の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md#root-でも使う任意)）
+- [実施手順](#実施手順)の手順 3 で、setup-notes が `/root/.bashrc` に書く 2 行も消える（この設定が同じことをする）
+  - [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)の PATH の行と、lazydocker.md の「root でも使う」の `DOCKER_HOST` の行
+- 前提: 自分のユーザーで[実施手順](#実施手順)を通してあること
+- この節の手順 1 で root のシェルに入り、手順 3 で入り直す
+- `sudo -i` は `ALL_PROXY` を渡さない。インターネットに出られないホストで root の clone は試していない
+- 補足: [root のシェルで読むときの違い](../README.md#root-のシェルでの違い)（README）
+
+> [!WARNING]
+> - **自分専用のマシンで、一般ユーザーを信用できるときだけ通す**。root のシェルを開くたびに、Homebrew のユーザーが書き換えられるコマンド（`brew shellenv`・starship・zoxide・fzf）とファイル（Homebrew の補完）が root で動く
+> - root でも Homebrew が PATH の先頭になる。root の `git`・`curl` なども、Homebrew に入っていれば Homebrew のものが使われる（`brew install` などは root では断られる）
+> - この節は **x86_64 のコンテナでのみ検証した**（[付録](#付録-root-のシェルでも読む節の検証記録2026-10-05)）
+
+1. 自分のユーザーのシェルで、root のシェルに入る。
+
+   ```bash
+   sudo -i
+   ```
+
+   - プロンプトが `[root@<HOST> ~]#` になる
+   - **次の手順は、root のシェルで貼る**
+
+1. root のシェルで、[実施手順](#実施手順)の手順 1〜8 を順に貼る。
+
+   - `~` は `/root`。手順 1 は `/root/.config/bash` と `/root/.bashrc` を見る
+   - setup-notes の root の 2 行を書いたホストでは、手順 4 の `git diff` に、その 2 行が `-` で出る
+   - 手順 6・7 は、手順 4 の `grep` が行を出したときだけ（root のシェルのエディタで直す）
+   - 手順 8 は、AlmaLinux 10 の `/root/.bash_profile` が `~/.bashrc` を読むので、2 行が出る（何も作らない）
+   - 手順 9 は飛ばし、この節の手順 3 で入り直す
+
+   <details>
+   <summary>補足: root で流したときの出力</summary>
+
+   検証コンテナで、setup-notes の root の 2 行がある `/root/.bashrc` に流したときの、手順 4 の `git diff` と手順 8 の出力（抜粋）:
+
+   ```
+   @@ -20,5 +20,3 @@ export PATH
+    alias rm='rm -i'
+    alias cp='cp -i'
+    alias mv='mv -i'
+   -case ":${PATH}:" in *:/home/linuxbrew/.linuxbrew/bin:*) ;; *) PATH="${PATH}:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" ;; esac
+   -export DOCKER_HOST=unix:///run/podman/podman.sock
+   ...
+   /root/.bash_profile:4:if [ -f ~/.bashrc ]; then
+   /root/.bash_profile:5:  . ~/.bashrc
+   ```
+
+   - 手順 2 は `Cloning into '/root/.config/bash'...`。この時の root のシェルはまだこの設定を読んでいないので、git は RPM のもの
+   - AlmaLinux 10 の `/root/.bashrc` は、`cp`・`rm`・`mv` を `-i` のエイリアスにしている。手順 3 の `cp -p` は控えがまだ無いので聞かれない。[ロールバック](#ロールバック)の手順 3 には `command` を付けてある（付ける前は、`cp: overwrite '/root/.bashrc'?` が次に貼った行を答えとして読み、控えに戻らなかった）
+
+   </details>
+
+1. root のシェルを `exit` で抜けて、`sudo -i` で入り直す。
+
+   - 自分のユーザーのシェルに戻ってから、`sudo -i` と打つ
+   - ほかに開いたままの root のシェルには効かない。開き直す
+   - **次の手順は、入り直した root のシェルで貼る**
+
+1. 入り直した root のシェルで、[実施手順](#実施手順)の手順 10 を貼る。
+
+   - 1 行目が `1`、最後が `0` ならよい
+   - `DOCKER_HOST=unix:///run/podman/podman.sock` は、システムの `podman.socket` を有効にしたホスト（setup-notes の lazydocker.md の「root でも使う」の手順 1）だけ。無ければ空
+   - 確かめたら `exit` で抜ける
+
+   <details>
+   <summary>補足: root のシェルでの出力</summary>
+
+   検証コンテナ（Homebrew で starship・zoxide・fzf・eza・lazydocker を入れ、システムの `podman.socket` を有効にしたホスト）で、入り直した root のシェルでの出力（プロンプトは省いた）:
+
+   ```
+   1
+   alias la='eza -la --git --group-directories-first'
+   alias ll='eza -l --git --group-directories-first'
+   alias lt='eza --tree --level=2'
+   function
+   EDITOR= DOCKER_HOST=unix:///run/podman/podman.sock
+   HISTSIZE=100000 shopt -s autocd shopt -s globstar
+   "\C-r": "__fzf_history__"
+   "\C-t": "fzf-file-widget"
+   complete -o bashdefault -o default -F _brew brew
+   complete -o bashdefault -o default -F _fzf_path_completion bat
+   0
+   ```
+
+   - プロンプトは starship の `root in ~` になった
+   - `printenv PATH` は `/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/root/.local/bin:…` で、Homebrew が先頭。`git`・`curl` は Homebrew に無いので `/bin` のもの
+   - `brew install tree` は `Error: Running Homebrew as root is extremely dangerous and no longer supported.` で止まった
+   - `function` は `z` の 1 行（yazi は入れていないので `y` は無い）
+
+   </details>
+
+1. 元に戻すときは、`sudo -i` の root のシェルで、[ロールバック](#ロールバック)の手順 1〜5 を貼る。
+
+   - [ロールバック](#ロールバック)の手順 5 は、`/root/.config/bash` を消す（取り戻せない）
+   - 控え（`/root/.bashrc.before-bash`）に戻すと、setup-notes の root の 2 行も戻る
+   - 戻した後は、root のシェルを開き直す
+
+---
+
 ## 更新
 
 - この設定を新しくする。ツールを入れたり外したりしたときは、何もしなくてよい（開き直した端末から効く）
@@ -291,12 +396,18 @@
    - 手元で変えたファイルがあって pull が止まったら、`git -C ~/.config/bash status` で見る
    - 開いている端末には効かない。[手順 9](#実施手順) と同じく開き直す
 
+1. root のシェルにも入れたときだけ、`sudo -i` の root のシェルで、この節の手順 1 を貼る。
+
+   - `/root/.config/bash` が新しくなる。出力は、この節の手順 1 と同じ
+   - 開いている root のシェルには効かない。`exit` で抜けて入り直す
+
 ---
 
 ## ロールバック
 
 - この文書で足したものを外す。ツールと、ツールごとの設定（`~/.config/wezterm` など）は消さない
 - 外した後もツールを使うなら、そのツールの手順書の `~/.bashrc` に書く手順を貼り直すか、この節の手順 3 で控えから戻す
+- root のシェルにも入れたなら、root の分は [root のシェルでも読む](#root-のシェルでも読む任意)の節の手順 5 で戻す
 
 > [!CAUTION]
 > **この節の手順 5 は、`~/.config/bash` を消す**。手元で変えて commit・push していないものは取り戻せない。この節の手順 4 で確かめてから貼る。
@@ -324,11 +435,12 @@
 1. 控えの内容に戻すときだけ、控えから戻す。
 
    ```bash
-   cp -p ~/.bashrc.before-bash ~/.bashrc && rm ~/.bashrc.before-bash
+   command cp -p ~/.bashrc.before-bash ~/.bashrc && command rm ~/.bashrc.before-bash
    bash -n ~/.bashrc && echo 'bash -n: OK'
    ```
 
    - `bash -n: OK` と出ればよい
+   - `command` は、root のシェル（AlmaLinux 10 の `/root/.bashrc` が `cp`・`rm` を `-i` のエイリアスにしている）でも、上書きと削除を聞かせないため
 
 1. 設定のリポジトリに、手元だけの変更が無いか確かめる。
 
@@ -398,6 +510,10 @@
   - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-に変えたときの検証記録2026-10-03)）
     - 確認したこと: 問いを出させない `GIT_TERMINAL_PROMPT=0` で clone と pull が通る、LF、SSH で clone したホストの代わり（`origin` を `git@github.com:…` にした clone）が更新で HTTPS になって pull できる
   - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナだけで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）
+  - [root のシェルでも読む](#root-のシェルでも読む任意)の節（2026-10-05）: x86_64 のコンテナで、setup-notes の root の 2 行がある `/root/.bashrc` に、その節の手順を tmux のペインに貼って流した（ブラケットペーストの無しと有り。[付録](#付録-root-のシェルでも読む節の検証記録2026-10-05)）
+    - 確認したこと: 2 行が移行で消える、`sudo -i`・`su -`・`sudo -s` の root のシェルで最後まで読まれる、Homebrew が PATH の先頭で `brew install` は断られる、root の `DOCKER_HOST`、`sudo -i lazydocker` が root のコンテナを出す、非対話で何も出さない、元に戻すと `/root/.bashrc` が元と同じ中身に戻る、自分のユーザーの `DOCKER_HOST` は変わらない
+    - 見つけて直したこと: [ロールバック](#ロールバック)の手順 3 の `cp`・`rm` が、root のエイリアスで聞いた
+    - 確認していないこと: 実機、aarch64、Git Bash（`EUID` は 0 にならないはず）、インターネットに出られないホストでの root の clone
   - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、LAN の別の PC からの ssh、HTTPS の clone と更新の、Windows 11 の Git Bash と実機での実行、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） | AlmaLinux 10 の実機（Raspberry Pi 5） |
@@ -453,6 +569,7 @@
 | `~/.bashrc` | 元の手順書の行が消え、末尾に `if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi` |
 | `~/.bashrc.before-bash` | 手順 3 の控え |
 | `~/.bash_profile` | 手順 8 で作ったときだけ（ログインシェルの設定ファイルが 1 つも無かったホスト） |
+| `/root/.config/bash`・`/root/.bashrc`・`/root/.bashrc.before-bash` | [root のシェルでも読む](#root-のシェルでも読む任意)の節を通したときだけ。中身は上の 3 つと同じ形 |
 
 - 開き直したシェルでの確かめ（手順 10）の出力は、手順 10 の補足にある
 
@@ -473,8 +590,9 @@
 - **starship を使うホストでは、wezterm の設定も新しくする**
   - WezTerm のシェル統合の `PS0` が starship の `PS0` を壊す問題を、ryo-aoki-pc/wezterm で直した。古い `~/.config/wezterm` のままだと、コマンドの出力の前に `${STARSHIP_START_TIME:0:0}` の文字が出る（Windows の WezTerm の画面では `STARSHIP_START_TIME:0:0}` と見えた）
 - **トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、この設定に書かない**。ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く
-- **root のシェルは対象外**
-  - root の `~/.bashrc` にこの 1 行を足すと、Homebrew のユーザーが持つコマンドを root で動かす。root で Homebrew のコマンドを使うなら、setup-notes の [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)
+- **root のシェルで読むのは、一般ユーザーを信用できるホストだけ**（[root のシェルでも読む](#root-のシェルでも読む任意)の節）
+  - root のシェルを開くたびに、Homebrew のユーザーが書き換えられるコマンドとファイルが root で動く
+  - 一般ユーザーを信用できないホストで、root で Homebrew のコマンドだけを使うなら、この設定は入れず、setup-notes の [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)を通す（PATH の末尾に足すだけで、起動のときには何も動かさない）
 - **WSL・MSYS2・QMK MSYS は、ホームが別**
   - WSL は、WSL の中で手順 1〜10 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
 - **macOS と zsh は対象外**（Homebrew の場所も `/home/linuxbrew/.linuxbrew` 決め打ち）
@@ -852,3 +970,48 @@ setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/bl
 - Windows 11 の Git Bash（Git Credential Manager が問いを出さないこと）と、AlmaLinux 10 の実機・WSL での手順 2 と更新
 - SSH で clone してある実機の `~/.config/bash`（Raspberry Pi 5・Windows 11 の PC・WSL）で、更新の手順 1 が `origin` を HTTPS にすること
 - インターネットに出られないホストでの、トンネル越しの clone と pull
+
+### 付録: root のシェルでも読む節の検証記録（2026-10-05）
+
+[root のシェルでも読む（任意）](#root-のシェルでも読む任意)と、`bashrc` の root の `DOCKER_HOST` を足したときの記録。x86_64 のクラウドホスト（Ubuntu 24.04、cgroup v1）上の Docker 29.6.2 で、使い捨てのコンテナを立てて行った。実機には何も加えていない。
+
+**環境**:
+
+- `quay.io/almalinuxorg/10-init:10.2`（`sha256:c8a5eee8…28e1`。中のパッケージは `x86_64_v2` のもの）を `--privileged --cgroupns=private` で、Docker の bridge のネットワークに立て、systemd・sshd・logind を動かした
+- 版: `bash-5.2.26-6.el10`、`sudo-1.9.17-10.p2.el10_2.6`、`git-2.52.0-1.el10`、`rootfiles-8.1-54.el10`、`podman-5.8.2-9.el10_2.alma.1`。Homebrew 7.0.8（starship 1.26.0・zoxide 0.10.0・fzf 0.74.4・eza 0.23.5・lazydocker 0.25.2・shellcheck 0.11.0）
+- 一般ユーザー `<USER>`（wheel、NOPASSWD の sudo）。自分の `podman.socket`（`systemctl --user`）と、システムの `podman.socket` を有効にした
+
+**手順書の外で行った準備**:
+
+- プロキシの CA・dnf・systemd とログインシェルのプロキシの環境変数を入れ、ホストの側の中継でプロキシに届かせた（root の podman のネットワークがホストに及ばないよう、`--network host` にしなかった）
+- Homebrew の root の断りが効くように `/.dockerenv` を消した（あると Homebrew は root を断らない。setup-notes の homebrew.md の付録）
+- 手順 2・更新の clone の URL を、このリポジトリの作業中のコミットの bare リポジトリ（`/srv/bash.git`、root の持ち物。`git config --system --add safe.directory`）に置き換えた
+- `<USER>` で[実施手順](#実施手順)の手順 1〜5・8・10 を通した（手順 9 は ssh を入り直した）
+- `/root/.bashrc` には、setup-notes の homebrew.md「root のシェルでも使う」の手順 1 と lazydocker.md「root でも使う」の手順 1〜3 を、`<USER>` の端末に貼って書かせた（root のコンテナ `lazydocker-root-web` も動かした）
+
+**流し方**: ホストの tmux 3.4 のペイン（160x50）から `docker exec -it … ssh -t <USER>@127.0.0.1` でログインし、この文書から抜き出したブロック（折り畳みの外のもの）を `tmux paste-buffer` で貼った。画面は `capture-pane` で読んだ。
+
+| 手順・確認 | 結果 |
+|---|---|
+| 節の前 | `/root/.bashrc` は rootfiles の既定の中身の後ろに setup-notes の 2 行。`/root/.config` は無い |
+| 1 回目（ブラケットペースト無し）: 節の手順 1・2（実施手順 1〜5・8） | 実施手順 1 は `ls: cannot access '/root/.config/bash'`、2 は `Cloning into '/root/.config/bash'...`、3 は `bash -n: OK`、4 は setup-notes の 2 行が `-` で出て `grep` は何も出さない、5 は読み込みの 1 行、8 は `/root/.bash_profile:4:if [ -f ~/.bashrc ]; then` と `/root/.bash_profile:5:  . ~/.bashrc` |
+| 節の手順 3・4（実施手順 10） | 手順 4 の補足の出力のとおり。プロンプトは starship の `root in ~` |
+| root のシェルの中 | `printenv PATH` は Homebrew が先頭、`command -v git curl` は `/bin/git`・`/bin/curl`、`brew install tree` は `Error: Running Homebrew as root is extremely dangerous and no longer supported.`。`cd /usr/share` の後の `zoxide query --list` は `/usr/share`（データベースは `/root/.local/share/zoxide`）。`/home/linuxbrew` と `<USER>` のホームに、root の持ち物のファイルはできなかった |
+| root の起動で動くもの | root の `bash -i -c exit` に `strace -f -e trace=execve` を当てた: Homebrew の `brew`（1 回）・`fzf`（1 回）・`starship`（4 回）・`zoxide`（1 回）と、`/usr/bin` の `grep`・`sed` など |
+| ほかの入口 | `sudo -s`・`su -`（検証のためだけに root にパスワードを付け、後で `/etc/shadow` を戻した）は `__bash_config_loaded=1` と `DOCKER_HOST=unix:///run/podman/podman.sock`。`su`（`-` 無し）は `__bash_config_loaded=1` だが、`DOCKER_HOST` は引き継いだ `unix:///run/user/<UID>/podman/podman.sock` のまま |
+| 非対話 | `sudo -i true` も、root への鍵の `ssh root@127.0.0.1 true` も 0 バイト。`ssh root@127.0.0.1 'printenv DOCKER_HOST; command -v brew'` は `unix:///run/podman/podman.sock` と Homebrew の `brew` |
+| setup-notes の代わりのコマンド | `sudo -i bash -c 'printenv DOCKER_HOST; command -v lazydocker'` は `unix:///run/podman/podman.sock` と Homebrew の `lazydocker`。`sudo -i bash -c 'printenv PATH; command -v brew'` は Homebrew が先頭の PATH と `brew`。`sudo -i lazydocker` は `running  lazydocker-root-web` だけを出した |
+| setup-notes の lazydocker.md の元に戻す手順 6〜8 | 手順 6 の `grep -c` は `0`。手順 8 でソケットを止めた後も `/run/podman/podman.sock` のファイルは残り、`sudo -i bash -c 'printenv DOCKER_HOST'` は `unix:///run/podman/podman.sock` を返した |
+| 節の手順 5（[ロールバック](#ロールバック)の手順 1〜5）、直す前 | 手順 3 の `cp -p` が `cp: overwrite '/root/.bashrc'?` を出し、次に貼った手順 4 の行を答えとして読んだ。控えには戻らず、`/root/.bashrc.before-bash` が残った（root の `alias cp='cp -i'`）。手順 3 に `command` を付けて直した |
+| 2 回目（ブラケットペースト有り）、直した後 | 節の手順 1〜5 が 1 回目と同じ結果。元に戻した後の `/root/.bashrc` の SHA-256 は、節の前と同じ。`/root/.bashrc.before-bash` と `/root/.config/bash` は無い |
+| 3 回目（ブラケットペースト無し）、直した後 | 2 回目と同じ |
+| `<USER>` | 実施手順 10 の `DOCKER_HOST` は `unix:///run/user/<UID>/podman/podman.sock` のまま。[更新](#更新)の手順 1 と、直した[ロールバック](#ロールバック)の手順 1〜5（`~/.bashrc` は控えと同じ SHA-256 に戻った） |
+| 静的検査 | `bash -n`・`shellcheck -s bash`（0.11.0）は何も出さない。`bash -c` は 0 バイト、`bash -u -c` と `bash --norc -u -i -c` は、`<USER>` と root のどちらでも `ok` と `ok-1` |
+
+#### 未確認事項（root の節）
+
+- 実機（x86_64・aarch64）での実行
+- Windows 11 の Git Bash（`EUID` は 0 にならないので、変わらないはず）
+- インターネットに出られないホストでの root の clone（`sudo -i` は `ALL_PROXY` を渡さない）
+- コンソールでの root のログイン、root への ssh の対話のログイン
+- root の starship の設定（`/root/.config/starship.toml`）と、root の WezTerm のシェル統合

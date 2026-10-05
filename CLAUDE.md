@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## このリポジトリは何か
 
-いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。公開のリポジトリで（2026-10-03 に公開）、どのホストも HTTPS で clone する（`https://github.com/ryo-aoki-pc/bash.git`。認証は要らない。HTTPS の git は setup-notes の ssh-socks-tunnel.md のトンネルも通る）。非公開だった間は、HTTPS（gh の資格情報）、2026-10-01 からは SSH（GitHub に登録した鍵）で clone していた。
+いろいろなホスト（AlmaLinux 10 の x86_64 / aarch64・WSL、Windows 11 の Git Bash）で共有する bash の設定。各ホストの `~/.config/bash` に clone し、`~/.bashrc` の末尾の 1 行（`if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi`）で読む。ホストごとに入っているツールが違うので、どの設定もツールがあるかを起動のたびに確かめる。root のシェルでも読める（2026-10-05。root は `/root/.config/bash` に自分の clone を作り、`/root/.bashrc` の同じ 1 行で読む。自分専用のマシンで一般ユーザーを信用できる前提で、root でも `brew shellenv`・starship・zoxide・fzf を同じように読む。違うのは `DOCKER_HOST` だけで、root は `/run/podman/podman.sock`）。公開のリポジトリで（2026-10-03 に公開）、どのホストも HTTPS で clone する（`https://github.com/ryo-aoki-pc/bash.git`。認証は要らない。HTTPS の git は setup-notes の ssh-socks-tunnel.md のトンネルも通る）。非公開だった間は、HTTPS（gh の資格情報）、2026-10-01 からは SSH（GitHub に登録した鍵）で clone していた。
 
 - 読むもの・読む順番とその実測・移行で消す行の説明は `README.md`（参照用）
 - 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
@@ -48,6 +48,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
     - 後で、取り残された sshd のセッションの bash が無いかを見る
   - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
     - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
+- root のシェルを試すときは、コンテナの `/.dockerenv` を消す（あると Homebrew が root を断らず、実機と違う。setup-notes の homebrew.md の付録）。root の起動で何が動くかは、`strace -f -e trace=execve` を root の `bash -i -c exit` に当てて見る
 - 手順 2・更新の git を試すときは、`GIT_TERMINAL_PROMPT=0` を付けて、認証を聞かれずに通ることを見る（docs/install.md の HTTPS の付録）
   - Windows の Git Bash では、`GIT_CONFIG_COUNT` などで `credential.helper` を空にして、Git Credential Manager を呼ばせない（非公開だったときの HTTPS の clone では、資格情報が無いとサインインの窓が開いた）
   - SSH で clone していたときの試し方（本物の `~/.ssh/known_hosts` に書かない）は、docs/install.md の SSH の付録にある
@@ -59,7 +60,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
   - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
   - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
-- `docs/install.md` — 導入・更新・ロールバックの手順書
+- `docs/install.md` — 導入・更新・ロールバックの手順書。任意節「root のシェルでも読む」は、`sudo -i` の root のシェルで実施手順の手順 1〜8・10 をそのまま貼る形（ブロックが `~` を使うので書き分けない）
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの
@@ -68,6 +69,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
   - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
+  - setup-notes が `/root/.bashrc` に書く行（homebrew.md「root のシェルでも使う」の手順 1、lazydocker.md「root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → README の「読む順番」の表を実測で直す
 - 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
 
@@ -79,6 +81,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - ツールの有無は `command -v <コマンド> >/dev/null 2>&1`（組み込みで fork しない）
   - ただし PATH を順に探すので、Git Bash では 1 回に約 2ms かかる（Windows 11 の PC の 37 要素の PATH。見つからないときがいちばん長い）。同じコマンドを何度も確かめる形は増やさない
 - `set -u` でも読めるよう、未設定かもしれない変数は `${変数-}` で参照する
+- root かどうかは bash の `${EUID-}`（組み込みの変数。外部コマンドを動かさない）で見る。Git Bash では 0 にならない
 - 関数の中から読まない・読ませない（読み込むものが関数の外で `declare` を使うと、その関数のローカル変数になる。2026-09-30 の `brew shellenv`・starship 1.26.0・`shell/wezterm.sh`・zoxide 0.10.0 の初期化には無く、検証コンテナで関数の中から読んでも動いたが、上がったときに壊れないように）
 - ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
 - ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の CLAUDE.md の実測）
