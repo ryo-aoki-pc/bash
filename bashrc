@@ -27,6 +27,7 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 fi
 
 # Neovim を既定のエディタにする（docs/neovim.md「既定のエディタにする」）
+# 手順書の直接追記に付ける目印は移行時に外し、ここではツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR=nvim
 	export VISUAL=nvim
