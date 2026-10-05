@@ -9,7 +9,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 読むもの・読む順番とその実測・移行で消す行の説明は `README.md`（参照用）
 - 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
 
-ビルド・テストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
+初回導入は `install.sh`（`docs/quick-start.md`）。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
+
+導入の回帰テストは `python3 -m unittest discover -s tests`（使い捨てのホームだけを変更する）。ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
 
 ## よく使うコマンド
 
@@ -68,7 +70,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - `bashrc` に読むものを足した・変えた → README の「読むもの」の表、`docs/install.md` の手順 10 とその補足の出力
 - 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
   - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
-  - 逆に、この設定が読むものを足したら、元の手順書の `~/.bashrc` に書く手順に「自分用の bash の設定を入れたホストでは、このブロックは貼らない」の箇条書きを足す（setup-notes の CLAUDE.md にも同じ決まりがある）
+  - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の CLAUDE.md にも同じ決まりがある）
   - setup-notes が `/root/.bashrc` に書く行（homebrew.md「root のシェルでも使う」の手順 1、lazydocker.md「root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → README の「読む順番」の表を実測で直す
 - 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → `docs/install.md` の手順と補足の「状態」行・注意点、README の冒頭、`bashrc` の冒頭のコメント
