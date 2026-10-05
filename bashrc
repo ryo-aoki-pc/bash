@@ -123,7 +123,7 @@ fi
 
 # --- プロンプトのフック（PROMPT_COMMAND を触るので、この順に読む。理由は README） ---
 
-# starship（docs/starship.md 手順 4・5）
+# starship（docs/starship.md。初期化の順番はここで管理する）
 # 読み直したときは初期化し直さない（starship は初期化のたびに PS0 に自分を足す）
 if command -v starship >/dev/null 2>&1 && ! declare -F starship_precmd >/dev/null; then
 	eval "$(starship init bash)"
