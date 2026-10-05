@@ -18,7 +18,7 @@
 - 手順の後: root のシェル（`sudo -i`・`su -`）でも読むなら [root のシェルでも読む（任意）](#root-のシェルでも読む任意)。以後は[更新](#更新)・[ロールバック](#ロールバック)。ツールを入れたときに `~/.bashrc` へ書く手順（setup-notes の各手順書）は、このホストでは貼らない（各手順書の箇条書きにある）
 
 > [!WARNING]
-> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](#更新)だけを流した）。**2026-10-03 に clone を HTTPS に変えた後は、手順 2 と更新を x86_64 のコンテナで流しただけ**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**[root のシェルでも読む](#root-のシェルでも読む任意)の節は、x86_64 のコンテナでだけ流した**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は、x86_64 のコンテナと、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**2026-10-06 に Windows ホストで設定本体と移行 awk を再検証した**（履歴・`shopt`・fzf・fd を含む。bat のプレビュー、Homebrew の補完、fzf の実際のキー操作は未確認）。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](#更新)だけを流した）。**2026-10-03 に clone を HTTPS に変えた後は、手順 2 と更新を x86_64 のコンテナで流しただけ**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**[root のシェルでも読む](#root-のシェルでも読む任意)の節は、x86_64 のコンテナでだけ流した**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 1. この設定が既に入っているか確かめる。
 
@@ -213,7 +213,7 @@
 
    - 1 行目が `1` なら、対話のシェルでこの設定が最後まで読まれている
    - `HISTSIZE=100000 shopt -s autocd shopt -s globstar` は、どのホストでも出る（履歴と `shopt`）
-   - `bind -X` は、fzf があれば `"\C-r": "__fzf_history__"` と `"\C-t": "fzf-file-widget"` の 2 行。`complete -p` は、Homebrew の bat があれば `complete -F _fzf_path_completion bat`（fzf が無ければ `_bat`）と `brew` の行
+   - `bind -X` は、fzf があれば Ctrl+R の `__fzf_history__` と Ctrl+T の `fzf-file-widget` を出す。Git Bash 5.3 では `"\C-r" "__fzf_history__"` のようにコロンが無く、WezTerm の統合を読むとマウス報告よけの行も出る。`complete -p` は、Homebrew の bat があれば `complete -F _fzf_path_completion bat`（fzf が無ければ `_bat`）と `brew` の行
    - 2〜4 行目は、このホストに入っているツールの分だけ出る（README の[読むもの](../README.md#読むもの)）。eza があれば `ll`・`la`・`lt`、yazi があれば `function`（`y`）、zoxide があれば `function`（`z`）
    - Git Bash では、eza が無くても `alias ll='ls -l'` が出る（Git for Windows の `/etc/profile.d/aliases.sh` のもので、この設定のものではない）。`alias gdu` は出ない（scoop の gdu は `gdu` の名前で入る）
    - AlmaLinux 10 でも、eza が無いと `alias ll='ls -l --color=auto'` が出る（coreutils-common の `/etc/profile.d/colorls.sh` のもので、この設定のものではない）
@@ -239,7 +239,7 @@
    ```
 
    - `DOCKER_HOST` は、podman の API ソケット（setup-notes の [podman.md 手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
-   - 上の 3 つの出力は、2026-10-02 に足した `HISTSIZE` / `bind -X` / `complete -p` の 3 行より前のもの。その 3 行の出力は、[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)の x86_64 のコンテナのものだけがある
+   - 上の 3 つの出力は、2026-10-02 に足した `HISTSIZE` / `bind -X` / `complete -p` の 3 行より前のもの。追加分は、[x86_64 のコンテナの付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)と、[Windows ホストでの再検証の付録](#付録-windows-ホストでの設定の再検証2026-10-06)を参照
 
    AlmaLinux 10 の実機（Raspberry Pi 5。Homebrew で zoxide・yazi・neovim を入れたホスト）で、開き直したログインシェル（tmux のペイン）での出力:
 
@@ -511,11 +511,13 @@
       - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
   - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-に変えたときの検証記録2026-10-03)）
     - 確認したこと: 問いを出させない `GIT_TERMINAL_PROMPT=0` で clone と pull が通る、LF、SSH で clone したホストの代わり（`origin` を `git@github.com:…` にした clone）が更新で HTTPS になって pull できる
-  - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナだけで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）
+  - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）。2026-10-06 に Windows ホストでも設定本体と移行 awk を再検証した（[付録](#付録-windows-ホストでの設定の再検証2026-10-06)）
+    - 確認したこと: 履歴の追記と `ignoreboth`、`shopt`、scoop の fzf・fd、対話と非対話での `set -u`、ログインシェル、OSC 133 の `D;1`、読み直しでのフックの重複防止、zoxide、Windows 形式の cwd-file を使う `y()`（スタブ）、非ゼロの `EUID` と既存 `DOCKER_HOST` の保存、移行 awk の 8 ケース
+    - 今回確認していないこと: Homebrew の補完、bat のプレビュー、fzf の実際のキー操作、本物の yazi TUI、実 SSH 通信、導入・更新・ロールバック手順全体
   - [root のシェルでも読む](#root-のシェルでも読む任意)の節（2026-10-05）: x86_64 のコンテナで、setup-notes の root の 2 行がある `/root/.bashrc` に、その節の手順を tmux のペインに貼って流した（ブラケットペーストの無しと有り。[付録](#付録-root-のシェルでも読む節の検証記録2026-10-05)）
     - 確認したこと: 2 行が移行で消える、`sudo -i`・`su -`・`sudo -s` の root のシェルで最後まで読まれる、Homebrew が PATH の先頭で `brew install` は断られる、root の `DOCKER_HOST`、`sudo -i lazydocker` が root のコンテナを出す、非対話で何も出さない、元に戻すと `/root/.bashrc` が元と同じ中身に戻る、自分のユーザーの `DOCKER_HOST` は変わらない
     - 見つけて直したこと: [ロールバック](#ロールバック)の手順 3 の `cp`・`rm` が、root のエイリアスで聞いた
-    - 確認していないこと: 実機、aarch64、Git Bash（`EUID` は 0 にならないはず）、インターネットに出られないホストでの root の clone
+    - 確認していないこと: Linux の実機、aarch64、インターネットに出られないホストでの root の clone。Git Bash で `EUID` が 0 にならず、既存 `DOCKER_HOST` を変えないことは 2026-10-06 に確認した
   - **確認していないこと**: WSL での手順 2・更新以外、x86_64 の AlmaLinux 10 の実機、AlmaLinux 10 の実機の、システムの sshd（PAM を通る）越しの ssh と rsync、LAN の別の PC からの ssh、HTTPS の clone と更新の、Windows 11 の Git Bash と実機での実行、インターネットに出られないホストでの導入と更新（トンネル越しの HTTPS の clone と pull）、WezTerm の GUI の画面とキー操作（プロンプトへのジャンプ・出力のコピー。Windows の画面がロックされていて試せなかった。AlmaLinux 10 の実機の画面でも試していない）
 
 | 項目 | 検証コンテナ | Windows 11 の PC（Git Bash） | AlmaLinux 10 の実機（Raspberry Pi 5） |
@@ -1017,3 +1019,45 @@ setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/bl
 - インターネットに出られないホストでの root の clone（`sudo -i` は `ALL_PROXY` を渡さない）
 - コンソールでの root のログイン、root への ssh の対話のログイン
 - root の starship の設定（`/root/.config/starship.toml`）と、root の WezTerm のシェル統合
+
+---
+
+### 付録: Windows ホストでの設定の再検証（2026-10-06）
+
+2026-10-02 と 2026-10-05 の追加分を含む、`b14a9bc` の `bashrc` と移行 awk を Windows ホストで確かめた。**設定の試験 12 ケース、移行 awk の試験 8 ケースがすべて成功し、ShellCheck の指摘は 0 件だった**。`bashrc` の変更は必要なかった。`install.sh` と導入・更新・ロールバック手順全体は今回の検証対象に含めていない。
+
+**環境**: Windows のビルド 26300.9457 / 26H2、Git for Windows 2.55.0.windows.5、Bash `5.3.15(2)-release`（`OSTYPE=cygwin`）。fzf 0.74.4、fd 10.5.0、starship 1.26.0、zoxide 0.9.9、yazi 26.9.1、ShellCheck 0.11.0。neovim は PATH 上にあり、bat・eza・gdu-go は無かった。`/etc/bash_completion.d` も無かった。
+
+**試験方法**:
+
+- PowerShell から Git for Windows の `bin/bash.exe` を起動した。`--noprofile --norc` で起動するときは、Git の `usr/bin` と `mingw64/bin` を PATH に足した
+- `HOME`・履歴・starship の設定とキャッシュ・`_ZO_DATA_DIR`・一時ファイルは、作業ツリー内の試験専用ディレクトリにした。本物の `~/.bashrc` と `~/.bash_profile` は変更していない
+- 対話の設定の判定には `bash --noprofile --norc -u -i -c` を使った。プロンプトは `bash --noprofile -i` の標準入力にコマンドを流し、生の stdout と stderr を合わせて保存した（端末は割り当てていないため、起動時のジョブ制御の警告 2 行は試験環境によるもの）
+- WezTerm は、このホストの `~/.config/wezterm/shell/wezterm.sh` を試験用にコピーし、`TERM_PROGRAM=WezTerm` と Windows 形式の `WEZTERM_SHELL_INTEGRATION` を渡した
+- 移行 awk は試験用の入力ファイルに当てた。本物の `~/.bashrc` の移行は行っていない
+
+**確かめたこと**:
+
+| 試験 | 結果 |
+|---|---|
+| 構文・静的検査 | `bash -n bashrc` と `shellcheck -s bash bashrc` は終了コード 0、出力なし |
+| 非対話・`set -u` | 設定の読み込みは終了コード 0、stdout / stderr とも 0 バイト。対話専用の印・`y`・starship・zoxide の関数は無い。対話の後半も `set -u` で読める |
+| ツール無し | Git の標準コマンドだけの PATH でも終了コード 0、履歴と `shopt` は入る。任意のツールの関数は無い |
+| 履歴 | `HISTSIZE=100000`、`HISTFILESIZE=100000`、`HISTCONTROL=ignoreboth`。同時に起動した 2 シェルが終了すると、既存の履歴と両方の追加分が残る。連続重複は 1 件、空白始まりのコマンドは保存されない |
+| `shopt` | `histappend`・`autocd`・`cdspell`・`dirspell`・`globstar` がすべて on |
+| fzf | `fzf --bash` が Ctrl+R・Ctrl+T の `bind -X` と Alt+C のマクロ、補完を登録。設定を 2 回読み直しても `bind -X` の内容は同じ |
+| fd と `FZF_*` | ファイルとディレクトリの候補に隠し項目が入り、`.git` は除外される。実際の fd の結果から `fzf --filter=visible` で `visible.txt` を選べた。bat が無いので `FZF_CTRL_T_OPTS` と `MANPAGER` は入らない |
+| プロンプト・読み直し | `false` の直後は OSC 133 の `D;1`。`PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;starship_precmd;__zoxide_hook`。2 回読み直す前後の `PROMPT_COMMAND` と `PS0` は一致し、starship の展開式が画面に文字として漏れない |
+| zoxide | 試験用データベースで別のディレクトリから `z share-target` によって移動。設定の警告なし |
+| `y()`（cwd-file スタブ） | `C:\…` と `/c/…` が同じディレクトリなら `OLDPWD` は変わらない。日本語と空白を含む Windows 形式のパスへ移動。空・存在しない移動先では動かず、一時ファイルも残らない |
+| Windows の `EUID`・`DOCKER_HOST` | `EUID` は 0 でなく、ソケット無しでは `DOCKER_HOST` が入らない。既存の `tcp://existing.example:2375` は変わらない |
+| sshd を真似た起動 | 試験用 HOME で `SSH_CLIENT` を付け、`SHLVL` を外した `bash -c` は stdout / stderr とも 0 バイト。`EDITOR` / `VISUAL` は入り、対話専用の設定は入らない |
+| ログインシェル | 試験用 `~/.bash_profile` から `~/.bashrc` を読み、設定の印・履歴・`shopt`・fzf とプロンプトの関数を確認。eza が無いので `ll` は Git の `alias ll='ls -l'` |
+| 移行 awk（8 ケース） | `old-lines.txt` の全 31 行と `old-y.txt` の全 4 形が消える。編集済みの行・閉じ括弧欠落や本体編集済みの `y()` は残る。末尾改行無しでも処理でき、保存する行には LF が補われる。すべて 2 度通して同じ結果 |
+
+#### 今回の未確認事項
+
+- fzf の Ctrl+R・Ctrl+T・Alt+C と `**` の補完を実際の端末で操作すること、bat のプレビュー、Homebrew の補完
+- 本物の yazi TUI と Windows への引数変換（今回の `y()` は cwd-file を書くスタブで試験）
+- eza・bat・gdu-go の実行、ホストで常用している starship の設定、WezTerm の GUI とキー操作
+- 実際の SSH・scp・sftp・rsync、HTTPS の clone と更新、導入・ロールバック手順全体
