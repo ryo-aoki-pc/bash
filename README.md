@@ -48,7 +48,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 - eza が無いと、`ll` は AlmaLinux 10 の `alias ll='ls -l --color=auto'`（coreutils-common の `/etc/profile.d/colorls.sh`）のまま（この設定のものではない。Git Bash は[下](#windows-11-の-git-bash-での違い)）
 - 対話のシェルで最後まで読むと、`__bash_config_loaded=1` が入る（確かめる用）
 - bash-settings.md 手順 5 の `~/.inputrc`（補完の大文字小文字、↑/↓ の履歴の検索）は、bash ではなく readline のファイルなので、この設定には含めない。各ホストで同書の手順を通す
-- 履歴と `shopt`・Homebrew の補完・fzf の 4 つは、2026-10-02 に x86_64 のコンテナだけで確かめた（Git Bash と実機は未確認。[docs/install.md の付録](docs/install.md#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）
+- 履歴と `shopt`・Homebrew の補完・fzf の 4 つは、2026-10-02 に x86_64 のコンテナで確かめた。2026-10-06 に Windows の Git Bash でも履歴・`shopt`・fzf と fd を確かめた（Homebrew の補完と bat のプレビュー、fzf の実際のキー操作は未確認。[docs/install.md の付録](docs/install.md#付録-windows-ホストでの設定の再検証2026-10-06)）
 
 ### Windows 11 の Git Bash での違い
 
@@ -63,7 +63,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
   - 移ったかは、`$PWD`（`/c/Users/…`）と文字列で比べず、同じディレクトリか（`-ef`）で比べる。公式の文字列の比べ方では、動かずに `q` で閉じても同じ場所へ `cd` し直し、`cd -` の戻り先が今の場所になっていた（2026-10-01 に setup-notes の yazi.md と合わせて直した）
 - WezTerm は `WEZTERM_SHELL_INTEGRATION` を Windows の形のパス（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`）で渡す。Git Bash はそのまま読める
 - zoxide の Windows 版は、プロンプトのたびに `cygpath -w` を外部コマンドで動かす（zoxide の作り。`~/.bashrc` に初期化を直に書いていたときと同じ）
-- 2026-10-02 に足した履歴と `shopt`・Homebrew の補完・fzf・`FZF_*` の行は、Git Bash ではまだ確かめていない（`command -v` が fzf・fd・bat の 3 回増える）
+- 2026-10-02 に足した履歴と `shopt`・fzf・fd の `FZF_*` は、2026-10-06 に Git Bash で確かめた。`fzf --bash` がキーと補完を登録し、読み直しても `bind -X`・`PROMPT_COMMAND`・`PS0` は変わらなかった。Homebrew の補完と bat のプレビュー、キーを実際に押す動作は未確認（[付録](docs/install.md#付録-windows-ホストでの設定の再検証2026-10-06)）
 - ツールの有無を確かめる `command -v` は、PATH を順に探すので 1 回に約 2ms かかる（検証した PC の 37 要素の PATH。2026-10-01 のこの設定は 8 回）。対話のシェルの起動は、`~/.bashrc` に直に書いていたときより 10〜40ms 長い（測るたびに揺れた）
 - 非対話のシェル（`ssh <ホスト> <コマンド>`・scp・sftp）では外部コマンドを 1 つも動かさないので、`~/.bashrc` に zoxide の初期化を直に書いていたときより約 100ms 短い
   - Windows の sshd（`DefaultShell` が Git Bash）は、sftp と scp（SFTP の方式）の `sftp-server.exe` も bash から起動するので、sftp でも `~/.bashrc` が読まれる
@@ -86,7 +86,7 @@ root のシェル（docs/install.md の[root のシェルでも読む](docs/inst
 - AlmaLinux 10 の `/root/.bashrc` の `cp`・`rm`・`mv` の `-i` のエイリアスは残る（この設定は変えない）
 - 非対話（`sudo -i <コマンド>`・`ssh root@<HOST> <コマンド>`）で何も出さない
 - setup-notes が以前 `/root/.bashrc` に書いていた 2 行（homebrew.md・lazydocker.md の root の節）は、導入の手順 3 で消える（この設定が同じことをする。homebrew.md の行は PATH の末尾に足すが、この設定は先頭に足す）
-- Windows 11 の Git Bash では、`EUID` が 0 にならないので変わらないはず（確かめていない）
+- Windows 11 の Git Bash では、2026-10-06 に `EUID` が 0 でなく、ソケットが無いと `DOCKER_HOST` が入らず、既存の値も変わらないことを確かめた（[付録](docs/install.md#付録-windows-ホストでの設定の再検証2026-10-06)）
 
 ## 読む順番
 
