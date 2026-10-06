@@ -6,6 +6,7 @@ alias vi=nvim
 # setup-notes: neovim editor begin
 # setup-notes: neovim editor end
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANPAGER="bat -plman"
 export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
 alias ll="eza -l --git --group-directories-first"
 alias la="eza -la --git --group-directories-first"

@@ -11,6 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 初回導入は `install.sh`（`docs/quick-start.md`）。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
+2026-10-06 に AlmaLinux 10.2 Workstation の x86_64 新規 VM で `install.sh` の初回・再実行・root 自身の導入と 8 回帰テストを確認した。別の専用ユーザーでは既知の旧設定の手動移行も通した（`docs/quick-start.md`・`docs/install.md` の再検証記録）。Windows / WSL の新スクリプトの実導入、任意の手編集、全ツールの組み合わせは含まない。
+
+同日の実 PTY の `man bash` で、旧 `col -bx` パイプが SGR の断片を文字として残したため、bat 公式 README と同じ `MANPAGER="bat -plman"` へ変更した。移行一覧は旧値を残して新値も加えた。AlmaLinux 10.2 の表示を確認し、Windows / WSL / aarch64 の表示は再検証していない。
+
 導入の回帰テストは `python3 -m unittest discover -s tests`（使い捨てのホームだけを変更する）。ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
 
 ## よく使うコマンド

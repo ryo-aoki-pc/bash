@@ -35,7 +35,8 @@ fi
 
 # man のページャに bat を使う（docs/bat.md「ページャに使う」）
 if command -v bat >/dev/null 2>&1; then
-	export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+	# groff の SGR を col へ通すと ESC が落ち、1mNAME0m などが文字として残る
+	export MANPAGER="bat -plman"
 fi
 
 # Docker の API を使うツールに podman のソケットを教える（docs/podman.md「Docker 向けのツールから使う」）
