@@ -14,6 +14,8 @@ git clone https://github.com/ryo-aoki-pc/bash.git ~/.config/bash &&
 
 端末を開き直すと、入っているツールの設定が効く。以後は `git -C ~/.config/bash pull --ff-only` で更新する。既に clone 済みなら `install.sh` だけ実行する。
 
+2026-10-06 に新規 AlmaLinux 10.2 の x86_64 VM で、初回・再実行・root 自身の導入と 8 回帰テストを確認した（[新規導入の記録](docs/quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。専用ユーザーでは[既知の旧設定の手動移行](docs/install.md#付録-新規-almalinux-vm-での手動移行の再検証2026-10-06)も通した。同じ VM で見つけた man ページャを修正し、表示と 8 テストを再確認した（[修正の記録](docs/install.md#付録-man-ページャの修正と再検証2026-10-06)）。Windows / WSL の新スクリプト実導入は未検証。
+
 git の clone 自体はホームの設定を書き換えないので、初回の実行だけは必要。スクリプトが追加する読み込み口は次の 1 行。
 
 ```bash
@@ -30,7 +32,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 |---|---|---|---|
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [homebrew.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md) 手順 3 |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)「既定のエディタにする」 |
-| `MANPAGER` を bat に | `bat` がある | 前半 | [bat.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bat.md)「ページャに使う」 |
+| `MANPAGER=bat -plman` | `bat` がある | 前半 | [bat.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bat.md)「ページャに使う」 |
 | `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」（root は [lazydocker.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md)「root でも使う」） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bash-settings.md) 手順 3（`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
 | `alias vi=nvim` | `nvim` がある | 後半 | neovim.md「既定のエディタにする」 |
@@ -72,7 +74,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 
 ### root のシェルでの違い
 
-root のシェル（docs/install.md の[root のシェルでも読む](docs/install.md#root-のシェルでも読む任意)）で確かめたこと（2026-10-05、x86_64 のコンテナだけ。[docs/install.md の付録](docs/install.md#付録-root-のシェルでも読む節の検証記録2026-10-05)）:
+root のシェル（docs/install.md の[root のシェルでも読む](docs/install.md#root-のシェルでも読む任意)）で確かめたこと（2026-10-05、x86_64 のコンテナ。[docs/install.md の付録](docs/install.md#付録-root-のシェルでも読む節の検証記録2026-10-05)）。2026-10-06 には新規 x86_64 VM でも root 自身の初回・再実行と実対話シェルの読み込みを確認した（[新規 VM の記録](docs/quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。以下のソケット・各ツールの組み合わせの記録はコンテナの結果:
 
 - root は、自分の clone（`/root/.config/bash`）を、`/root/.bashrc` の同じ 1 行で読む。更新は root のシェルでも pull する
 - 読むものは自分のユーザーと同じ。root のシェルを開くたびに、Homebrew の `brew`（`shellenv`）・`fzf`・starship・zoxide が root で動く
