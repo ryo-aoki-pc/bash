@@ -605,7 +605,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 ### 付録: 履歴・shopt・Homebrew の補完・fzf を足したときの検証記録（2026-10-02）
 
-setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/bash-settings.md) と [fzf.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/fzf.md) を足したときに、`bashrc` に履歴と `shopt`・Homebrew の補完・fzf（`FZF_*` を含む）を足した。**x86_64 のコンテナだけで確かめた**（Git Bash と実機は未確認）。
+setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) にまとめてある）を足したときに、`bashrc` に履歴と `shopt`・Homebrew の補完・fzf（`FZF_*` を含む）を足した。**x86_64 のコンテナだけで確かめた**（Git Bash と実機は未確認）。
 
 **環境**: AlmaLinux 10.2 の `quay.io/almalinuxorg/10-init`（Docker 29.6.2、`--privileged`・`--network host`。systemd と sshd）。Homebrew 7.0.7 に fzf 0.74.4・fd 10.5.0・bat 0.26.1・eza 0.23.5・zoxide 0.10.0・starship 1.26.0・shellcheck 0.11.0。bash-completion 2.11（BaseOS）。`~/.config/wezterm` は無し。
 
@@ -775,7 +775,7 @@ setup-notes の [bash-settings.md](https://github.com/ryo-aoki-pc/setup-notes/bl
 - **トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、この設定に書かない**。ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く
 - **root のシェルで読むのは、一般ユーザーを信用できるホストだけ**（[root のシェルでも読む](../install.md#root-のシェルでも読む任意)の節）
   - root のシェルを開くたびに、Homebrew のユーザーが書き換えられるコマンドとファイルが root で動く
-  - 一般ユーザーを信用できないホストで、root で Homebrew のコマンドだけを使うなら、この設定は入れず、setup-notes の [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)を通す（PATH の末尾に足すだけで、起動のときには何も動かさない）
+  - 一般ユーザーを信用できないホストで、root で Homebrew のコマンドだけを使うなら、この設定は入れず、setup-notes の [almalinux-setup.md の「Homebrew を root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew-を-root-のシェルでも使う任意)を通す（PATH の末尾に足すだけで、起動のときには何も動かさない）
 - **WSL・MSYS2・QMK MSYS は、ホームが別**
   - WSL は、WSL の中で手順 1〜10 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
 - **macOS と zsh は対象外**（Homebrew の場所も `/home/linuxbrew/.linuxbrew` 決め打ち）

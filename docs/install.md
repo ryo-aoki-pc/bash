@@ -166,7 +166,7 @@
 - root でも、自分のユーザーと同じものを読む（`brew shellenv` で Homebrew が PATH の先頭、starship・zoxide・fzf・Homebrew の補完も）
 - `DOCKER_HOST` は、root のコンテナのソケット（`/run/podman/podman.sock`。setup-notes の [lazydocker.md の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md#root-でも使う任意)）
 - [実施手順](#実施手順)の手順 3 で、setup-notes が `/root/.bashrc` に書く 2 行も消える（この設定が同じことをする）
-  - [homebrew.md の「root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/homebrew.md#root-のシェルでも使う任意)の PATH の行と、lazydocker.md の「root でも使う」の `DOCKER_HOST` の行
+  - [almalinux-setup.md の「Homebrew を root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew-を-root-のシェルでも使う任意)（もとは homebrew.md）の PATH の行と、lazydocker.md の「root でも使う」の `DOCKER_HOST` の行
 - 前提: 自分のユーザーで[実施手順](#実施手順)を通してあること
 - この節の手順 1 で root のシェルに入り、手順 3 で入り直す
 - `sudo -i` は `ALL_PROXY` を渡さない
