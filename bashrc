@@ -7,7 +7,7 @@
 # ホストによって入っているツールが違うので、どの設定も、そのコマンドがあるかを
 # シェルを開くたびに確かめ、無ければ何もしない。ツールを後から入れても、次に開いた
 # シェルから効く（今のシェルで使うなら . ~/.bashrc で読み直す。starship だけは、
-# 読み直すと WezTerm のシェル統合より後ろになるので、端末を開き直す。README の「読む順番」）。
+# 読み直すと WezTerm のシェル統合より後ろになるので、端末を開き直す。docs/reference/readme.md の「読む順番」）。
 # ホストだけの設定（トークンなど）はここに書かず、~/.bashrc の上の 1 行より後ろに書く。
 #
 # ※ 何も出力しない（scp・rsync・ssh <ホスト> <コマンド> の非対話のシェルでも読まれる）
@@ -21,7 +21,7 @@
 # ssh <ホスト> <コマンド> や ssh -t <ホスト> lazygit のような非対話のシェルでも要る、
 # PATH と環境変数だけを置く
 
-# Homebrew（setup-notes の docs/homebrew.md 手順 3）
+# Homebrew（setup-notes の docs/almalinux-setup.md 手順 48）
 if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
@@ -33,7 +33,7 @@ if command -v nvim >/dev/null 2>&1; then
 	export VISUAL=nvim
 fi
 
-# man のページャに bat を使う（docs/bat.md「ページャに使う」）
+# man のページャに bat を使う（setup-notes の docs/almalinux-setup.md 手順 55）
 if command -v bat >/dev/null 2>&1; then
 	# groff の SGR を col へ通すと ESC が落ち、1mNAME0m などが文字として残る
 	export MANPAGER="bat -plman"
@@ -59,7 +59,7 @@ case $- in
 *) return 0 ;;
 esac
 
-# 履歴と shopt（setup-notes の docs/bash-settings.md 手順 3）。ツールの有無によらず入れる
+# 履歴と shopt（setup-notes の docs/almalinux-setup.md 手順 43・51）。ツールの有無によらず入れる
 # histappend は AlmaLinux 10 の /etc/bashrc が対話のシェルに入れているが、Git Bash の既定は off なのでここでも入れる
 HISTSIZE=100000
 HISTFILESIZE=100000
@@ -71,7 +71,7 @@ if command -v nvim >/dev/null 2>&1; then
 	alias vi=nvim
 fi
 
-# eza（docs/eza.md「エイリアスを足す」。ls は置き換えない）
+# eza（setup-notes の docs/almalinux-setup.md 手順 54。ls は置き換えない）
 if command -v eza >/dev/null 2>&1; then
 	alias ll="eza -l --git --group-directories-first"
 	alias la="eza -la --git --group-directories-first"
@@ -96,7 +96,7 @@ if command -v yazi >/dev/null 2>&1; then
 	}
 fi
 
-# Homebrew で入れたコマンドの補完（docs/bash-settings.md 手順 4）
+# Homebrew で入れたコマンドの補完（setup-notes の docs/almalinux-setup.md 手順 51）
 # Homebrew は補完を etc/bash_completion.d に置き、bash-completion の遅延読み込み（XDG_DATA_DIRS の下）では見つからない。
 # fzf より前に読む（fzf は bat などの既にある補完を包んで ** の補完を足す。後ろだと元に戻ってしまう）
 if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then
@@ -107,11 +107,11 @@ if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then
 	unset __f
 fi
 
-# fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と ** の補完（docs/fzf.md 手順 3）
+# fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と ** の補完（setup-notes の docs/almalinux-setup.md 手順 53）
 # PROMPT_COMMAND・PS0・PS1 には触らないので、下のプロンプトのフックの並びには入らない。読み直しても二重にならない
 if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
-	# 候補を fd に、Ctrl+T のプレビューを bat にする（docs/fzf.md「fd と bat を候補とプレビューに使う」）
+	# 候補を fd に、Ctrl+T のプレビューを bat にする（setup-notes の docs/almalinux-setup.md「fzf で fd と bat を候補とプレビューに使う」）
 	if command -v fd >/dev/null 2>&1; then
 		export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
@@ -124,7 +124,7 @@ fi
 
 # --- プロンプトのフック（PROMPT_COMMAND を触るので、この順に読む。理由は README） ---
 
-# starship（docs/starship.md。初期化の順番はここで管理する）
+# starship（setup-notes の docs/almalinux-setup.md 手順 52。初期化の順番はここで管理する）
 # 読み直したときは初期化し直さない（starship は初期化のたびに PS0 に自分を足す）
 if command -v starship >/dev/null 2>&1 && ! declare -F starship_precmd >/dev/null; then
 	eval "$(starship init bash)"
@@ -136,7 +136,7 @@ if [ -r "${WEZTERM_SHELL_INTEGRATION:=$HOME/.config/wezterm/shell/wezterm.sh}" ]
 	. "$WEZTERM_SHELL_INTEGRATION"
 fi
 
-# zoxide（docs/zoxide.md 手順 3）
+# zoxide（setup-notes の docs/almalinux-setup.md 手順 57）
 # 読み直したときは初期化し直さない（AlmaLinux の /etc/bashrc は PROMPT_COMMAND を配列にし、
 # zoxide は配列の先頭しか見ないので、初期化のたびにフックを重ねて足す）
 # ~/.bashrc の読み込みの行より後ろで別の形（--cmd cd など）の zoxide を読むなら、--hook none を付ける
