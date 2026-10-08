@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
 
 - 読むもの・読む順番・移行で消す行の説明は `docs/reference/readme.md`、実測は `docs/verification/readme.md`
-- 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
+- 文書の入口は `docs/README.md`。通常の導入は `docs/quick-start.md`、手動での導入・移行と root の任意節は `docs/install.md`（[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
 
 初回導入は `install.sh`（`docs/quick-start.md`）。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
@@ -59,12 +59,15 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 
 ## 構成
 
+- `README.md` — 設定の概要、通常の導入・手動移行・root の選択表、ホスト固有の設定と変更時の案内
+- `docs/README.md` — 手順・補足資料・検証記録を目的別に探すための索引。文書の追加・移動・削除時にリンクを更新する
+- `docs/quick-start.md` — `install.sh` を使う通常の導入・更新・ロールバック
 - `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
 - `migrate/` — 導入の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
   - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
   - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
   - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
-- `docs/install.md` — 導入・更新・ロールバックの手順書。任意節「root のシェルでも読む」は、`sudo -i` の root のシェルで実施手順の手順 1〜8・10 をそのまま貼る形（ブロックが `~` を使うので書き分けない）
+- `docs/install.md` — 手動での導入・移行・更新・ロールバックの手順書。任意節「root のシェルでも読む」は、`sudo -i` の root のシェルで実施手順の手順 1〜8・10 をそのまま貼る形（ブロックが `~` を使うので書き分けない）
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの

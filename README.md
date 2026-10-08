@@ -21,9 +21,17 @@ git の clone 自体はホームの設定を書き換えないので、初回の
 if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 ```
 
-通常の導入は [docs/quick-start.md](docs/quick-start.md)。setup-notes の追記との対応は [補足資料](docs/reference/quick-start.md)。手動で導入する場合（既にある `~/.bashrc` の行の片付けを含む）は [docs/install.md](docs/install.md) にある（root のシェルは、その任意節「root のシェルでも読む」）。
+## 手順の選び方
 
-背景と設定一覧は [補足資料](docs/reference/readme.md)、実測と実施結果は [検証記録](docs/verification/readme.md) にある。
+| 目的 | 読む手順 | 進め方 |
+| --- | --- | --- |
+| 通常の導入 | [quick-start.md](docs/quick-start.md) | `install.sh` で既知の旧設定を移行し、読み込み口を設定する |
+| 手動での導入・移行内容の確認 | [install.md](docs/install.md) | 既存の `~/.bashrc` を確認しながら、導入と移行を手で進める |
+| root のシェルへの導入 | [install.md の root のシェルでも読む](docs/install.md#root-のシェルでも読む任意) | 自分のユーザーへの導入後、任意節を通す。一般ユーザーを信用できるホストで行う |
+
+通常の導入と手動での導入は、どちらかを選ぶ。更新・ロールバックは選んだ手順書の該当節を使う。
+
+手順・補足資料・検証記録は [文書索引](docs/README.md)から目的別に探せる。背景と設定一覧は [補足資料](docs/reference/readme.md)、実測と実施結果は [検証記録](docs/verification/readme.md) にある。
 
 ## ホストだけの設定
 
