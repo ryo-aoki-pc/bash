@@ -8,26 +8,26 @@
 
 | 読むもの | 条件 | 前半 / 後半 | 元の手順書 |
 |---|---|---|---|
-| Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 48（もとは homebrew.md） |
+| Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3（もとは homebrew.md） |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)「既定のエディタにする」 |
-| `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 55（もとは bat.md「ページャに使う」） |
+| `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 7（もとは bat.md「ページャに使う」） |
 | `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」（root は [lazydocker.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md)「root でも使う」） |
-| 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 43・51（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
+| 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 2 と[「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
 | `alias vi=nvim` | `nvim` がある | 後半 | neovim.md「既定のエディタにする」 |
-| `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 54（もとは eza.md「エイリアスを足す」。共通のオプション） |
+| `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 6（もとは eza.md「エイリアスを足す」。共通のオプション） |
 | `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)「gdu の名前で呼ぶ」 |
 | `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [yazi.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/yazi.md) 手順 3 |
-| Homebrew で入れたコマンドの補完（`etc/bash_completion.d/*` を全部読む） | `$HOMEBREW_PREFIX/etc/bash_completion.d` がある | 後半（fzf より前） | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 51（もとは bash-settings.md） |
-| fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 53（もとは fzf.md） |
+| Homebrew で入れたコマンドの補完（`etc/bash_completion.d/*` を全部読む） | `$HOMEBREW_PREFIX/etc/bash_completion.d` がある | 後半（fzf より前） | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md） |
+| fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 5（もとは fzf.md） |
 | `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | [almalinux-setup.md の「fzf で fd と bat を候補とプレビューに使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#fzf-で-fd-と-bat-を候補とプレビューに使う任意) |
-| starship | `starship` があり、まだ初期化していない | 後半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 52（もとは starship.md） |
+| starship | `starship` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 4（もとは starship.md） |
 | WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) 手順 6 |
-| zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 57（もとは zoxide.md。`--cmd z`） |
+| zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 9（もとは zoxide.md。`--cmd z`） |
 
 - `ls` や `cat` は置き換えない（元の手順書と同じ）
 - eza が無いと、`ll` は AlmaLinux 10 の `alias ll='ls -l --color=auto'`（coreutils-common の `/etc/profile.d/colorls.sh`）のまま（この設定のものではない。Git Bash は[下](#windows-11-の-git-bash-での違い)）
 - 対話のシェルで最後まで読むと、`__bash_config_loaded=1` が入る（確かめる用）
-- [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#実施手順) 手順 45（もとは bash-settings.md 手順 5）の `~/.inputrc`（補完の大文字小文字、↑/↓ の履歴の検索）は、bash ではなく readline のファイルなので、この設定には含めない。各ホストで同書の手順を通す
+- [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 4（もとは bash-settings.md 手順 5）の `~/.inputrc`（補完の大文字小文字、↑/↓ の履歴の検索）は、bash ではなく readline のファイルなので、この設定には含めない。各ホストで同書の手順を通す
 
 ### Windows 11 の Git Bash での違い
 
