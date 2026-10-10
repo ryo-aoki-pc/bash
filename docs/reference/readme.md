@@ -99,6 +99,7 @@
 ├── docs/quick-start.md           # 通常の導入と setup-notes の追記との対応
 ├── docs/install.md               # 手動での導入・更新・ロールバックの手順書
 ├── .gitattributes                # 改行を LF に固定（core.autocrlf=true の git でも CRLF にしない）
-├── CLAUDE.md
+├── AGENTS.md                     # コーディングエージェント（Claude Code・Codex・Grok Build）への指示
+├── CLAUDE.md                     # Claude Code に AGENTS.md を読ませる 1 行（`@AGENTS.md`）
 └── README.md
 ```

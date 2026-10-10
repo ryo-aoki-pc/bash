@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このリポジトリで作業するコーディングエージェント（Claude Code・Codex・Grok Build）への指示。Claude Code は CLAUDE.md の `@AGENTS.md` で、Codex と Grok Build はこのファイルを直接読む。
 
 ## このリポジトリは何か
 
@@ -72,7 +72,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、`docs/install.md` の手順 10 と `docs/verification/install.md` の記録
 - 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
   - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
-  - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の CLAUDE.md にも同じ決まりがある）
+  - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
   - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、lazydocker.md「root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
 - 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → `docs/install.md` の手順・注意点と `docs/verification/install.md` の実施範囲、README の冒頭、`bashrc` の冒頭のコメント
@@ -88,7 +88,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - root かどうかは bash の `${EUID-}`（組み込みの変数。外部コマンドを動かさない）で見る。Git Bash では 0 にならない
 - 関数の中から読まない・読ませない（読み込むものが関数の外で `declare` を使うと、その関数のローカル変数になる。2026-09-30 の `brew shellenv`・starship 1.26.0・`shell/wezterm.sh`・zoxide 0.10.0 の初期化には無く、検証コンテナで関数の中から読んでも動いたが、上がったときに壊れないように）
 - ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
-- ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の CLAUDE.md の実測）
+- ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の AGENTS.md の実測）
 - **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由は `docs/reference/readme.md` の「読む順番」、実測は `docs/verification/readme.md`
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
   - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。docs/install.md 手順 6）
@@ -97,7 +97,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 
 ## docs/install.md の書き方
 
-setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の CLAUDE.md の「docs/install.md の書き方」と同じ）。要点:
+setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の AGENTS.md の「docs/install.md の書き方」と同じ）。要点:
 
 - タイトルの直後に `## 実施手順` を置き、手順は**番号付きリスト 1 つ**（マーカーはすべて `1.`、本文は 3 スペース字下げ）
   - リードの `> [!IMPORTANT]` に実行する場所・前提・対話や切り替えのある手順、続けて読み方の箇条書き、検証記録へのリンク
@@ -121,3 +121,16 @@ setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の CLAUD
 - 実行・更新・ロールバック・再実行用の確認手順には、必要な前提・注意・分岐・待機条件・期待結果だけを載せる
 - 検証の環境・実施日・対象コミット・実出力・結果・未確認事項は `docs/verification/<手順書名>.md`、背景説明は必要なときだけ `docs/reference/<手順書名>.md` に置く。README は `readme.md` を使う
 - 既存の記録の本文を保持して移動し、ファイルと見出しへの参照を更新する。再実行できる確認コマンドを実施済みの記録と混同しない
+
+## 共同作業の規則
+
+このリポジトリでは、Claude Code・Codex・Grok Build が同じ規則で作業する。分担と `main` への取り込みは人が決める。
+
+- 起動された worktree（作業ディレクトリ）の中だけでファイルを変える。ほかの worktree のファイルは変えない
+- 今のブランチにだけコミットする。`main` にはコミットも push もしない
+- 頼まれた範囲のファイルだけを変える。範囲の外を変えるときは、変える前に理由を書いて確かめる
+- 終わったら、テストとリンターを通してから、目的ごとにコミットする。通らなければコミットせずに、結果を報告する
+- コミットしたら、今のブランチを push し、`main` への Pull Request を作る（既にあれば足す）。`main` への取り込み（マージ）とブランチの削除は人が行う。今のブランチに `main` を取り込むのは、頼まれたときと、Pull Request が競合したときだけ
+- 秘密情報（`.env`・鍵・トークン・パスワード）を読まない・書かない・出力しない
+- レビューを頼まれたら、ファイルを変えずに、指摘を「重大度・場所（ファイル:行）・理由・直し方」で挙げる
+- ほかの担当の変更は、`git diff main...agent/codex` のように git で読む（ほかの worktree へ移らない）

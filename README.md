@@ -40,7 +40,7 @@ if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
   - `PROMPT_COMMAND`・`PS0`・`PS1` を触るものは、[読む順番](docs/reference/readme.md#読む順番)を検証コンテナで確かめてから位置を決める
 - 元の手順書が `~/.bashrc` に書く行を、`migrate/old-lines.txt` にも足す
 - 元の手順書（setup-notes など）は共通設定を前提にし、`~/.bashrc` への追記・削除のブロックを置かず、読み込みと確認のコマンドだけを書く
-- 書き方の決まり（何も出力しない・`if` で判定する・`set -u` で読める など）は [CLAUDE.md](CLAUDE.md) の「コードの注意」
+- 書き方の決まり（何も出力しない・`if` で判定する・`set -u` で読める など）は [AGENTS.md](AGENTS.md) の「コードの注意」
 
 ## 対象外
 
