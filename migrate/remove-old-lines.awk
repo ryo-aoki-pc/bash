@@ -3,7 +3,7 @@
 #   awk -f remove-old-lines.awk old-lines.txt old-y.txt <~/.bashrc の控え> > ~/.bashrc
 #
 # - old-lines.txt の行と、行全体が同じ行を消す（空行は数えない）
-# - old-y.txt の行の並び（yazi.md の y 関数）と、続く行がすべて同じときだけ、その並びを消す
+# - old-y.txt の行の並び（以前の setup-notes の yazi.md の y 関数）と、続く行がすべて同じときだけ、その並びを消す
 #   （範囲の sed だと、閉じ括弧が無いときに最後の行まで消してしまうため）
 #   old-y.txt は空行で区切って、いくつかの形を置ける（どれか 1 つと同じなら消す）
 # 少しでも違う行（手で直した行・別の --cmd や EZA_OPTS の行）は消さずに残す

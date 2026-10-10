@@ -9,14 +9,14 @@
 | 読むもの | 条件 | 前半 / 後半 | 元の手順書 |
 |---|---|---|---|
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3（もとは homebrew.md） |
-| `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)「既定のエディタにする」 |
+| `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [almalinux-setup.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#neovim)の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 7（もとは bat.md「ページャに使う」） |
 | `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」（root は [lazydocker.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md)「root でも使う」） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 2 と[「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
-| `alias vi=nvim` | `nvim` がある | 後半 | neovim.md「既定のエディタにする」 |
+| `alias vi=nvim` | `nvim` がある | 後半 | almalinux-setup.md の「Neovim」の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 6（もとは eza.md「エイリアスを足す」。共通のオプション） |
 | `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)「gdu の名前で呼ぶ」 |
-| `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [yazi.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/yazi.md) 手順 3 |
+| `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [almalinux-setup.md の「yazi」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#yazi)の手順 4（もとは yazi.md 手順 3） |
 | Homebrew で入れたコマンドの補完（`etc/bash_completion.d/*` を全部読む） | `$HOMEBREW_PREFIX/etc/bash_completion.d` がある | 後半（fzf より前） | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md） |
 | fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 5（もとは fzf.md） |
 | `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | [almalinux-setup.md の「fzf で fd と bat を候補とプレビューに使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#fzf-で-fd-と-bat-を候補とプレビューに使う任意) |
@@ -80,9 +80,9 @@
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
   - bash-settings.md の `HISTSIZE` / `HISTFILESIZE` / `HISTCONTROL` / `shopt -s autocd …` の 4 行と Homebrew の補完の 1 行、fzf.md の `eval "$(fzf --bash)"` と `export FZF_…` の 4 行（2026-10-02）
   - setup-notes が以前 `/root/.bashrc` に書いていた 2 行（2026-10-05）: homebrew.md「root のシェルでも使う」の PATH の `case` の行と、lazydocker.md「root でも使う」の `export DOCKER_HOST=unix:///run/podman/podman.sock`（末尾に `# setup-notes: lazydocker root` の目印が付いた形も含む）
-  - neovim.md が直接追記に付ける `# setup-notes: neovim editor begin` / `end` の目印も外す（2026-10-05）。元値の控え `~/.local/state/neovim-editor-before.bash` は消さない。この設定へ移行した後は、neovim.md の印付き部分のロールバックを使わず、この設定の `EDITOR`・`VISUAL`・`vi` を変更する
+  - 以前の neovim.md（2026-10-10 に almalinux-setup.md にまとめた）が直接追記に付けた `# setup-notes: neovim editor begin` / `end` の目印も外す（2026-10-05）。元値の控え `~/.local/state/neovim-editor-before.bash` は消さない。この設定へ移行した後は、neovim.md の印付き部分のロールバックを使わず、この設定の `EDITOR`・`VISUAL`・`vi` を変更する
 - `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 4 つの形がある
-  - setup-notes の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
+  - setup-notes の以前の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
 - `migrate/remove-old-lines.awk`: 上の 2 つを使って消す awk
 
 ## ファイル構成

@@ -69,7 +69,7 @@
 
 ### 参照
 
-- setup-notes の手順書（`~/.bashrc` に書く手順のあるもの）: [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（homebrew・zoxide・starship・eza・bat・fzf・bash-settings をまとめたもの）・[yazi.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/yazi.md)・[gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)・[neovim.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)・[podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)
+- setup-notes の手順書（`~/.bashrc` に書く手順のあるもの）: [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（homebrew・zoxide・starship・eza・bat・fzf・bash-settings と、2026-10-10 から yazi・neovim もまとめたもの）・[gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)・[podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)
 - ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) — シェル統合
 - `man bash`（INVOCATION: ログインシェル・対話のシェル・sshd から起動されたときに読むファイル）
 

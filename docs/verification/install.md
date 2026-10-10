@@ -8,7 +8,7 @@
 
 元の説明は [実施手順](../install.md#実施手順)の手順 2 に対応する。
 
-- Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
+- Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#openssh-サーバー) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
 - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナと、Windows 11 の Git for Windows 2.55.0 で `git -c core.autocrlf=true clone` して確かめた）
 - 2026-10-03 にこのリポジトリを公開し、clone を HTTPS に変えた（利用者の選択）
   - 認証は要らない。SSH の鍵・Git Credential Manager・gh の資格情報は使わない
