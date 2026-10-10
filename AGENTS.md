@@ -2,6 +2,8 @@
 
 このリポジトリで作業するコーディングエージェント（Claude Code・Codex・Grok Build）への指示。Claude Code は CLAUDE.md の `@AGENTS.md` で、Codex と Grok Build はこのファイルを直接読む。
 
+利用者への回答・質問・報告は、常に日本語で書く（コードのコメントなどの言語は、このファイルのほかの決まりに従う）。
+
 ## このリポジトリは何か
 
 AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
