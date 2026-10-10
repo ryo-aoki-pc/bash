@@ -26,7 +26,7 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 
-# Neovim を既定のエディタにする（docs/neovim.md「既定のエディタにする」）
+# Neovim を既定のエディタにする（setup-notes の docs/almalinux-setup.md の「Neovim」の手順 4。もとは neovim.md）
 # 手順書の直接追記に付ける目印は移行時に外し、ここではツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR=nvim
@@ -83,7 +83,7 @@ if command -v gdu-go >/dev/null 2>&1; then
 	alias gdu=gdu-go
 fi
 
-# yazi を閉じたときに、そのディレクトリへ移る y（docs/yazi.md 手順 3）
+# yazi を閉じたときに、そのディレクトリへ移る y（setup-notes の docs/almalinux-setup.md の「yazi」の手順 4。もとは yazi.md 手順 3）
 # 移ったかは、文字列ではなく同じディレクトリか（-ef）で比べる（Git Bash では yazi が C:\… の形で書き、
 # $PWD の /c/… と文字列では一致しないので、動かずに閉じても cd し直して cd - の戻り先が変わる）
 if command -v yazi >/dev/null 2>&1; then

@@ -45,7 +45,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - zoxide は `HOME` ではなく `%LOCALAPPDATA%\zoxide` にデータベースを書くので、`_ZO_DATA_DIR` を一時的な場所にする
   - Git の `/etc/profile` は、環境変数 `ORIGINAL_PATH` があるとそれで `PATH` を組み立て直す。Claude Code などの Git Bash から起動したログインシェルで PATH を足すなら、`ORIGINAL_PATH` を外す
   - sshd の非対話は、`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を `SSH_CLIENT` を付け、`SHLVL` を外して起動すると真似られる（`~/.bashrc` を読む）
-  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる。setup-notes の windows-openssh-server.md）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
+  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる。setup-notes の windows-setup.md の「SSH でログインを確かめる」と、その注意点。もとは windows-openssh-server.md）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
     - `scp -O`・scp は `-S` に遠くのコマンドを包むラッパーを、sftp は `-s` に同じ形のコマンド（`/` を含むとサブシステムではなくコマンドになる）を渡す。Windows の sshd は `sftp-server.exe` も bash から起動する
     - 対話は、`ssh <HOST>` でコマンドなしに入り、`exec env HOME=<使い捨て> … bash -i` に入れ替える（`ssh -tt <HOST> <コマンド>` は、最初の語しか動かなかった）。1 行が長い（585 文字）と次の入力まで渡らなかったので、パスは変数に入れて短くする。値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くでファイルに書く
     - SSH のセッションで scoop の shim が起動できない状態は、自分のユーザーで作ったジャンクションを通る shim で作れる（SSH でなければ動く）
@@ -70,8 +70,8 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 ## 変えたら合わせて直すもの
 
 - `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、`docs/install.md` の手順 10 と `docs/verification/install.md` の記録
-- 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
-  - yazi.md の `y()` が変わった → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
+- 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf〔今は almalinux-setup.md と gdu.md・podman.md〕、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
+  - `y()` を変えた（もとは setup-notes の yazi.md の手順 3 にあった形）→ `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
   - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、lazydocker.md「root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
@@ -93,7 +93,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
   - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。docs/install.md 手順 6）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
-- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は setup-notes の yazi.md の手順 3 と同じ文字列にする（`migrate/old-y.txt` の 1 つ目の形とも同じ）
+- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は、`migrate/old-y.txt` の 1 つ目の形と同じ文字列にする（もとは setup-notes の yazi.md の手順 3 の形。今の setup-notes は `y()` を書かず、almalinux-setup.md の「yazi」の手順 4 で確かめるだけ）
 
 ## docs/install.md の書き方
 

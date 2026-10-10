@@ -64,7 +64,7 @@ root のシェル（docs/install.md の[root のシェルでも読む](../instal
 
 ### Windows 11 の Git Bash での違いの観測
 
-  - SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-openssh-server.md) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない（その PC の sshd に WSL からつないで確かめた）
+  - SSH のセッションで scoop の shim が起動できない状態（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#openssh-サーバー) の「scoop のツールを SSH のセッションで使う」）でも、何も出さない（その PC の sshd に WSL からつないで確かめた）
 
 ### root のシェルでの違いの観測
 

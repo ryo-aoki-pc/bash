@@ -10,7 +10,7 @@
 > - **自分のユーザーのシェルで貼る**。root のシェルにも入れるなら、この手順の後で [root のシェルでも読む（任意）](#root-のシェルでも読む任意)を通す（一般ユーザーを信用できるホストだけ）
 > - **Windows 11 では、Git for Windows の Git Bash に同じブロックを貼る**。WSL は Linux のホストとして、WSL のシェルで別に通す（`/mnt/c` の clone は使わない）
 > - **前提**: git が入っていること（公開のリポジトリを HTTPS で clone する。GitHub の鍵や認証は要らない）
->   - git: AlmaLinux 10 は setup-notes の [git.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/git.md)、Windows 11 は [Git for Windows](https://gitforwindows.org/)
+>   - git: AlmaLinux 10 は setup-notes の [AlmaLinux 10 の初期設定の「Git」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#git)、Windows 11 は [Git for Windows](https://gitforwindows.org/)（setup-notes の [Windows 11 の初期設定の「Git for Windows」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#git-for-windows)）
 >   - **インターネットに出られないホストは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る**（HTTPS の git は `ALL_PROXY` を読む）
 > - **手順 6 はエディタで直す操作、手順 9 は端末を開き直す操作**。手順 10 は、開き直した端末で貼る
 
@@ -322,7 +322,7 @@
 ### 注意点
 
 - 非対話のシェルでも `~/.bashrc` が読まれる。scp・sftp・rsync を壊さないよう、ホスト固有の追記から出力しない
-- Windows の対話 SSH で scoop の shim が起動できないときは、setup-notes の windows-openssh-server.md「scoop のツールを SSH のセッションで使う」を行う
+- Windows の対話 SSH で scoop の shim が起動できないときは、setup-notes の [Windows 11 の初期設定の「scoop のツールを SSH のセッションで使う（任意）」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#scoop-のツールを-ssh-のセッションで使う任意)を行う
 - ツールを後から入れたときは `. ~/.bashrc` で読み直す。starship を入れたときは、読み込み順を保つため端末を開き直す
 - starship を使うホストでは、WezTerm の設定も更新する。コマンド出力の前に `${STARSHIP_START_TIME:0:0}` が出るときは古いシェル統合を更新する
 - トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は共通設定に書かず、ホストの読み込み行より後ろに置く
