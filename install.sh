@@ -45,7 +45,7 @@ if ! grep -qxF "$source_line" "$stage_dir/bashrc"; then
 fi
 # 一致した行を消すと if の中が空になる場合などは、元のファイルを変える前に止まる。
 if ! bash -n "$stage_dir/bashrc"; then
-	printf '%s\n' '中断: 移行後の構文が不正。~/.bashrc は変更していない。docs/install.md の手動手順で移行する' >&2
+	printf '%s\n' '中断: 移行後の構文が不正。~/.bashrc は変更していない。手動移行: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意' >&2
 	exit 1
 fi
 
@@ -84,4 +84,4 @@ else
 fi
 printf '%s\n' \
 	'完了: 端末を開き直す。確認: echo "${__bash_config_loaded-読まれていない}"' \
-	'独自のツール設定が残る場合は docs/install.md の手順 6 に従い、共通設定の読み込み行より後ろへ移す。'
+	'独自設定は共通設定の読み込み行より後ろへ移す（手動移行の手順 6: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意）。'
