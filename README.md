@@ -1,5 +1,8 @@
 # bash
 
+導入・利用・更新は [AlmaLinux 10 の手順](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) / [Windows 11 の手順](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) に集約している。設定仕様・開発者向け操作・過去の検証・ロールバックはこのリポジトリで管理する。
+
+
 いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）と、Windows 11 の Git Bash で同じものを使う。
 
 - 各ホストの `~/.config/bash` に HTTPS で clone し、初回だけ `install.sh` を実行する（公開のリポジトリなので認証は要らない）。既知の旧設定の移行、控えの作成、`~/.bashrc` の読み込み行の追加をまとめて行う
@@ -7,23 +10,7 @@
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）
 - root のシェル（`sudo -i`・`su -`）でも読める。root は `/root/.config/bash` に自分の clone を作り、`/root/.bashrc` の同じ 1 行で読む（自分専用のマシンで、一般ユーザーを信用できるときだけ。[root のシェルでの違い](docs/reference/readme.md#root-のシェルでの違い)）
 
-```bash
-git clone https://github.com/ryo-aoki-pc/bash.git ~/.config/bash &&
-  bash ~/.config/bash/install.sh
-```
-
-端末を開き直すと、入っているツールの設定が効く。以後は `git -C ~/.config/bash pull --ff-only` で更新する。既に clone 済みなら `install.sh` だけ実行する。
-
-
-git の clone 自体はホームの設定を書き換えないので、初回の実行だけは必要。スクリプトが追加する読み込み口は次の 1 行。
-
-```bash
-if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
-```
-
-通常の導入は [docs/quick-start.md](docs/quick-start.md)。setup-notes の追記との対応は [補足資料](docs/reference/quick-start.md)。手動で導入する場合（既にある `~/.bashrc` の行の片付けを含む）は [docs/install.md](docs/install.md) にある（root のシェルは、その任意節「root のシェルでも読む」）。
-
-背景と設定一覧は [補足資料](docs/reference/readme.md)、実測と実施結果は [検証記録](docs/verification/readme.md) にある。
+通常導入・手動移行・root での導入・更新は setup-notes の正本を参照する。[導入案内](docs/quick-start.md)・[手動移行の案内](docs/install.md)・[設定一覧](docs/reference/readme.md)・[検証記録](docs/verification/readme.md)。
 
 ## ホストだけの設定
 
