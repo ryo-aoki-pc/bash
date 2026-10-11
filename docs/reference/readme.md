@@ -11,11 +11,11 @@
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3（もとは homebrew.md） |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [almalinux-setup.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#neovim)の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 7（もとは bat.md「ページャに使う」） |
-| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)「Docker 向けのツールから使う」（root は [lazydocker.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/lazydocker.md)「root でも使う」） |
+| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [Podman の「Docker 向けのツールから使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-docker-向けのツールから使う任意)（root は [lazydocker の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#lazydocker-root-でも使う任意)） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 2 と[「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
 | `alias vi=nvim` | `nvim` がある | 後半 | almalinux-setup.md の「Neovim」の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 6（もとは eza.md「エイリアスを足す」。共通のオプション） |
-| `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)「gdu の名前で呼ぶ」 |
+| `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu の「gdu の名前で呼ぶ」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-gdu-の名前で呼ぶ任意) |
 | `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [almalinux-setup.md の「yazi」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#yazi)の手順 4（もとは yazi.md 手順 3） |
 | Homebrew で入れたコマンドの補完（`etc/bash_completion.d/*` を全部読む） | `$HOMEBREW_PREFIX/etc/bash_completion.d` がある | 後半（fzf より前） | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md） |
 | fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 5（もとは fzf.md） |
@@ -74,7 +74,7 @@
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
 ## 移行で消す行
 
-[docs/install.md の手順 3](../install.md#実施手順) は、元の手順書が `~/.bashrc` に書いた行のうち、次のものと行全体が同じ行を消す。少しでも違う行は残し、手順 4・6・7 で見る。
+[正本の手動移行の手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) は、元の手順書が `~/.bashrc` に書いた行のうち、次のものと行全体が同じ行を消す。少しでも違う行は残し、同じ項の手順 4・6・7 で見る。
 
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
@@ -96,8 +96,9 @@
 │   ├── old-lines.txt             # 移行で消す行（1 行ずつ）
 │   ├── old-y.txt                 # 移行で消す y()（空行で区切った 4 つの形）
 │   └── remove-old-lines.awk      # 上の 2 つで ~/.bashrc の控えから消す
-├── docs/quick-start.md           # 通常の導入と setup-notes の追記との対応
-├── docs/install.md               # 手動での導入・更新・ロールバックの手順書
+├── docs/quick-start.md           # 正本への案内と開発者検査
+├── docs/extra/install.md         # 手動移行の復元と運用上の注意
+├── docs/extra/quick-start.md     # install.sh の復元手順
 ├── .gitattributes                # 改行を LF に固定（core.autocrlf=true の git でも CRLF にしない）
 ├── AGENTS.md                     # コーディングエージェント（Claude Code・Codex・Grok Build）への指示
 ├── CLAUDE.md                     # Claude Code に AGENTS.md を読ませる 1 行（`@AGENTS.md`）
