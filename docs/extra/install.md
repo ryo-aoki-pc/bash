@@ -2,9 +2,11 @@
 
 ## ロールバック
 
+- 手動移行を戻す手順。AlmaLinux 10 は自分のユーザーの bash、Windows 11 は自分のユーザーの Git Bash で行う。WSL の設定は WSL 側で別に戻す
 - この文書で足したものを外す。ツールと、ツールごとの設定（`~/.config/wezterm` など）は消さない
 - ツールの設定も戻すときは、この節の手順 2 で控えとの差を確認し、手順 3 で控えの内容を戻す
-- root のシェルにも入れたなら、root のシェルで [install.sh のロールバック](quick-start.md#ロールバック)を行う
+- 手動で root にも入れたなら、`sudo -i` で入り、root 自身の設定を対象にこの節の手順 1〜5 を行う。`~` は `/root`。手順 5 は `/root/.config/bash` を消し、戻した後は root のシェルを開き直す
+- `install.sh` で導入した設定の復元は [install.sh のロールバック](quick-start.md#ロールバック)を使う。root の分は root のシェルで行う
 
 > [!CAUTION]
 > **この節の手順 5 は、`~/.config/bash` を消す**。手元で変えて commit・push していないものは取り戻せない。この節の手順 4 で確かめてから貼る。
