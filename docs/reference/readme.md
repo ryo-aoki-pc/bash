@@ -21,7 +21,7 @@
 | fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 5（もとは fzf.md） |
 | `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | [almalinux-setup.md の「fzf で fd と bat を候補とプレビューに使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#fzf-で-fd-と-bat-を候補とプレビューに使う任意) |
 | starship | `starship` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 4（もとは starship.md） |
-| WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) 手順 6 |
+| WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | [WezTerm の旧手順 6](https://github.com/ryo-aoki-pc/wezterm/blob/f7fe6b33b36e806e99148d9551f16f0ee01e4949/docs/install.md)。現行は[共通 bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)が読む |
 | zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 9（もとは zoxide.md。`--cmd z`） |
 
 - `ls` や `cat` は置き換えない（元の手順書と同じ）
