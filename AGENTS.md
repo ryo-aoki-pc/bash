@@ -4,14 +4,23 @@
 
 利用者への回答・質問・報告は、常に日本語で書く（コードのコメントなどの言語は、このファイルのほかの決まりに従う）。
 
+## 導入手順の正本
+
+Windows 11・AlmaLinux 10 の導入・利用・更新・任意操作は、setup-notes の [windows-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) と [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) に集約する。既存の手順も対象とする。
+
+- 固有の仕様・他 OS の手順・開発者検査・理由・注意・検証記録・ロールバックが残る文書は保持する
+- 案内だけになった旧文書は削除する。README から上の2冊と[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)へ案内する
+
+以下の旧手順書を参照する規則は、実行手順については上の正本へ適用する。操作を変えたら正本・案内・参照情報を同期し、過去の検証本文は保持する。共通 bash 設定が読むツールの初期化を `~/.bashrc` に直接追記しない。
+
 ## このリポジトリは何か
 
 AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
 
 - 読むもの・読む順番・移行で消す行の説明は `docs/reference/readme.md`、実測は `docs/verification/readme.md`
-- 導入の手順は `docs/install.md`（手順書。[setup-notes](https://github.com/ryo-aoki-pc/setup-notes) と同じ書式。下の「docs/install.md の書き方」）
+- 導入の手順は上の正本。開発者検査は `docs/quick-start.md`、復元手順は `docs/extra/` に置く
 
-初回導入は `install.sh`（`docs/quick-start.md`）。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
+初回導入は正本から `install.sh` を実行する。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
 
 
@@ -20,7 +29,7 @@ AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各�
 ## よく使うコマンド
 
 ```bash
-# 構文と静的検査（shellcheck は setup-notes の docs/shellcheck.md で入れる）
+# 構文と静的検査（ShellCheck は setup-notes の docs/almalinux-setup.md の「ShellCheck と shfmt: 実施手順」で入れる）
 bash -n bashrc
 shellcheck -s bash bashrc
 
@@ -62,22 +71,23 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 ## 構成
 
 - `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
-- `migrate/` — 導入の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
+- `migrate/` — 正本の「共通の bash 設定を手動で移行する」の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
   - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
   - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
   - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
-- `docs/install.md` — 導入・更新・ロールバックの手順書。任意節「root のシェルでも読む」は、`sudo -i` の root のシェルで実施手順の手順 1〜8・10 をそのまま貼る形（ブロックが `~` を使うので書き分けない）
+- `docs/quick-start.md` — 正本への案内と開発者検査
+- `docs/extra/install.md`・`docs/extra/quick-start.md` — 手動移行・`install.sh` の復元手順と注意点
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの
 
-- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、`docs/install.md` の手順 10 と `docs/verification/install.md` の記録
-- 元の手順書（setup-notes の homebrew / zoxide / starship / yazi / eza / gdu / bat / neovim / podman / bash-settings / fzf〔今は almalinux-setup.md と gdu.md・podman.md〕、ryo-aoki-pc/wezterm の docs/install.md、ryo-aoki-pc/LazyVimStarter の docs/setup.md）が `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、README の「移行で消す行」
+- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定を手動で移行する」の最終確認を同期し、`docs/verification/install.md` に新しい検証結果を追記する
+- setup-notes の2冊で扱うツールが `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、`docs/reference/readme.md` の「移行で消す行」
   - `y()` を変えた（もとは setup-notes の yazi.md の手順 3 にあった形）→ `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
-  - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、lazydocker.md「root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
+  - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、同書「lazydocker: root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
-- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → `docs/install.md` の手順・注意点と `docs/verification/install.md` の実施範囲、README の冒頭、`bashrc` の冒頭のコメント
+- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の冒頭・`bashrc` の冒頭のコメントを同期し、`docs/verification/install.md` に新しい対象版と実施範囲を追記する
 
 ## コードの注意
 
@@ -93,30 +103,14 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の AGENTS.md の実測）
 - **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由は `docs/reference/readme.md` の「読む順番」、実測は `docs/verification/readme.md`
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
-  - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。docs/install.md 手順 6）
+  - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。正本の「共通の bash 設定を手動で移行する」の手順 6）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
 - インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は、`migrate/old-y.txt` の 1 つ目の形と同じ文字列にする（もとは setup-notes の yazi.md の手順 3 の形。今の setup-notes は `y()` を書かず、almalinux-setup.md の「yazi」の手順 4 で確かめるだけ）
 
-## docs/install.md の書き方
+## 手順書の書き方
 
-setup-notes の手順書と同じ骨格にする（ryo-aoki-pc/wezterm の AGENTS.md の「docs/install.md の書き方」と同じ）。要点:
 
-- タイトルの直後に `## 実施手順` を置き、手順は**番号付きリスト 1 つ**（マーカーはすべて `1.`、本文は 3 スペース字下げ）
-  - リードの `> [!IMPORTANT]` に実行する場所・前提・対話や切り替えのある手順、続けて読み方の箇条書き、検証記録へのリンク
-  - 変数は置かない（URL と置き場所は固定）
-- 各手順は「1 行の説明（「〜する。」）→ コマンドのブロック → 箇条書き（確認・分岐・注意）」
-  - 箇条書きは 1 項目 1 事実で、末尾に「。」を付けない。前提・注意・期待する確認結果は手順に残す。理由は `docs/reference/`、実測・検証結果は `docs/verification/` へ
-  - 条件付きの手順は 1 行の説明に条件を書き、判定する手順の箇条書きに「〜なら、手順 N は飛ばす」
-  - コマンドの無い操作（エディタで直す、端末を開き直す）も独立した手順にし、次にコマンドを貼る手順の直前に「**次の手順は、〜してから貼る**」を置く
-  - 対話のあるコマンド（エディタ・端末を開き直す操作のほか、問いを出すコマンド）は、その手順の最後のコマンドにする
-  - `<...>` を含むコマンドはブロックに置かず、箇条書きのインラインコードにする。出力例の値は `<USER>` / `<HOST>` などのプレースホルダで書く
-- 手順の後ろに `## 更新`・`## ロールバック`（リード → 番号付きリスト → `---`。節ごとに 1 から数える）。前提条件・注意・期待結果は手順書に残し、背景説明は `docs/reference/install.md`、検証記録は `docs/verification/install.md` に分ける
-- 手順の参照は、`## 実施手順` の中では「手順 N」、ほかの節からは「手順 N」と書いて実施手順の見出しへリンクする、その節の中は「この節の手順 N」。手順を分けたりまとめたりしたら番号を付け替える（README と、元の手順書の箇条書きの番号も）
-- アラートは本文の最上位にだけ置き、1 文書に 5 つまで。取り戻せない削除のある節は `> [!CAUTION]` で手順を名指しし、その手順の説明に「（取り戻せない）」
-- 閉じの `**` を約物に接して閉じない（`**…（…）**を` は太字にならない）
-- 手順書に検証の状態行・実測・付録を置かない。検証結果と未確認事項は対応する `docs/verification/<手順書名>.md` に記載し、過去の記録はリンク・手順番号以外を書き直さない。
-- コマンドは実際に実行したものを載せる。手順書のブロックを変えたら、コンテナなどで抜き出して流し直してから「検証済み」と書く
-- パスワード・鍵・トークンは書かない
+Windows・AlmaLinux の操作は setup-notes の2冊を正本にする。執筆規則は setup-notes の `docs/dev/writing-rules.md` に従う。固有内容がある文書は保持し、案内だけの旧文書は削除する。README から正本と集約対応表へ案内する。開発者検査・他 OS の操作・ロールバックはこのリポジトリで管理する。操作を変えたら正本と参照情報を同期する。検証記録の既存本文・手順番号・出力は保持し、削除した文書へのリンクだけを削除前の固定コミット URL に変更する。新しい対象版・環境・範囲は追記する。
 
 ## 手順書と記録の分離
 

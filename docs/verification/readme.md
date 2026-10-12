@@ -22,7 +22,7 @@ Windows 11 の PC の Git Bash（ツールは scoop で入れたもの）で確�
 
 ### 読むものの実測
 
-root のシェル（docs/install.md の[root のシェルでも読む](../install.md#root-のシェルでも読む任意)）で確かめたこと（2026-10-05、x86_64 のコンテナ。[docs/install.md の付録](install.md#付録-root-のシェルでも読む節の検証記録2026-10-05)）。2026-10-06 には新規 x86_64 VM でも root 自身の初回・再実行と実対話シェルの読み込みを確認した（[新規 VM の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。以下のソケット・各ツールの組み合わせの記録はコンテナの結果:
+root のシェル（docs/install.md の[root のシェルでも読む](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)）で確かめたこと（2026-10-05、x86_64 のコンテナ。[docs/install.md の付録](install.md#付録-root-のシェルでも読む節の検証記録2026-10-05)）。2026-10-06 には新規 x86_64 VM でも root 自身の初回・再実行と実対話シェルの読み込みを確認した（[新規 VM の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。以下のソケット・各ツールの組み合わせの記録はコンテナの結果:
 
 ### 読むものの実測
 

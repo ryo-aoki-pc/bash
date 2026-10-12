@@ -1,19 +1,19 @@
 # bash 導入の補足資料
 
-操作は [install.md](../install.md)、実施結果は [検証記録](../verification/install.md) を参照する。
+操作は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)、実施結果は [検証記録](../verification/install.md) を参照する。
 
 ## 補足
 
 ### <code>~/.config/bash</code> に置く理由と、HTTPS の clone
 
-元の説明は [実施手順](../install.md#実施手順)の手順 2 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 2 に対応する。
 
 - ほかの自分用の設定（`~/.config/wezterm`・`~/.config/yazi`・`~/.config/lazygit`・`~/.config/nvim`）と同じく、ツールの名前の付いたディレクトリにまとめる
 - `~/.bashrc` の 1 行（手順 5）と、手順 3 の `awk` は、この置き場所を決め打ちにしている。別の場所に置くなら、両方を書き換える
 
 ### 消し方
 
-元の説明は [実施手順](../install.md#実施手順)の手順 3 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 3 に対応する。
 
 - `migrate/old-lines.txt` の行と、行全体が同じ行を消す。手で直した行や、`--cmd cd` の zoxide・別の `EZA_OPTS` の eza のように少しでも違う行は残る（手順 4 で見る）
 - 控えの `~/.bashrc.before-bash` から読み、`~/.bashrc` に書く。`~/.bashrc` のファイル自体（パーミッション）はそのまま
@@ -21,7 +21,7 @@
 
 ### 残る行の例
 
-元の説明は [実施手順](../install.md#実施手順)の手順 4 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 4 に対応する。
 
 - 古い形の WezTerm の行（`if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` から `fi` までの 3 行など）。`grep` は `fi` の行を出さないので、手順 6 で `fi` まで消す
 - 手で直した行（`alias ll="eza -l --icons"`、`eval "$(zoxide init bash --cmd cd)"` など）
@@ -32,7 +32,7 @@
 
 ### 1 行の形
 
-元の説明は [実施手順](../install.md#実施手順)の手順 5 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 5 に対応する。
 
 - `[ -r … ] && . …` と書かずに `if` にしてあるのは、ファイルが無いときに `$?` を 1 のまま残さないため。`~/.bashrc` の最後の `$?` は、最初のプロンプトの前のコマンドの終了コードとして扱われ、WezTerm のシェル統合が送る OSC 133 の `D;1`（失敗）になる
 - `tail -c 1` は、`~/.bashrc` の最後の行に改行が無いときに、1 行を前の行につなげて書かないため
@@ -40,13 +40,13 @@
 
 ### 残す行を後ろへ移す理由
 
-元の説明は [実施手順](../install.md#実施手順)の手順 6 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 6 に対応する。
 
 - 前に残した行は、この設定より先に読まれる。Homebrew の PATH はまだ無く（`command not found`）、エイリアスはこの設定に上書きされる。zoxide の行が前にあると、この設定は zoxide を初期化し直さないので、`z` ができない
 
 ### Git Bash の <code>~/.bash_profile</code>
 
-元の説明は [実施手順](../install.md#実施手順)の手順 8 に対応する。
+元の説明は [正本の手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)の手順 8 に対応する。
 
 - WezTerm や Git Bash のショートカットは、bash をログインシェル（`-l`）で起動する。ログインシェルは `~/.bash_profile`・`~/.bash_login`・`~/.profile` の最初に見つかった 1 つだけを読み、`~/.bashrc` は読まない
 - AlmaLinux 10 の `~/.bash_profile`（`/etc/skel` から）は、`~/.bashrc` を読む
@@ -69,7 +69,7 @@
 
 ### 参照
 
-- setup-notes の手順書（`~/.bashrc` に書く手順のあるもの）: [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（homebrew・zoxide・starship・eza・bat・fzf・bash-settings と、2026-10-10 から yazi・neovim もまとめたもの）・[gdu.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/gdu.md)・[podman.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/podman.md)
+- setup-notes の手順書（`~/.bashrc` に書く手順のあるもの）: [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（homebrew・zoxide・starship・eza・bat・fzf・bash-settings と、2026-10-10 から yazi・neovim もまとめたもの）・[gdu の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-実施手順)・[Podman の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-実施手順)
 - ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) — シェル統合
 - `man bash`（INVOCATION: ログインシェル・対話のシェル・sshd から起動されたときに読むファイル）
 

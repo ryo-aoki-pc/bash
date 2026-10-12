@@ -1,6 +1,6 @@
 # 共通 bash 設定の導入の補足資料
 
-操作は [quick-start.md](../quick-start.md) を参照する。
+導入は [AlmaLinux 10 の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定) / [Windows 11 の「Git Bash と WezTerm の設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#git-bash-と-wezterm-の設定)、開発者検査は [quick-start.md の「検証」](../quick-start.md#検証)を参照する。
 
 ## setup-notes の追記との対応
 
@@ -12,14 +12,14 @@
 | almalinux-setup.md の「Neovim」（もとは neovim.md） | `EDITOR`・`VISUAL`・`alias vi` | Neovim 本体と設定リポジトリ |
 | almalinux-setup.md の「シェルのツール」の手順 1・7（もとは bat.md） | `MANPAGER` | bat 本体、任意の bat 設定ファイル |
 | almalinux-setup.md の「シェルのツール」の手順 1・6（もとは eza.md） | `ll`・`la`・`lt` | eza 本体。共通のオプションは README の表を参照 |
-| gdu.md | `alias gdu=gdu-go` | gdu 本体 |
+| [almalinux-setup.md の「gdu: gdu の名前で呼ぶ（任意）」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-gdu-の名前で呼ぶ任意) | `alias gdu=gdu-go` | gdu 本体 |
 | almalinux-setup.md の「yazi」（もとは yazi.md） | `y()` | yazi 本体・依存ツール・設定リポジトリ |
 | almalinux-setup.md の「シェルのツール」の手順 1・5（もとは fzf.md） | 初期化と `FZF_*` の 4 変数 | fzf 本体。候補とプレビューは fd・bat があるときに有効 |
 | almalinux-setup.md の「シェルのツール」の手順 1・4（もとは starship.md） | starship → WezTerm → zoxide の順で初期化 | starship 本体、任意の TOML / プリセット |
 | almalinux-setup.md の「シェルのツール」の手順 1・9（もとは zoxide.md） | `z` とフック | zoxide 本体 |
 | almalinux-setup.md の「共通の bash 設定」の手順 3・4 と「シェルのツール」の手順 3（もとは bash-settings.md） | 履歴・`shopt`・Homebrew の補完 | bash-completion と `~/.inputrc` |
-| podman.md | rootless の `DOCKER_HOST` | ソケットの有効化。既存の `DOCKER_HOST` は上書きしない |
-| lazydocker.md | root の `DOCKER_HOST` | root 自身の共通設定とシステムのソケットの有効化 |
+| [almalinux-setup.md の「Podman: Docker 向けのツールから使う（任意）」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-docker-向けのツールから使う任意) | rootless の `DOCKER_HOST` | ソケットの有効化。既存の `DOCKER_HOST` は上書きしない |
+| [almalinux-setup.md の「lazydocker: root でも使う（任意）」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#lazydocker-root-でも使う任意) | root の `DOCKER_HOST` | root 自身の共通設定とシステムのソケットの有効化 |
 | almalinux-setup.md の「WezTerm」の参照先（もとは wezterm-nightly.md） | 通常の WezTerm のシェル統合 | WezTerm の設定リポジトリ。WSL で Windows 側を読むパスはホスト固有 |
 
 `BAT_CONFIG_PATH` の独自の場所、eza の独自のオプション、zoxide の別のコマンド名はホスト固有の変更。参照先の LazyVimStarter が扱う `GITLAB_TOKEN` / `GITLAB_HOST` も共通化しない。`ALL_PROXY` と `https_proxy` はトンネルのセッション内だけで設定し、永続化しない。
