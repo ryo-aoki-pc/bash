@@ -9,7 +9,7 @@
 | setup-notes の文書 | 共通設定で読むもの | 別に行うこと |
 |---|---|---|
 | almalinux-setup.md の「Homebrew」の手順 1〜3（もとは homebrew.md） | `brew shellenv`（root も対象） | Homebrew 本体の導入。root は root 自身にも共通設定を導入する |
-| almalinux-setup.md の「Neovim」（もとは neovim.md） | `EDITOR`・`VISUAL`・`alias vi` | Neovim 本体と設定リポジトリ |
+| neovim.md の「Neovim」（もとは neovim.md） | `EDITOR`・`VISUAL`・`alias vi` | Neovim 本体と設定リポジトリ |
 | almalinux-setup.md の「シェルのツール」の手順 1・7（もとは bat.md） | `MANPAGER` | bat 本体、任意の bat 設定ファイル |
 | almalinux-setup.md の「シェルのツール」の手順 1・6（もとは eza.md） | `ll`・`la`・`lt` | eza 本体。共通のオプションは README の表を参照 |
 | [almalinux-setup.md の「gdu: gdu の名前で呼ぶ」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-gdu-の名前で呼ぶ) | `alias gdu=gdu-go` | gdu 本体 |

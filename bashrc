@@ -26,7 +26,7 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 
-# Neovim を既定のエディタにする（setup-notes の docs/almalinux-setup.md の「Neovim」の手順 4。もとは neovim.md）
+# Neovim を既定のエディタにする（setup-notes の docs/neovim.md の「Neovim」の手順 4。もとは neovim.md）
 # 手順書の直接追記に付ける目印は移行時に外し、ここではツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR=nvim
