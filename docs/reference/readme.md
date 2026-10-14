@@ -9,7 +9,7 @@
 | 読むもの | 条件 | 前半 / 後半 | 元の手順書 |
 |---|---|---|---|
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3（もとは homebrew.md） |
-| `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [almalinux-setup.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#neovim)の手順 4（もとは neovim.md「既定のエディタにする」） |
+| `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md#neovim)の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 7（もとは bat.md「ページャに使う」） |
 | `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [Podman の「Docker 向けのツールから使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-docker-向けのツールから使う)（root は [lazydocker の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#lazydocker-root-でも使う)） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 2 と[「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
