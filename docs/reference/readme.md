@@ -11,15 +11,15 @@
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3（もとは homebrew.md） |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [almalinux-setup.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#neovim)の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `MANPAGER=bat -plman` | `bat` がある | 前半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 7（もとは bat.md「ページャに使う」） |
-| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [Podman の「Docker 向けのツールから使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-docker-向けのツールから使う任意)（root は [lazydocker の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#lazydocker-root-でも使う任意)） |
+| `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [Podman の「Docker 向けのツールから使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman-docker-向けのツールから使う)（root は [lazydocker の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#lazydocker-root-でも使う)） |
 | 履歴と `shopt`（`HISTSIZE` / `HISTFILESIZE` を 100000、`HISTCONTROL=ignoreboth`、`histappend`、`autocd` `cdspell` `dirspell` `globstar`） | 条件なし | 後半 | [almalinux-setup.md の「共通の bash 設定」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)の手順 2 と[「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md。`histappend` は共通設定でも有効にする。Git Bash の既定は off） |
 | `alias vi=nvim` | `nvim` がある | 後半 | almalinux-setup.md の「Neovim」の手順 4（もとは neovim.md「既定のエディタにする」） |
 | `ll` / `la` / `lt`（eza） | `eza` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 6（もとは eza.md「エイリアスを足す」。共通のオプション） |
-| `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu の「gdu の名前で呼ぶ」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-gdu-の名前で呼ぶ任意) |
+| `alias gdu=gdu-go` | `gdu-go` がある | 後半 | [gdu の「gdu の名前で呼ぶ」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu-gdu-の名前で呼ぶ) |
 | `y`（yazi を閉じたディレクトリへ移る） | `yazi` がある | 後半 | [almalinux-setup.md の「yazi」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#yazi)の手順 4（もとは yazi.md 手順 3） |
 | Homebrew で入れたコマンドの補完（`etc/bash_completion.d/*` を全部読む） | `$HOMEBREW_PREFIX/etc/bash_completion.d` がある | 後半（fzf より前） | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 3（もとは bash-settings.md） |
 | fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と `**` の補完 | `fzf` がある | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 5（もとは fzf.md） |
-| `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | [almalinux-setup.md の「fzf で fd と bat を候補とプレビューに使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#fzf-で-fd-と-bat-を候補とプレビューに使う任意) |
+| `FZF_DEFAULT_COMMAND` / `FZF_CTRL_T_COMMAND` / `FZF_ALT_C_COMMAND`（fd）、`FZF_CTRL_T_OPTS`（bat のプレビュー） | `fzf` があり、`fd` / `bat` がある | 後半 | [almalinux-setup.md の「fzf で fd と bat を候補とプレビューに使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#fzf-で-fd-と-bat-を候補とプレビューに使う) |
 | starship | `starship` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 4（もとは starship.md） |
 | WezTerm のシェル統合 | `$WEZTERM_SHELL_INTEGRATION`（無ければ `~/.config/wezterm/shell/wezterm.sh`）がある | 後半 | [WezTerm の旧手順 6](https://github.com/ryo-aoki-pc/wezterm/blob/f7fe6b33b36e806e99148d9551f16f0ee01e4949/docs/install.md)。現行は[共通 bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定)が読む |
 | zoxide（`z`） | `zoxide` があり、まだ初期化していない | 後半 | [almalinux-setup.md の「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#シェルのツール)の手順 9（もとは zoxide.md。`--cmd z`） |
@@ -74,7 +74,7 @@
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
 ## 移行で消す行
 
-[正本の手動移行の手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) は、元の手順書が `~/.bashrc` に書いた行のうち、次のものと行全体が同じ行を消す。少しでも違う行は残し、同じ項の手順 4・6・7 で見る。
+[正本の手動移行の手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) は、元の手順書が `~/.bashrc` に書いた行のうち、次のものと行全体が同じ行を消す。少しでも違う行は残し、同じ項の手順 4・6・7 で見る。
 
 - `migrate/old-lines.txt`: 1 行ずつ
   - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
