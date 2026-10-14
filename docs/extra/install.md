@@ -19,15 +19,15 @@
    ```
 
    - `0` と出ればよい
-   - この節の手順 3 で控えに戻すまで、新しく開いたシェルでは、[手順 6](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) で後ろへ移した行が `command not found` を出すことがある（Homebrew の PATH を足す行が無くなるため）
+   - この節の手順 3 で控えに戻すまで、新しく開いたシェルでは、[手順 6](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) で後ろへ移した行が `command not found` を出すことがある（Homebrew の PATH を足す行が無くなるため）
 
-1. [手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) の控えと、今の `~/.bashrc` の違いを見る。
+1. [手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) の控えと、今の `~/.bashrc` の違いを見る。
 
    ```bash
    git --no-pager diff --no-index ~/.bashrc ~/.bashrc.before-bash
    ```
 
-   - `+` で始まる行が、控えから戻すと戻る行（[手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) で消した行と、[手順 6](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) でエディタで消した行）
+   - `+` で始まる行が、控えから戻すと戻る行（[手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) で消した行と、[手順 6](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) でエディタで消した行）
    - `-` で始まる行が、控えから戻すと消える行（控えを取った後に足した行）
    - 控えに戻さないなら、この節の手順 3 は飛ばす（`~/.bashrc.before-bash` は、要らなければ手で消す）
 
@@ -60,7 +60,7 @@
    ```
 
    - `No such file or directory` と出る
-   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#git-bash-の-bash_profile)）
+   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#git-bash-の-bash_profile)）
    - 開いている端末には、この設定の関数やフックが残る。開き直すと消える
 
 ---
@@ -68,7 +68,7 @@
 ## 注意点
 
 - 非対話のシェルでも `~/.bashrc` が読まれる。scp・sftp・rsync を壊さないよう、ホスト固有の追記から出力しない
-- Windows の対話 SSH で scoop の shim が起動できないときは、setup-notes の [Windows 11 の初期設定の「scoop のツールを SSH のセッションで使う（任意）」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#scoop-のツールを-ssh-のセッションで使う任意)を行う
+- Windows の対話 SSH で scoop の shim が起動できないときは、setup-notes の [Windows 11 の初期設定の「scoop のツールを SSH のセッションで使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#scoop-のツールを-ssh-のセッションで使う)を行う
 - ツールを後から入れたときは `. ~/.bashrc` で読み直す。starship を入れたときは、読み込み順を保つため端末を開き直す
 - starship を使うホストでは、WezTerm の設定も更新する。コマンド出力の前に `${STARSHIP_START_TIME:0:0}` が出るときは古いシェル統合を更新する
 - トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は共通設定に書かず、ホストの読み込み行より後ろに置く

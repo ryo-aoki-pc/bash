@@ -22,4 +22,4 @@ Windows 11・AlmaLinux 10 の導入・利用・更新手順は setup-notes の2�
 
 ## 手動移行
 
-[確認しながら移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する任意)（Windows 11 も Git Bash で同じ全節を行う）
+[確認しながら移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する)（Windows 11 も Git Bash で同じ全節を行う）

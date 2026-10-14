@@ -775,7 +775,7 @@ setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https:
 - **トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、この設定に書かない**。ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く
 - **root のシェルで読むのは、一般ユーザーを信用できるホストだけ**（[root のシェルでも読む](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)の節）
   - root のシェルを開くたびに、Homebrew のユーザーが書き換えられるコマンドとファイルが root で動く
-  - 一般ユーザーを信用できないホストで、root で Homebrew のコマンドだけを使うなら、この設定は入れず、setup-notes の [almalinux-setup.md の「Homebrew を root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew-を-root-のシェルでも使う任意)を通す（PATH の末尾に足すだけで、起動のときには何も動かさない）
+  - 一般ユーザーを信用できないホストで、root で Homebrew のコマンドだけを使うなら、この設定は入れず、setup-notes の [almalinux-setup.md の「Homebrew を root のシェルでも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew-を-root-のシェルでも使う)を通す（PATH の末尾に足すだけで、起動のときには何も動かさない）
 - **WSL・MSYS2・QMK MSYS は、ホームが別**
   - WSL は、WSL の中で手順 1〜10 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
 - **macOS と zsh は対象外**（Homebrew の場所も `/home/linuxbrew/.linuxbrew` 決め打ち）

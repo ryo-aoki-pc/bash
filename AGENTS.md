@@ -29,7 +29,7 @@ AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各�
 ## よく使うコマンド
 
 ```bash
-# 構文と静的検査（ShellCheck は setup-notes の docs/almalinux-setup.md の「ShellCheck と shfmt: 実施手順」で入れる）
+# 構文と静的検査（ShellCheck は setup-notes の docs/almalinux-setup.md の「ShellCheck と shfmt」で入れる）
 bash -n bashrc
 shellcheck -s bash bashrc
 
