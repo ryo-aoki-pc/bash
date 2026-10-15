@@ -6,32 +6,25 @@
 
 ## 導入手順の正本
 
-Windows 11・AlmaLinux 10 の導入・利用・更新・任意操作は、setup-notes の [windows-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) と [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) を正本にする。シェルと端末（共通の bash 設定・シェルのツール・WezTerm など）は [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) を正本にする。既存の手順も対象とする。
-
-- 固有の仕様・他 OS の手順・開発者検査・理由・注意・検証記録・ロールバックが残る文書は保持する
-- 案内だけになった旧文書は削除する。README から上の正本と[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)へ案内する
-
-以下の旧手順書を参照する規則は、実行手順については上の正本へ適用する。操作を変えたら正本・案内・参照情報を同期し、過去の検証本文は保持する。共通 bash 設定が読むツールの初期化を `~/.bashrc` に直接追記しない。
+導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
 
 ## このリポジトリは何か
 
 AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
 
-- 読むもの・読む順番・移行で消す行の説明は `docs/reference/readme.md`、実測は `docs/verification/readme.md`
-- 導入の手順は上の正本。開発者検査は `docs/quick-start.md`、復元手順は `docs/extra/` に置く
-
 初回導入は正本から `install.sh` を実行する。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
-
-
-導入の回帰テストは `python3 -m unittest discover -s tests`（使い捨てのホームだけを変更する）。ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
+ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
 
 ## よく使うコマンド
 
 ```bash
+# 導入の回帰テスト（使い捨てのホームだけを変更する。Windows では WSL の中で動かす）
+python3 -m unittest discover -s tests
+
 # 構文と静的検査（ShellCheck は setup-notes の docs/almalinux-setup.md の「ShellCheck と shfmt」で入れる）
-bash -n bashrc
-shellcheck -s bash bashrc
+bash -n install.sh && bash -n bashrc
+shellcheck -s bash install.sh bashrc
 
 # 非対話のシェルで何も出さないこと（0 が出ればよい）
 bash -c '. ~/.config/bash/bashrc' 2>&1 | wc -c
@@ -42,7 +35,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.bashrc | diff ~/.bashrc -
 ```
 
-- プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（README の「読む順番」の表の作り方）
+- プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（docs/verification/readme.md の「読む順番の検証記録」の表の作り方）
   - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
 - AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/almalinux-setup.md の「Homebrew」の手順 1〜3 と、シェルと端末のセットアップの「シェルのツール」の手順 1）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
 - AlmaLinux 10 の実機で試すときは、利用者の tmux とは別のソケット（`tmux -L <名前>`）のペインに、`load-buffer`・`paste-buffer -p` で貼る。出力は `pipe-pane` で生のまま受ける（AlmaLinux 10 の `tmux-3.3a-13.20230918git…` は、`capture-pane` でサーバーが SIGABRT で落ちた）
@@ -75,8 +68,10 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
   - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
   - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
-- `docs/quick-start.md` — 正本への案内と開発者検査
-- `docs/extra/install.md`・`docs/extra/quick-start.md` — 手動移行・`install.sh` の復元手順と注意点
+- `install.sh` — 初回の読み込み設定と既知の旧設定の移行。`tests/test_install.py` が、一時ホームで導入・移行・再実行を確かめる
+- `docs/extra/install.md`・`docs/extra/quick-start.md` — 手動移行・`install.sh` のロールバックと注意点
+- `docs/reference/readme.md` — 読むもの・Git Bash と root での違い・読む順番・移行で消す行。`docs/reference/install.md` — 正本の手動移行の各手順の背景
+- `docs/verification/` — 検証記録（`readme.md` は README と参考資料の実測、`install.md` は設定本体と手動移行、`quick-start.md` は `install.sh`、`claude.md` は旧開発ガイドから移した記録）
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの
@@ -87,7 +82,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
   - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、同書「lazydocker: root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
 - 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
-- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の冒頭・`bashrc` の冒頭のコメントを同期し、`docs/verification/install.md` に新しい対象版と実施範囲を追記する
+- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の「導入」・`bashrc` の冒頭のコメントを同期し、`docs/verification/install.md` に新しい対象版と実施範囲を追記する
 
 ## コードの注意
 
@@ -107,16 +102,13 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
 - インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は、`migrate/old-y.txt` の 1 つ目の形と同じ文字列にする（もとは setup-notes の yazi.md の手順 3 の形。今の setup-notes は `y()` を書かず、almalinux-setup.md の「yazi」の手順 4 で確かめるだけ）
 
-## 手順書の書き方
+## 文書の置き場所
 
-
-Windows・AlmaLinux の操作は setup-notes の2冊と、シェルと端末のセットアップを正本にする。執筆規則は setup-notes の `docs/dev/writing-rules.md` に従う。固有内容がある文書は保持し、案内だけの旧文書は削除する。README から正本と集約対応表へ案内する。開発者検査・他 OS の操作・ロールバックはこのリポジトリで管理する。操作を変えたら正本と参照情報を同期する。検証記録の既存本文・手順番号・出力は保持し、削除した文書へのリンクだけを削除前の固定コミット URL に変更する。新しい対象版・環境・範囲は追記する。
-
-## 手順書と記録の分離
-
-- 実行・更新・ロールバック・再実行用の確認手順には、必要な前提・注意・分岐・待機条件・期待結果だけを載せる
-- 検証の環境・実施日・対象コミット・実出力・結果・未確認事項は `docs/verification/<手順書名>.md`、背景説明は必要なときだけ `docs/reference/<手順書名>.md` に置く。README は `readme.md` を使う
-- 既存の記録の本文を保持して移動し、ファイルと見出しへの参照を更新する。再実行できる確認コマンドを実施済みの記録と混同しない
+- 導入・利用・更新の手順は正本に置き、README の「導入」の表から正本の項へ直接リンクする（手順書の先頭やカテゴリの見出しへはリンクしない）。執筆規則は setup-notes の `docs/dev/writing-rules.md`
+- `docs/extra/` はロールバックと注意点、`docs/reference/` は背景、`docs/verification/` は検証記録（環境・日付・対象コミット・実出力・未確認事項）。変更後の確認のコマンドは上の「よく使うコマンド」
+- 案内だけになった文書・節は消し、旧パスと移動先を setup-notes の集約対応表に足す。消すときは参照元のリンクを付け替える（検証記録は、削除前の固定コミットの URL にする）
+- 検証記録の既存の本文・手順番号・出力は変えない。新しい対象版・環境・範囲は追記する
+- 操作を変えたら、正本・README の表・参考資料を合わせて直す
 
 ## 共同作業の規則
 
