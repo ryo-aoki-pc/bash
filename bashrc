@@ -33,7 +33,7 @@ if command -v nvim >/dev/null 2>&1; then
 	export VISUAL=nvim
 fi
 
-# man のページャに bat を使う（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 7）
+# man のページャに bat を使う（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 7）
 if command -v bat >/dev/null 2>&1; then
 	# groff の SGR を col へ通すと ESC が落ち、1mNAME0m などが文字として残る
 	export MANPAGER="bat -plman"
@@ -59,7 +59,7 @@ case $- in
 *) return 0 ;;
 esac
 
-# 履歴と shopt（setup-notes の docs/almalinux-setup.md の「共通の bash 設定」の手順 2 と「シェルのツール」の手順 3）。ツールの有無によらず入れる
+# 履歴と shopt（setup-notes のシェルと端末のセットアップの「共通の bash 設定」の手順 2 と「シェルのツール」の手順 3）。ツールの有無によらず入れる
 # histappend は AlmaLinux 10 の /etc/bashrc が対話のシェルに入れているが、Git Bash の既定は off なのでここでも入れる
 HISTSIZE=100000
 HISTFILESIZE=100000
@@ -71,7 +71,7 @@ if command -v nvim >/dev/null 2>&1; then
 	alias vi=nvim
 fi
 
-# eza（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 6。ls は置き換えない）
+# eza（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 6。ls は置き換えない）
 if command -v eza >/dev/null 2>&1; then
 	alias ll="eza -l --git --group-directories-first"
 	alias la="eza -la --git --group-directories-first"
@@ -96,7 +96,7 @@ if command -v yazi >/dev/null 2>&1; then
 	}
 fi
 
-# Homebrew で入れたコマンドの補完（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 3）
+# Homebrew で入れたコマンドの補完（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 3）
 # Homebrew は補完を etc/bash_completion.d に置き、bash-completion の遅延読み込み（XDG_DATA_DIRS の下）では見つからない。
 # fzf より前に読む（fzf は bat などの既にある補完を包んで ** の補完を足す。後ろだと元に戻ってしまう）
 if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then
@@ -107,11 +107,11 @@ if [ -d "${HOMEBREW_PREFIX-}/etc/bash_completion.d" ]; then
 	unset __f
 fi
 
-# fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と ** の補完（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 5）
+# fzf のキー操作（Ctrl+R・Ctrl+T・Alt+C）と ** の補完（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 5）
 # PROMPT_COMMAND・PS0・PS1 には触らないので、下のプロンプトのフックの並びには入らない。読み直しても二重にならない
 if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
-	# 候補を fd に、Ctrl+T のプレビューを bat にする（setup-notes の docs/almalinux-setup.md「fzf で fd と bat を候補とプレビューに使う」）
+	# 候補を fd に、Ctrl+T のプレビューを bat にする（setup-notes のシェルと端末のセットアップの「fzf で fd と bat を候補とプレビューに使う」）
 	if command -v fd >/dev/null 2>&1; then
 		export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 		export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
@@ -124,7 +124,7 @@ fi
 
 # --- プロンプトのフック（PROMPT_COMMAND を触るので、この順に読む。理由は README） ---
 
-# starship（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 4。初期化の順番はここで管理する）
+# starship（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 4。初期化の順番はここで管理する）
 # 読み直したときは初期化し直さない（starship は初期化のたびに PS0 に自分を足す）
 if command -v starship >/dev/null 2>&1 && ! declare -F starship_precmd >/dev/null; then
 	eval "$(starship init bash)"
@@ -136,7 +136,7 @@ if [ -r "${WEZTERM_SHELL_INTEGRATION:=$HOME/.config/wezterm/shell/wezterm.sh}" ]
 	. "$WEZTERM_SHELL_INTEGRATION"
 fi
 
-# zoxide（setup-notes の docs/almalinux-setup.md の「シェルのツール」の手順 9）
+# zoxide（setup-notes のシェルと端末のセットアップの「シェルのツール」の手順 9）
 # 読み直したときは初期化し直さない（AlmaLinux の /etc/bashrc は PROMPT_COMMAND を配列にし、
 # zoxide は配列の先頭しか見ないので、初期化のたびにフックを重ねて足す）
 # ~/.bashrc の読み込みの行より後ろで別の形（--cmd cd など）の zoxide を読むなら、--hook none を付ける
