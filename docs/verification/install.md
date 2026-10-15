@@ -82,7 +82,7 @@ EDITOR=nvim DOCKER_HOST=
 - 同じ PC で eza・bat・gdu・starship も足すと、`alias ll='ls -l'` の代わりに `la`・`ll`・`lt` の eza の 3 行が出た。`alias gdu` は出なかった
 - Git Bash には `XDG_RUNTIME_DIR` が無いので、`DOCKER_HOST` は入らない
 
-### root での設定行の削除
+### root の clone とログイン設定
 
 記録の手順 2 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意) の番号。
 
@@ -125,7 +125,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 ## 導入の検証範囲
 
 > [!WARNING]
-> **AlmaLinux 10 は、x86_64 のコンテナ・新規 VM と、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**2026-10-06 に Windows ホストで設定本体と移行 awk を再検証した**（履歴・`shopt`・fzf・fd を含む。bat のプレビュー、Homebrew の補完、fzf の実際のキー操作は未確認）。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)だけを流した）。**HTTPS の clone と既知の旧設定の手動移行は、2026-10-06 に x86_64 の新規 VM の専用ユーザーでも確認した**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**root 自身の新規導入・再実行は x86_64 の新規 VM でも `install.sh` で確認した**。詳しくは[対象と検証環境](#対象と検証環境)。
+> **AlmaLinux 10 は、x86_64 のコンテナ・新規 VM と、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**2026-10-06 に Windows ホストで設定本体を再検証した**（履歴・`shopt`・fzf・fd を含む。bat のプレビュー、Homebrew の補完、fzf の実際のキー操作は未確認）。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)だけを流した）。**HTTPS の clone は、2026-10-06 に x86_64 の新規 VM の専用ユーザーでも確認した**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**root 自身の新規導入・再実行は x86_64 の新規 VM でも `install.sh` で確認した**。詳しくは[対象と検証環境](#対象と検証環境)。
 
 ## root の利用条件と検証範囲
 
@@ -152,22 +152,20 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 
 ### 導入の実施範囲
 
-- `install.sh` による新規導入・再実行は AlmaLinux 10.2 の x86_64 VM でも確認した（[2026-10-06 の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。同じ VM の専用ユーザーでは、既知の旧設定を用意して手動移行も確認した。任意の編集操作をすべて試した記録ではない
+- `install.sh` による新規導入・再実行は AlmaLinux 10.2 の x86_64 VM でも確認した（[2026-10-06 の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。任意の編集操作をすべて試した記録ではない
 
 ### 対象と検証環境
 
 - **目的**: いろいろなホストで同じ bash の設定を使う。setup-notes の手順書と wezterm の手順書がホストごとに `~/.bashrc` へ書いていた行を、このリポジトリの `bashrc` 1 つにまとめ、`~/.bashrc` からは 1 行で読む
-- **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` から元の手順書の行を消して、読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
-- **現行版の新規 VM**: 2026-10-06 に `3d5323e` の自動導入・再実行・root の設定と、専用ユーザーの既知の旧設定の手動移行を確認した。実キーの全組み合わせ、任意の手編集、物理実機は含まない
+- **進め方**: git で `~/.config/bash` に clone し、`~/.bashrc` に読み込みの 1 行を足す。**読者が書き換える変数は無い**（リポジトリの URL と置き場所は固定）
+- **現行版の新規 VM**: 2026-10-06 に `3d5323e` の自動導入・再実行・root の設定を確認した。実キーの全組み合わせ、任意の手編集、物理実機は含まない
 - **状態**: **AlmaLinux 10 は x86_64 のコンテナで検証済み（2026-09-30）。Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その PC の本物の `~/.bashrc` に導入した（2026-10-01）。clone を SSH に変えた後、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)を、その PC の Git Bash と WSL の AlmaLinux 10 で流し直した（2026-10-01）。AlmaLinux 10 の aarch64 の実機（Raspberry Pi 5）の本物の `~/.bashrc` に導入した（2026-10-02）。2026-10-03 にこのリポジトリを公開して clone を HTTPS に変え、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)を x86_64 のコンテナで流し直した**
   - AlmaLinux 10: 下表の検証コンテナで、**この文書の bash のコードブロックを抜き出したもの**を、一般ユーザーの `bash -s` に手順ごとに流した（[付録](#付録-コンテナでの検証記録2026-09-30)）
     - 手順 9・10 は、端末の代わりに `script` の擬似端末でログインシェル（`bash -il`）を開き、手順 10 のブロックを打ち込んで出力を読んだ
-    - 手順 5・6 を入れ替えた今の版（レビューの後）を、もう一度はじめから流した（付録の「2 回目」）
+    - もう一度はじめから流した（付録の「2 回目」）
     - 確認したこと
       - 未導入の判定、clone（`core.autocrlf=true` でも LF）、clone に失敗したときの手順 3 の `中断:`
-      - 元の手順書の行の消し方: 実機と同じ並びの `~/.bashrc`（ホストだけの行つき）、今の手順書の行をすべて持つ `~/.bashrc`、`/etc/skel` のままの `~/.bashrc`、`~/.bashrc` の無いホーム（Git Bash の代わり）
-      - 手順 6 で残す行を後ろへ移す形（Homebrew のコマンドを使う行、`--hook none` を足した `--cmd cd` の zoxide）と、手順 7 の確かめ
-      - 移行の前後のシェルの比較（エイリアス・関数・`PATH`・環境変数・`PROMPT_COMMAND`）
+      - 導入の前後のシェルの比較（エイリアス・関数・`PATH`・環境変数・`PROMPT_COMMAND`）
       - 読み込みの 1 行と 2 度貼ったとき、`~/.bash_profile` の有無、開き直したログインシェルでの読み込み
       - 非対話のシェルで何も出さないこと（`bash -c`・`ssh` のコマンド・scp・sftp・rsync）、`set -u`（非対話の前半と、対話の後半）
       - 更新（新しいコミットを入れた fast-forward）、ロールバック（手元だけのコミットと stash が見えることも）
@@ -178,7 +176,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
     - 確認したこと
       - 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5（その PC の `~/.bashrc` の写しは、元と同じ中身に戻った）
       - 非公開のリポジトリの clone と pull。はじめは HTTPS（認証は gh の資格情報）で流し、clone を SSH に変えた後に、手順 2（初めてつなぐときの問いに `yes` と `no`）と更新を SSH で流し直した（[付録](#付録-ssh-の-clone-の検証記録2026-10-01)）。`core.autocrlf=true` の clone で LF
-      - Git Bash の awk・`git diff --no-index`・`sed -i`・読み取り専用のファイルを含む `rm -rf`。移行の awk が、LazyVim で整形された `y()` を消さないことを見つけて直した
+      - Git Bash の `git diff --no-index`・`sed -i`・読み取り専用のファイルを含む `rm -rf`
       - `~/.bash_profile` の無いホームで Git for Windows が出す `WARNING:` と、それが作る `~/.bash_profile`
       - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（starship の有無の両方）、`--hook none` の zoxide、`y()`（本物の yazi を端末で動かした）
       - 非対話のシェル（sshd の起動のしかたを真似た `bash -c`）で何も出さないこと、`set -u`、起動の時間と `command -v` の時間
@@ -189,15 +187,15 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
   - AlmaLinux 10 の実機（下表の Raspberry Pi 5）: 利用者の依頼で、その本物の `~/.bashrc` に導入し、導入を残した（[付録](#付録-almalinux-10-の実機aarch64への導入2026-10-02)）
     - **この文書の bash のコードブロックを抜き出したもの**を、利用者の tmux とは別のソケットの tmux のペインのログインシェルに、括弧付き貼り付けで貼って流した。手順 9 は、tmux のセッションを閉じて開き直した
     - 確認したこと
-      - 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log（元の手順書の 9 行を消す移行、SSH の clone）
+      - 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log（SSH の clone）
       - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（COPR の WezTerm の公式のシェル統合がある形。WezTerm の GUI・ssh・tmux の 3 つの端末の形）と、導入の前後のシェルの状態の比較
       - `y()`（本物の yazi）と `z`
       - 非対話のシェルで何も出さないこと（`bash -c`、自分のユーザーで 127.0.0.1 に立てた sshd 越しの `ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）、対話の ssh、`set -u`
       - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
   - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-の検証記録2026-10-03)）
     - 確認したこと: 問いを出させない `GIT_TERMINAL_PROMPT=0` で clone と pull が通る、LF、SSH で clone したホストの代わり（`origin` を `git@github.com:…` にした clone）が更新で HTTPS になって pull できる
-  - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）。2026-10-06 に Windows ホストでも設定本体と移行 awk を再検証した（[付録](#付録-windows-ホストでの設定の再検証2026-10-06)）
-    - 確認したこと: 履歴の追記と `ignoreboth`、`shopt`、scoop の fzf・fd、対話と非対話での `set -u`、ログインシェル、OSC 133 の `D;1`、読み直しでのフックの重複防止、zoxide、Windows 形式の cwd-file を使う `y()`（スタブ）、非ゼロの `EUID` と既存 `DOCKER_HOST` の保存、移行 awk の 8 ケース
+  - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）。2026-10-06 に Windows ホストでも設定本体を再検証した（[付録](#付録-windows-ホストでの設定の再検証2026-10-06)）
+    - 確認したこと: 履歴の追記と `ignoreboth`、`shopt`、scoop の fzf・fd、対話と非対話での `set -u`、ログインシェル、OSC 133 の `D;1`、読み直しでのフックの重複防止、zoxide、Windows 形式の cwd-file を使う `y()`（スタブ）、非ゼロの `EUID` と既存 `DOCKER_HOST` の保存
     - 今回確認していないこと: Homebrew の補完、bat のプレビュー、fzf の実際のキー操作、本物の yazi TUI、実 SSH 通信、導入・更新・ロールバック手順全体
   - [root のシェルでも読む](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)の節（2026-10-05）: x86_64 のコンテナで、setup-notes の root の 2 行がある `/root/.bashrc` に、その節の手順を tmux のペインに貼って流した（ブラケットペーストの無しと有り。[付録](#付録-root-のシェルでも読む節の検証記録2026-10-05)）
     - 確認したこと: `sudo -i`・`su -`・`sudo -s` の root のシェルで最後まで読まれる、Homebrew が PATH の先頭で `brew install` は断られる、root の `DOCKER_HOST`、`sudo -i lazydocker` が root のコンテナを出す、非対話で何も出さない、元に戻すと `/root/.bashrc` が元と同じ中身に戻る、自分のユーザーの `DOCKER_HOST` は変わらない
@@ -222,7 +220,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 
 ### 実施前の状態
 
-| 項目 | 移行するホスト（検証の m3） | 新しいホスト（検証の n2） |
+| 項目 | 設定済みのホスト（検証の m3） | 新しいホスト（検証の n2） |
 |---|---|---|
 | `~/.bashrc` | `/etc/skel` の 25 行の後ろに、元の手順書の行とホストだけの行（付録） | `/etc/skel` のまま |
 | `~/.config/bash` | 無し | 無し |
@@ -262,7 +260,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 
 ### 設定の参照先
 
-- [README](../../README.md) — 読むものの表、読む順番とその実測、移行で消す行
+- [README](../../README.md) — 読むものの表、読む順番とその実測
 
 ### 付録: コンテナでの検証記録（2026-09-30）
 
@@ -276,16 +274,15 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
   - `~/.config/wezterm` には ryo-aoki-pc/wezterm を clone し、`shell/wezterm.sh` を直したものに差し替えた
   - sshd は、`/etc/ssh/sshd_config.d/90-test.conf`（`Port 2222`・`ListenAddress 127.0.0.1`）で立て、ユーザーごとに鍵を作った
 - **この文書の bash のコードブロックを機械的に抜き出したもの**を、手順ごとにそのユーザーの `bash -s` に流した（折り畳みの中のブロックは除いた。`su -` で入るので、流すたびにそのユーザーのログインシェルが `~/.bashrc` を読む）
-- 手順 6 は、エディタの代わりに awk で、手順 4 の `grep` が出した WezTerm の `if … fi` の 3 行を消し、Homebrew を使う 3 行と zoxide の行を末尾へ移して、zoxide の行に `--hook none` を足した
 - 手順 9・10: そのユーザーで `script -q -E never -O <ログ> -c 'bash -il'` を `TERM=xterm-256color TERM_PROGRAM=WezTerm` で開き（手順 9 の代わり）、手順 10 のブロックを 1 行ずつ打ち込んで、ログから制御文字を除いて読んだ
 
-**2 回目（今の版。手順 5・6 を入れ替え、手順 7 を足し、更新を 2 つに分け、ロールバックの手順 4 に `log` と `stash list` を足した後）**
+**2 回目（更新を 2 つに分け、ロールバックの手順 4 に `log` と `stash list` を足した後）**
 
 | ユーザー（実施前の `~/.bashrc`） | 流した手順 | 結果 |
 |---|---|---|
-| m3（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、39〜41 行目 `if type brew &>/dev/null; then` で `brew --prefix` を使う 3 行、42 行目 `eval "$(zoxide init bash --cmd cd)"`、43 行目ダミーの `GITLAB_TOKEN`） | 手順 1〜5・6（awk）・7・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5 | 手順 3 は `bash -n: OK`。手順 10 は手順 10 の補足のとおり。更新は `Fast-forward` と `検証用のコミット` の 1 行。ロールバックの手順 1 は `0`、手順 3 で実施前と同じ 43 行に戻った。手順 4 は `## …` の 1 行だけ、手順 5 は `No such file or directory` |
-| m4（`/etc/skel` の後ろに、手順書が書く行をすべて、並びを直す前の手順書の並びで。starship が最後） | 手順 1〜5・8・10 | 手順 3 で 20 行がすべて消え、手順 4 の `grep` は何も出さなかった（手順 6・7 は飛ばした） |
-| n2（`/etc/skel` のまま） | 手順 1〜5・8・10 | 手順 4 は何も出さず、手順 10 は m4 と同じ |
+| m3（`/etc/skel` の 25 行、26 行目 `brew shellenv`（引数なし）、27〜33 行目 `y()`、34 行目 `zoxide init bash`、36〜38 行目 `if [ -n "$WEZTERM_SHELL_INTEGRATION" ]; then` の 3 行、39〜41 行目 `if type brew &>/dev/null; then` で `brew --prefix` を使う 3 行、42 行目 `eval "$(zoxide init bash --cmd cd)"`、43 行目ダミーの `GITLAB_TOKEN`） | 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5 | 手順 3 は `bash -n: OK`。手順 10 は手順 10 の補足のとおり。更新は `Fast-forward` と `検証用のコミット` の 1 行。ロールバックの手順 1 は `0`、手順 3 で実施前と同じ 43 行に戻った。手順 4 は `## …` の 1 行だけ、手順 5 は `No such file or directory` |
+| m4（`/etc/skel` の後ろに、手順書が書く行をすべて、並びを直す前の手順書の並びで。starship が最後） | 手順 1〜5・8・10 | |
+| n2（`/etc/skel` のまま） | 手順 1〜5・8・10 | 手順 10 は m4 と同じ |
 | g2（ホームにドットファイルが 1 つも無い。Git Bash の新しいホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `grep: /home/g2/.bashrc: No such file or directory` も出した。手順 3 で空の `~/.bashrc` ができた。手順 8 は 2 行の `~/.bash_profile` を作り、手順 10 のログインシェルはそこから `~/.bashrc` を読んだ（1 行目が `1`） |
 
 - 最初に流した n2・g2 は、検証の手違いで `~/.config` を root で作っていたので、手順 2 が `Permission denied` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった（直してから、はじめから流し直した）
@@ -298,18 +295,18 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 | `set -u`（m3） | `bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1`（後半まで読んだ） |
 | 手元だけのコミットと stash があるときのロールバックの手順 4（n2） | `[ahead 1]`、`log` のコミット 1 行、`stash@{0}: …` が出た |
 
-**1 回目（手順 5 と 6 が逆で、手順 7 が無かった版）**
+**1 回目**
 
 | ユーザー（実施前の `~/.bashrc`） | 流した手順（今の番号） | 結果 |
 |---|---|---|
-| mig（m3 から、Homebrew を使う 3 行と `--cmd cd` の zoxide の行を除いたもの。`GITLAB_HOST` の行もあった） | 手順 1〜4、手順 6（`sed -i 27,29d`）、手順 5・8・10、更新（当時の 1 つのブロック）、ロールバックの手順 1〜5 | 最初の手順 2 は、bare リポジトリの `safe.directory` を足す前で `fatal: detected dubious ownership` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった。そのほかは 2 回目の m3 と同じ（手順 3 の控えから実施前に戻った） |
+| mig（m3 から、Homebrew を使う 3 行と `--cmd cd` の zoxide の行を除いたもの。`GITLAB_HOST` の行もあった） | 手順 1〜4、手順 5・8・10、更新（当時の 1 つのブロック）、ロールバックの手順 1〜5 | 最初の手順 2 は、bare リポジトリの `safe.directory` を足す前で `fatal: detected dubious ownership` になり、手順 3 は `中断: 手順 2 の clone ができていない` で何も変えなかった。そのほかは 2 回目の m3 と同じ（手順 3 の控えから実施前に戻った） |
 
 1 回目で個別に確かめたこと:
 
 | 確かめたこと | 結果 |
 |---|---|
-| 移行の前後の、対話のシェルの状態（mig2。`alias`・`declare -F`・`PATH`・`EDITOR`・`VISUAL`・`MANPAGER`・`DOCKER_HOST`・`PROMPT_COMMAND`） | 違いは 2 つだけ。`DOCKER_HOST` が `unix:///podman/podman.sock`（ソケットが無く、`XDG_RUNTIME_DIR` も空のまま足されていた）から空になった。`PROMPT_COMMAND` は `([0]="starship_precmd" [1]="__zoxide_hook")` から `([0]="__wezterm_prompt_command;__wz_mouse_off;starship_precmd" [1]="__zoxide_hook")` になった（README の[読む順番](../reference/readme.md#読む順番)） |
-| 移行の前後（mig） | `PATH` は変わらず、`GITLAB_*` の 2 行は `~/.bashrc` に残った。前の `~/.bashrc` に無かった eza・gdu・Neovim・bat・starship の設定が足された（Homebrew に入っているため）。WezTerm の関数は、古い形の行が `WEZTERM_SHELL_INTEGRATION` を要したので前には無かった |
+| 導入の前後の、対話のシェルの状態（mig2。`alias`・`declare -F`・`PATH`・`EDITOR`・`VISUAL`・`MANPAGER`・`DOCKER_HOST`・`PROMPT_COMMAND`） | 違いは 2 つだけ。`DOCKER_HOST` が `unix:///podman/podman.sock`（ソケットが無く、`XDG_RUNTIME_DIR` も空のまま足されていた）から空になった。`PROMPT_COMMAND` は `([0]="starship_precmd" [1]="__zoxide_hook")` から `([0]="__wezterm_prompt_command;__wz_mouse_off;starship_precmd" [1]="__zoxide_hook")` になった（README の[読む順番](../reference/readme.md#読む順番)） |
+| 導入の前後（mig） | `PATH` は変わらず、`GITLAB_*` の 2 行は `~/.bashrc` に残った。前の `~/.bashrc` に無かった eza・gdu・Neovim・bat・starship の設定が足された（Homebrew に入っているため）。WezTerm の関数は、古い形の行が `WEZTERM_SHELL_INTEGRATION` を要したので前には無かった |
 | 2 度目の手順 3・5 | `中断: ~/.bashrc.before-bash が既にある`。読み込みの行は 1 つのまま |
 | `git -c core.autocrlf=true clone` | `git ls-files --eol` はすべて `i/lf w/lf attr/text=auto eol=lf`、`bashrc` の CR は 0 個。CRLF にした `bashrc` を読むと `$'\r': command not found` と `syntax error` になった |
 | 非対話のシェル（全部のツールがあるユーザー） | `bash -c '. ~/.bashrc' 2>&1 \| wc -c` は `0`。`ssh <HOST> true` の出力は 0 バイト（初回の `known_hosts` の警告を除く）。`ssh <HOST> 'echo …'` では `EDITOR=nvim` と Homebrew の `brew` が見え、`y`・`ll`・`z` と `__bash_config_loaded` は無かった。scp・`scp -O`・sftp・rsync は通った |
@@ -323,7 +320,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 #### 未確認事項
 
-- Windows 11 の Git Bash での実行（`awk`・`git diff --no-index`・`~/.bash_profile` の生成と Git for Windows の警告・起動の時間・`command -v` が見つからないときの時間・`y()`・`--hook none` の zoxide）
+- Windows 11 の Git Bash での実行（`git diff --no-index`・`~/.bash_profile` の生成と Git for Windows の警告・起動の時間・`command -v` が見つからないときの時間・`y()`・`--hook none` の zoxide）
 - WSL、MSYS2・QMK MSYS
 - 実機（AlmaLinux 10）と aarch64
 - 非公開の GitHub のリポジトリの clone と pull（gh と Git Credential Manager の認証）
@@ -357,8 +354,8 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 | ホーム（実施前） | 流した手順 | 結果 |
 |---|---|---|
-| w1（その PC の `~/.bashrc` と `~/.bash_profile` の写し） | 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5 | 手順 1 は `ls` の `No such file or directory` だけ。手順 2 は `Cloning into 'C:/…/.config/bash'...` から `Resolving deltas: 100% (17/17), done.` まで。手順 3 は `bash -n: OK`、手順 4 の `git diff` は 10 行すべてを `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした）。手順 5 は読み込みの 1 行と `bash -n: OK`。手順 8 は `/c/…/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`。手順 10 は手順 10 の補足の 7 行。更新は `Updating e44c6e6..3870660`・`Fast-forward` と、新しいコミットの 1 行。ロールバックの手順 1 は `0`、手順 2 は 10 行を `+` で出し、手順 3 は `bash -n: OK` で、`~/.bashrc` はその PC の `~/.bashrc` と同じ中身に戻った（`cmp` で一致）。手順 4 は `## <ブランチ>...origin/<ブランチ>` の 1 行だけ、手順 5 は `No such file or directory`（`.git` の読み取り専用のファイルも消えた） |
-| g1（ドットファイルが 1 つも無い。新しい Git Bash のホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `ls` と `grep` の 2 つの `No such file or directory`。手順 3 で空の `~/.bashrc` ができ、手順 4 は何も出さなかった。手順 8 は作った 2 行を出した。開き直したログインシェルに `WARNING:` は出ず、手順 10 は w1 と同じ |
+| w1（その PC の `~/.bashrc` と `~/.bash_profile` の写し） | 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5 | 手順 1 は `ls` の `No such file or directory` だけ。手順 2 は `Cloning into 'C:/…/.config/bash'...` から `Resolving deltas: 100% (17/17), done.` まで。手順 3 は `bash -n: OK`。手順 5 は読み込みの 1 行と `bash -n: OK`。手順 8 は `/c/…/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`。手順 10 は手順 10 の補足の 7 行。更新は `Updating e44c6e6..3870660`・`Fast-forward` と、新しいコミットの 1 行。ロールバックの手順 1 は `0`、手順 3 は `bash -n: OK` で、`~/.bashrc` はその PC の `~/.bashrc` と同じ中身に戻った（`cmp` で一致）。手順 4 は `## <ブランチ>...origin/<ブランチ>` の 1 行だけ、手順 5 は `No such file or directory`（`.git` の読み取り専用のファイルも消えた） |
+| g1（ドットファイルが 1 つも無い。新しい Git Bash のホームの代わり） | 手順 1〜5・8・10 | 手順 1 は `ls` と `grep` の 2 つの `No such file or directory`。手順 3 で空の `~/.bashrc` ができた。手順 8 は作った 2 行を出した。開き直したログインシェルに `WARNING:` は出ず、手順 10 は w1 と同じ |
 | s1（g1 と同じで、パスに空白と日本語を含む `…/新しい ホーム`） | 手順 1〜5・8・10 | g1 と同じ |
 | a1（`~/.bashrc` は読み込みの 1 行、`~/.bash_profile` は手順 8 の 2 行。starship・eza・bat・gdu も PATH に置いた） | 手順 10 | ryo-aoki-pc/wezterm#26 の `shell/wezterm.sh` では、手順 10 の補足のとおり eza の 3 行を含む出力。`main` の `shell/wezterm.sh` では、出力の前ごとに `STARSHIP_START_TIME:0:0}` が出た |
 
@@ -432,8 +429,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 | 1 | `ls` の `No such file or directory` だけ |
 | 2 | `Cloning into 'C:/Users/<WIN_USER>/.config/bash'...` から `Resolving deltas: 100% (29/29), done.` まで |
 | 3 | `bash -n: OK`。控えの `~/.bashrc.before-bash` は、書き換える前の `~/.bashrc` と同じ中身（sha256 が一致） |
-| 4 | `git diff` は 10 行すべて（LazyVim で整形された `y()`・古い形の WezTerm の行・zoxide の行）を `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした） |
-| 5 | 読み込みの 1 行と `bash -n: OK`。`~/.bashrc` はこの 1 行だけになった |
+| 5 | 読み込みの 1 行と `bash -n: OK` |
 | 8 | `/c/Users/<WIN_USER>/.bash_profile:3:test -f ~/.bashrc && . ~/.bashrc`（何も作らない） |
 | 10（開き直した窓） | 手順 10 の補足の、Windows の 7 行と同じ。`PROMPT_COMMAND` は `__wezterm_prompt_command;__wz_mouse_off;__zoxide_hook`。WezTerm の統合は、GUI が渡す `WEZTERM_SHELL_INTEGRATION` から読まれた |
 
@@ -518,7 +514,6 @@ SSH の clone で、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blo
 | 1 | `ls` の `No such file or directory` だけ |
 | 2 | `Cloning into '/home/<USER>/.config/bash'...` から `Resolving deltas: 100% (35/35), done.` まで。ホスト鍵の問いは出ず、`known_hosts` は前後で同じ中身だった。`git ls-files --eol` は 8 つとも `i/lf w/lf` |
 | 3 | `bash -n: OK`。控えの `~/.bashrc.before-bash` は、書き換える前の `~/.bashrc` と同じ中身（`cmp` で一致） |
-| 4 | `git diff` は 26〜34 行目の 9 行（Homebrew・zoxide・`y()`）を `-` で出し、`grep` は何も出さなかった（手順 6・7 は飛ばした） |
 | 5 | 読み込みの 1 行と `bash -n: OK` |
 | 8 | `/home/<USER>/.bash_profile:4:if [ -f ~/.bashrc ]; then` と `/home/<USER>/.bash_profile:5:    . ~/.bashrc`（何も作らない）。終了コードは 2 だった（無い `~/.bash_login`・`~/.profile` を `grep` が開けないため） |
 | 10（開き直したペイン） | 手順 10 の補足の、AlmaLinux 10 の実機の 7 行 |
@@ -559,7 +554,7 @@ SSH の clone で、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blo
 - WezTerm の GUI の画面とキー操作（このホストの GNOME の画面では試していない。OSC 133 は生の出力で見た）
 - システムの sshd（PAM を通る）越しの ssh・scp・sftp、LAN の別の PC からの ssh、rsync（このホストに無い）
 - 初めて github.com につなぐホストでの手順 2 の問い（このホストの `known_hosts` には前からあった。WSL では確かめた）
-- 手順 6・7（エディタで直す行が無かった）、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)（導入を残した）
+- [ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)（導入を残した）
 - starship・eza・bat・gdu があるとき（このホストに無い）
 
 ---
@@ -573,7 +568,6 @@ SSH の clone で、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blo
 **確かめたこと**:
 
 - `bash -n bashrc` と `shellcheck -s bash bashrc` が通る
-- 移行の awk: `/etc/skel` の `~/.bashrc` に、setup-notes の `brew shellenv`・bash-settings.md の 5 行・fzf.md の 5 行を足したもの（36 行）から、その 11 行だけが消えて `/etc/skel` と同じ 25 行になった
 - 非対話: `bash -c '. ~/.bashrc' 2>&1 | wc -c` が `0`、`ssh <HOST> true` の出力が 0 バイト。`bash -u -c` は `ok`、`bash --norc -u -i -c` は `ok-1`
 - 対話（SSH でログインした bash を tmux のペインで）: 手順 10 の出力は `1`、eza の 3 つのエイリアス、`function`（`z`）、`HISTSIZE=100000 shopt -s autocd shopt -s globstar`、`bind -X` の 2 行、`complete -o bashdefault -o default -F _brew brew` と `complete -F _fzf_path_completion bat`、最後に `0`
 - fzf は `PROMPT_COMMAND` に触らない: `declare -p PROMPT_COMMAND` は、`. ~/.bashrc` を 2 回読み直す前後とも `([0]="starship_precmd" [1]="__zoxide_hook")`。`bind -X | sort | uniq -d` は空のまま 2 行
@@ -701,11 +695,10 @@ SSH の clone で、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blo
 VM の環境は [新規 AlmaLinux VM の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)を参照。
 
 - 同じ新規 VM の実 SSH 対話 PTY で、`3d5323e` の `MANPAGER="sh -c 'col -bx | bat -l man -p'"` は `man bash` の SGR の ESC を落とし、`1mNAME0m`・`4mBASH24m` などを文字として表示した
-- [bat の公式 README](https://github.com/sharkdp/bat#man) と同じ `MANPAGER="bat -plman"` へ変更した。旧パイプに `MANROFFOPT=-c` を付ける形でも正常に表示したが、共通設定には追加の環境変数が要らない直接 bat の形を採用した。新しい値も `migrate/old-lines.txt` に加え、旧設定の移行対象を保った
+- [bat の公式 README](https://github.com/sharkdp/bat#man) と同じ `MANPAGER="bat -plman"` へ変更した。旧パイプに `MANROFFOPT=-c` を付ける形でも正常に表示したが、共通設定には追加の環境変数が要らない直接 bat の形を採用した
 - 共通設定の読み直し後に `man bash` の見出し・本文と `q` での終了を確認した。この表示は AlmaLinux 10.2 / bat 0.26.1 / man-db 2.12.0 の結果。Windows Git Bash には `man` が無く、WSL・aarch64 の man 表示は今回は再検証していない
-- 初回の補助 fixture は Windows の改行変換で CRLF になり、構文検査と行照合が失敗した。専用ユーザーの試験用設定を OS 既定に戻し、LF の fixture で頭から移行をやり直して上の結果を得た。本文のブロックの不具合ではなかった
 
-- 修正後の `bash -n`・`shellcheck -s bash`・導入と移行の 8 回帰テストも成功した。共通設定本体は非対話・対話の `set -u` で読めた。OS の `/etc/bashrc` は起動時の `set -u` に対応していないため、その試験は共通設定本体を直接読む形で行った
+- 修正後の `bash -n`・`shellcheck -s bash`・8 回帰テストも成功した。共通設定本体は非対話・対話の `set -u` で読めた。OS の `/etc/bashrc` は起動時の `set -u` に対応していないため、その試験は共通設定本体を直接読む形で行った
 
 ## 非対話シェルとツールの初期化
 
