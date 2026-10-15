@@ -46,4 +46,3 @@
 - [注意点](docs/extra/install.md#注意点)
 - 検証記録: [README の実測](docs/verification/readme.md)・[設定本体と手動移行](docs/verification/install.md)・[install.sh](docs/verification/quick-start.md)
 - 変更後の確認のコマンド: [AGENTS.md の「よく使うコマンド」](AGENTS.md#よく使うコマンド)
-- 旧手順書の移動先: setup-notes の[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)

@@ -27,7 +27,7 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 
-# Neovim を既定のエディタにする（setup-notes の docs/neovim.md の「Neovim」の手順 4。もとは neovim.md）
+# Neovim を既定のエディタにする（setup-notes の docs/neovim.md の「Neovim」の手順 4）
 # 手順書の直接追記に付ける目印は移行時に外し、ここではツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR=nvim
@@ -40,10 +40,10 @@ if command -v bat >/dev/null 2>&1; then
 	export MANPAGER="bat -plman"
 fi
 
-# Docker の API を使うツールに podman のソケットを教える（docs/podman.md「Docker 向けのツールから使う」）
+# Docker の API を使うツールに podman のソケットを教える（setup-notes の docs/almalinux-setup.md の「Podman: Docker 向けのツールから使う」）
 # ソケットがあるときだけ足す（podman.socket を有効にしていないホストや、
 # XDG_RUNTIME_DIR の無い sudo -iu のシェルでは足さない）
-# root は、root のコンテナを扱うシステムの podman.socket のソケットにする（docs/lazydocker.md「root でも使う」）
+# root は、root のコンテナを扱うシステムの podman.socket のソケットにする（setup-notes の docs/almalinux-setup.md の「lazydocker: root でも使う」）
 if [ -z "${DOCKER_HOST-}" ]; then
 	if [ "${EUID-}" = 0 ]; then
 		if [ -S /run/podman/podman.sock ]; then
@@ -79,12 +79,12 @@ if command -v eza >/dev/null 2>&1; then
 	alias lt="eza --tree --level=2"
 fi
 
-# gdu（docs/gdu.md「gdu の名前で呼ぶ」。Homebrew 版の実行ファイルは gdu-go）
+# gdu（setup-notes の docs/almalinux-setup.md の「gdu: gdu の名前で呼ぶ」。Homebrew 版の実行ファイルは gdu-go）
 if command -v gdu-go >/dev/null 2>&1; then
 	alias gdu=gdu-go
 fi
 
-# yazi を閉じたときに、そのディレクトリへ移る y（setup-notes の docs/almalinux-setup.md の「yazi」の手順 4。もとは yazi.md 手順 3）
+# yazi を閉じたときに、そのディレクトリへ移る y（setup-notes の docs/almalinux-setup.md の「yazi」の手順 4）
 # 移ったかは、文字列ではなく同じディレクトリか（-ef）で比べる（Git Bash では yazi が C:\… の形で書き、
 # $PWD の /c/… と文字列では一致しないので、動かずに閉じても cd し直して cd - の戻り先が変わる）
 if command -v yazi >/dev/null 2>&1; then

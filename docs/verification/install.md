@@ -1,54 +1,51 @@
 # bash 導入の検証記録
 
-以下は既存文書から移した記録。本文の「本書」「この文書」と手順番号は、記録元の手順書を指す。新しく検証した記録ではない。
+記録の手順は [当時の導入手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md)、背景説明は [補足資料](../reference/install.md) を参照する。日付・対象の版・実施範囲は各記録に記載する。
 
-手順は [install.md](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md)、背景説明は [補足資料](../reference/install.md) を参照する。日付・対象の版・実施範囲は各記録に記載する。
+### HTTPS の clone と配置
 
-### <code>~/.config/bash</code> に置く理由と、HTTPS の cloneの検証記録
+記録の手順 2 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 2 に対応する。
-
-- Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [windows-openssh-server.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#openssh-サーバー) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
+- Git Bash のホームは `/c/Users/<WIN_USER>`（setup-notes の [Windows 11 の OpenSSH サーバー](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#openssh-サーバー) の実測）なので、Windows では `C:\Users\<WIN_USER>\.config\bash` に置かれる。git は `Cloning into 'C:/…/.config/bash'...` と Windows の形のパスで出す（検証は使い捨ての `HOME` で行った）
 - `.gitattributes` で改行を LF に固定してある。`core.autocrlf=true` の git（scoop の git の既定）で clone しても、CRLF にならない（検証コンテナと、Windows 11 の Git for Windows 2.55.0 で `git -c core.autocrlf=true clone` して確かめた）
-- 2026-10-03 にこのリポジトリを公開し、clone を HTTPS に変えた（利用者の選択）
+- 公開のリポジトリを HTTPS で clone する（利用者の選択）
   - 認証は要らない。SSH の鍵・Git Credential Manager・gh の資格情報は使わない
   - x86_64 の AlmaLinux 10 のコンテナで、git の認証の設定の無いユーザーが、問いを出させない `GIT_TERMINAL_PROMPT=0` を付けて clone できた（`~/.ssh` も作られなかった）
-  - 非公開だった間は、2026-10-01 までは HTTPS（gh の資格情報）、その後は SSH（GitHub に登録した鍵）で clone していた（記録は付録）
 - インターネットに出られないホストも、同じ URL で clone する。HTTPS の git は `ALL_PROXY` を読み、SSH の git は読まない
   - Windows 11 の PC で、待ち受けの無いプロキシ（`socks5h://127.0.0.1:9`）を `ALL_PROXY` に入れると、SSH の git はプロキシを使わずに通り、HTTPS の git は `Failed to connect to github.com:443 over proxy 127.0.0.1` で失敗した
-  - HTTPS の git がトンネルを通ることは、setup-notes の ssh-socks-tunnel.md 手順 3 の補足が、公開のリポジトリで確かめている。このリポジトリをトンネル越しに clone・pull するところは試していない
+  - HTTPS の git がトンネルを通ることは、setup-notes の almalinux-setup.md の「SSH の SOCKS トンネル」の補足が、公開のリポジトリで確かめている。このリポジトリをトンネル越しに clone・pull するところは試していない
 - 止まったときに `~/.config/bash` が残らないことは、非公開だったときに、HTTPS で認証を聞かれたところを `Ctrl+C` で止めて確かめた（AlmaLinux 10.2 の git 2.52.0）
 
-### 消し方の検証記録
+### 既知の設定行の削除
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 3 に対応する。
+記録の手順 3 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
 - yazi の `y()` は、`migrate/old-y.txt` の形のどれかと、続く行がすべて同じときだけ消す。形は、setup-notes の yazi.md の 7 行（今の形と、2026-10-01 に比べ方を直す前の形）と、それぞれを LazyVim で保存した 8 行（保存のときに shfmt が整形した形）の 4 つ。`sed '/^function y() {$/,/^}$/d'` のような範囲の消し方は、閉じ括弧が見つからないと最後の行まで消すので使わない
 - 検証コンテナで、実機と同じ並び（Homebrew・`y()`・zoxide・`if … fi` の 3 行の WezTerm）の `~/.bashrc` に流した出力は、[付録](#付録-コンテナでの検証記録2026-09-30)にある
 
-### 残る行の例の検証記録
+### 残る設定行
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 4 に対応する。
+記録の手順 4 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
 - 手順 3 から手順 6 までの間に新しく開いたシェルでは、残った行が `command not found` を出すことがある（検証コンテナで、手順 6 の前に残っていた `eval "$(zoxide init bash --cmd cd)"` が `zoxide: command not found` を出した。手順 6 で後ろへ移すと出なくなった）
 
-### 残す行を後ろへ移す理由の検証記録
+### zoxide のフック
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 6 に対応する。
+記録の手順 6 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
 - この設定は `eval "$(zoxide init bash)"` でフックを足している。zoxide は `PROMPT_COMMAND` の先頭の要素しか見ないので、AlmaLinux 10（`/etc/bashrc` が配列にする）では、後ろに残した zoxide の行がフックをもう 1 つ足し、`. ~/.bashrc` で読み直すたびに増える（検証コンテナで `[1]="__zoxide_hook" [2]="__zoxide_hook"`）
 - `--hook none` を足すと、残した行は `cd` などの関数だけを足す。検証コンテナでは、フックは読み直しても 1 つのままで、`cd share` で `/usr/share` に移り、`zoxide: detected a possible configuration issue.` は出なかった。`z` もそのまま使える（この設定が定義する）
 
-### Git Bash の <code>~/.bash_profile</code>の検証記録
+### Git Bash の <code>~/.bash_profile</code>
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 8 に対応する。
+記録の手順 8 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
 - Git for Windows は、`~/.bashrc` があって 3 つとも無いと、`~/.bashrc` を読む `~/.bash_profile` を作り、`WARNING: Found ~/.bashrc but no ~/.bash_profile, ~/.bash_login or ~/.profile.` と赤く表示する（`/etc/profile.d/bash_profile.sh`）。この手順は、それを先に作っておくもの
   - 検証した PC（Git for Windows 2.55.0）で、`~/.bashrc` だけがあるホームのログインシェルを開くと、この表示が出て、`# generated by Git for Windows` で始まる 3 行の `~/.bash_profile` ができた。この手順で作った後は出なかった
 
-### 検証での出力の検証記録
+### 対話シェルの出力
 
-元の説明は [実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 10 に対応する。
+記録の手順 10 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の番号。
 
 検証コンテナで、Homebrew で zoxide・yazi・eza・bat・neovim・gdu・starship を入れたユーザーの、開き直した対話のシェル（`script` の擬似端末）での出力（プロンプトは省いた）:
 
@@ -65,7 +62,7 @@ EDITOR=nvim DOCKER_HOST=
 0
 ```
 
-- `DOCKER_HOST` は、podman の API ソケット（setup-notes の [podman.md 手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
+- `DOCKER_HOST` は、podman の API ソケット（setup-notes の [当時の Podman の手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/podman.md#実施手順)）があるときだけ入る。検証コンテナには無かった
 - 上の 3 つの出力は、2026-10-02 に足した `HISTSIZE` / `bind -X` / `complete -p` の 3 行より前のもの。追加分は、[x86_64 のコンテナの付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)と、[Windows ホストでの再検証の付録](#付録-windows-ホストでの設定の再検証2026-10-06)を参照
 
 AlmaLinux 10 の実機（Raspberry Pi 5。Homebrew で zoxide・yazi・neovim を入れたホスト）で、開き直したログインシェル（tmux のペイン）での出力:
@@ -98,9 +95,9 @@ EDITOR=nvim DOCKER_HOST=
 - 同じ PC で eza・bat・gdu・starship も足すと、`alias ll='ls -l'` の代わりに `la`・`ll`・`lt` の eza の 3 行が出た。`alias gdu` は出なかった
 - Git Bash には `XDG_RUNTIME_DIR` が無いので、`DOCKER_HOST` は入らない
 
-### root で流したときの出力の検証記録
+### root での設定行の削除
 
-元の説明は [root のシェルでも読む（任意）](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)の手順 2 に対応する。
+記録の手順 2 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意) の番号。
 
 検証コンテナで、setup-notes の root の 2 行がある `/root/.bashrc` に流したときの、手順 4 の `git diff` と手順 8 の出力（抜粋）:
 
@@ -119,9 +116,9 @@ EDITOR=nvim DOCKER_HOST=
 - 手順 2 は `Cloning into '/root/.config/bash'...`。この時の root のシェルはまだこの設定を読んでいないので、git は RPM のもの
 - AlmaLinux 10 の `/root/.bashrc` は、`cp`・`rm`・`mv` を `-i` のエイリアスにしている。手順 3 の `cp -p` は控えがまだ無いので聞かれない。[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 3 には `command` を付けてある（付ける前は、`cp: overwrite '/root/.bashrc'?` が次に貼った行を答えとして読み、控えに戻らなかった）
 
-### root のシェルでの出力の検証記録
+### root の対話シェルの出力
 
-元の説明は [root のシェルでも読む（任意）](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)の手順 4 に対応する。
+記録の手順 4 は [当時の手順書](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意) の番号。
 
 検証コンテナ（Homebrew で starship・zoxide・fzf・eza・lazydocker を入れ、システムの `podman.socket` を有効にしたホスト）で、入り直した root のシェルでの出力（プロンプトは省いた）:
 
@@ -145,31 +142,31 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 - `brew install tree` は `Error: Running Homebrew as root is extremely dangerous and no longer supported.` で止まった
 - `function` は `z` の 1 行（yazi は入れていないので `y` は無い）
 
-## 手順冒頭の検証範囲
+## 導入の検証範囲
 
 > [!WARNING]
 > **AlmaLinux 10 は、x86_64 のコンテナ・新規 VM と、aarch64 の実機（Raspberry Pi 5）で検証した**（実機は、その本物の `~/.bashrc` に導入した。どちらも、画面の代わりに擬似端末や tmux のペインで対話のシェルを動かした）。**Windows 11 は、実機の Git Bash で `HOME` を使い捨てのディレクトリにして流し、その後、その PC の本物の `~/.bashrc` に導入した**。**2026-10-06 に Windows ホストで設定本体と移行 awk を再検証した**（履歴・`shopt`・fzf・fd を含む。bat のプレビュー、Homebrew の補完、fzf の実際のキー操作は未確認）。**WezTerm の GUI の画面とキー操作は、どの OS でもまだ試していない**。**x86_64 の AlmaLinux 10 の実機では試していない**（WSL では、SSH で clone していたときの手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)だけを流した）。**HTTPS の clone と既知の旧設定の手動移行は、2026-10-06 に x86_64 の新規 VM の専用ユーザーでも確認した**。**インターネットに出られないホストの、トンネル越しの HTTPS の clone と更新も試していない**。**root 自身の新規導入・再実行は x86_64 の新規 VM でも `install.sh` で確認した**。詳しくは[対象と検証環境](#対象と検証環境)。
 
-## 手順冒頭の検証範囲
+## root の利用条件と検証範囲
 
 > [!WARNING]
 > - **自分専用のマシンで、一般ユーザーを信用できるときだけ通す**。root のシェルを開くたびに、Homebrew のユーザーが書き換えられるコマンド（`brew shellenv`・starship・zoxide・fzf）とファイル（Homebrew の補完）が root で動く
 > - root でも Homebrew が PATH の先頭になる。root の `git`・`curl` なども、Homebrew に入っていれば Homebrew のものが使われる（`brew install` などは root では断られる）
 > - この節は **x86_64 のコンテナでのみ検証した**（[付録](#付録-root-のシェルでも読む節の検証記録2026-10-05)）
 
-### 手順内の記述
+### トンネル越しの clone の未確認範囲
 
-- インターネットに出られないホストでは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。この手順の補足）
+- インターネットに出られないホストでは、setup-notes の [当時の SSH の SOCKS トンネルの手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。この手順の補足）
 
-### 手順内の記述
+### トンネル越しの更新の未確認範囲
 
-- インターネットに出られないホストは、setup-notes の [ssh-socks-tunnel.md 手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。[手順 2](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の補足）
+- インターネットに出られないホストは、setup-notes の [当時の SSH の SOCKS トンネルの手順 1〜3](https://github.com/ryo-aoki-pc/setup-notes/blob/ae1981a48fee0e26540d82224d4c195492bae782/docs/ssh-socks-tunnel.md#実施手順) でトンネルを張ったシェルで貼る（トンネル越しには試していない。[手順 2](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順) の補足）
 
-### 手順内の記述
+### root の clone の未確認範囲
 
 - `sudo -i` は `ALL_PROXY` を渡さない。インターネットに出られないホストで root の clone は試していない
 
-### 手順内の記述
+### origin の URL の設定
 
 - `set-url` は、HTTPS で clone したホストでは何も変えない。SSH で clone したホスト（2026-10-01〜10-03 の版の手順）を HTTPS にそろえる
 
@@ -200,7 +197,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
     - `HOME` は使い捨てのディレクトリにした（その PC の `~/.bashrc` と `~/.bash_profile` の写し、ドットファイルの無いホーム、空白と日本語を含むホーム）
     - 確認したこと
       - 手順 1〜5・8・10、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log、[ロールバック](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#ロールバック)の手順 1〜5（その PC の `~/.bashrc` の写しは、元と同じ中身に戻った）
-      - 非公開のリポジトリの clone と pull。はじめは HTTPS（認証は gh の資格情報）で流し、clone を SSH に変えた後に、手順 2（初めてつなぐときの問いに `yes` と `no`）と更新を SSH で流し直した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）。`core.autocrlf=true` の clone で LF
+      - 非公開のリポジトリの clone と pull。はじめは HTTPS（認証は gh の資格情報）で流し、clone を SSH に変えた後に、手順 2（初めてつなぐときの問いに `yes` と `no`）と更新を SSH で流し直した（[付録](#付録-ssh-の-clone-の検証記録2026-10-01)）。`core.autocrlf=true` の clone で LF
       - Git Bash の awk・`git diff --no-index`・`sed -i`・読み取り専用のファイルを含む `rm -rf`。移行の awk が、LazyVim で整形された `y()` を消さないことを見つけて直した
       - `~/.bash_profile` の無いホームで Git for Windows が出す `WARNING:` と、それが作る `~/.bash_profile`
       - 対話のシェルの OSC 133 の `D`・zoxide の警告・読み直し（starship の有無の両方）、`--hook none` の zoxide、`y()`（本物の yazi を端末で動かした）
@@ -208,7 +205,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
       - 開いたシェルにツールを入れて `. ~/.bashrc` で読み直したとき（eza・bat）
       - その PC の sshd に、同じ PC の WSL の AlmaLinux 10 から鍵でつないだ: `ssh <HOST> <コマンド>`・`scp -O`・scp・sftp・対話の ssh。SSH のセッションで scoop の shim が起動できない状態（本物の RedirectionGuard）も作って比べた
     - 2026-10-01 の後半に、その PC の本物の `~/.bashrc` に導入した。利用者の WezTerm の GUI に新しい窓を開いて手順 1〜5・8 を貼り、開き直した窓で手順 10 と、cwd の引き継ぎ・`z`・`y` を確かめた。clone を SSH に変えた後、その PC の `~/.config/bash` も SSH に切り替えた（[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の箇条書き）
-  - WSL の AlmaLinux 10（同じ PC の WSL）: 手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log だけを、`HOME` を使い捨てのディレクトリにして流した（[付録](#付録-ssh-の-clone-に変えたときの検証記録2026-10-01)）
+  - WSL の AlmaLinux 10（同じ PC の WSL）: 手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 の pull と log だけを、`HOME` を使い捨てのディレクトリにして流した（[付録](#付録-ssh-の-clone-の検証記録2026-10-01)）
   - AlmaLinux 10 の実機（下表の Raspberry Pi 5）: 利用者の依頼で、その本物の `~/.bashrc` に導入し、導入を残した（[付録](#付録-almalinux-10-の実機aarch64への導入2026-10-02)）
     - **この文書の bash のコードブロックを抜き出したもの**を、利用者の tmux とは別のソケットの tmux のペインのログインシェルに、括弧付き貼り付けで貼って流した。手順 9 は、tmux のセッションを閉じて開き直した
     - 確認したこと
@@ -217,7 +214,7 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
       - `y()`（本物の yazi）と `z`
       - 非対話のシェルで何も出さないこと（`bash -c`、自分のユーザーで 127.0.0.1 に立てた sshd 越しの `ssh <HOST> <コマンド>`・scp・`scp -O`・sftp）、対話の ssh、`set -u`
       - podman のソケットがあるときの `DOCKER_HOST`（`systemctl --user start` で一時的に起動した）、起動の時間
-  - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-に変えたときの検証記録2026-10-03)）
+  - HTTPS の clone（2026-10-03）: x86_64 の AlmaLinux 10 のコンテナで、手順 1・2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順 1 を一般ユーザーの bash に流した（[付録](#付録-https-の-clone-の検証記録2026-10-03)）
     - 確認したこと: 問いを出させない `GIT_TERMINAL_PROMPT=0` で clone と pull が通る、LF、SSH で clone したホストの代わり（`origin` を `git@github.com:…` にした clone）が更新で HTTPS になって pull できる
   - 2026-10-02 に `bashrc` に足した履歴と `shopt`・Homebrew の補完・fzf は、x86_64 のコンテナで確かめた（[付録](#付録-履歴shopthomebrew-の補完fzf-を足したときの検証記録2026-10-02)）。2026-10-06 に Windows ホストでも設定本体と移行 awk を再検証した（[付録](#付録-windows-ホストでの設定の再検証2026-10-06)）
     - 確認したこと: 履歴の追記と `ignoreboth`、`shopt`、scoop の fzf・fd、対話と非対話での `set -u`、ログインシェル、OSC 133 の `D;1`、読み直しでのフックの重複防止、zoxide、Windows 形式の cwd-file を使う `y()`（スタブ）、非ゼロの `EUID` と既存 `DOCKER_HOST` の保存、移行 awk の 8 ケース
@@ -252,40 +249,41 @@ complete -o bashdefault -o default -F _fzf_path_completion bat
 | Homebrew とツール | あり（検証環境の表） | あり |
 | `~/.config/wezterm` | あり | 無し |
 
-### 選択した方針の記録
+### 選択した方針
 
-- **公開のリポジトリを、HTTPS で clone する**（2026-10-03 に公開し、利用者の選択で SSH から変えた）。clone と pull に認証は要らない
-  - HTTPS の git は setup-notes の ssh-socks-tunnel.md のトンネル（`ALL_PROXY`）を通るので、インターネットに出られないホストも同じ URL にした（SSH の git は通らない）
+- **公開のリポジトリを、HTTPS で clone する**（利用者の選択）。clone と pull に認証は要らない
+  - HTTPS の git は setup-notes の almalinux-setup.md の「SSH の SOCKS トンネル」（`ALL_PROXY`）を通るので、インターネットに出られないホストも同じ URL を使う（SSH の git は通らない）
   - このリポジトリへ push するには、別に認証（gh など）が要る。この手順書では push しない
-  - 非公開だった間は、HTTPS（gh の資格情報）、2026-10-01 からは SSH（GitHub に登録した鍵）で clone していた（記録は付録）
-- **プロンプトの 3 つ（starship・WezTerm・zoxide）は、この順に読む**。setup-notes の starship.md と ryo-aoki-pc/wezterm の手順書も、同じ並びに直した（2026-09-30。前は starship を最後に置いていた）。理由と実測は README の[読む順番](../reference/readme.md#読む順番)
-### 完了時点の状態の測定・実施記録
+- **プロンプトの 3 つ（starship・WezTerm・zoxide）は、この順に読む**。理由と実測は参考資料の[読む順番](../reference/readme.md#読む順番)
+
+### root の設定ファイル
 
 | `/root/.config/bash`・`/root/.bashrc`・`/root/.bashrc.before-bash` | [root のシェルでも読む](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#root-のシェルでも読む任意)の節を通したときだけ。中身は上の 3 つと同じ形 |
 
-### 注意点の測定・実施記録
+### sshd からの読み込み
 
-  - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-openssh-server.md の Git Bash）
+  - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-setup.md の「OpenSSH サーバー」の Git Bash）
 
-### 注意点の測定・実施記録
+### Git Bash の非対話シェル
 
     - Git Bash は、`bash -c` のときに環境変数 `SSH_CLIENT` があり、`SHLVL` が無ければ読んだ（Windows 11 の PC で、sshd の起動のしかたを真似て確かめた。`SSH_CLIENT` を外すと読まなかった）
 
-### 注意点の測定・実施記録
+### SSH のセッションで起動できない shim
 
   - 検証した PC の sshd で、自分で作ったジャンクションを通る shim（SSH のセッションでは起動できない）を PATH の先頭に置いて確かめた。`~/.bashrc` に zoxide の初期化を直に書いていたときは、`Shim: Could not create process …` が毎回出た（scp・sftp の転送は通ったが、エラーが出続けた）
 
-### 注意点の測定・実施記録
+### ツールを入れたシェルでの再読み込み
 
   - 開いているシェルは、開いたときにあったツールの分だけ読んでいる。そのシェルで使うなら `. ~/.bashrc` で読み直す（検証コンテナで、開いたシェルに zoxide を入れて読み直し、`z` が警告無しで動いた）
 
-### 注意点の測定・実施記録
+### WSL と対象外の環境
 
   - WSL は、WSL の中で手順 1〜10 を通す（試していない）。MSYS2・QMK MSYS のホームは対象外
 
-### 参照の記録
+### 設定の参照先
 
 - [README](../../README.md) — 読むものの表、読む順番とその実測、移行で消す行
+
 ### 付録: コンテナでの検証記録（2026-09-30）
 
 x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --network host almalinux:10 sleep infinity` で使い捨てのコンテナを立てた。実機には何も加えていない。
@@ -364,7 +362,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 **環境**:
 
-- Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64。setup-notes の windows-openssh-server.md を通した PC（sshd が動いていて、`DefaultShell` は Git Bash）
+- Windows 11 Pro 26H2（ビルド 26300.9457）/ x86_64。setup-notes の windows-setup.md の「OpenSSH サーバー」を通した PC（sshd が動いていて、`DefaultShell` は Git Bash）
 - Git for Windows 2.55.0.windows.5（`C:\Program Files\Git`、bash 5.3.15、`MSYSTEM=MINGW64`、`core.autocrlf=false`）
 - WezTerm 20260905-153129-092dcf70。シェル統合は、WezTerm の GUI と同じく `WEZTERM_SHELL_INTEGRATION`（`C:\Users\<WIN_USER>\.config\wezterm/shell/wezterm.sh`。ryo-aoki-pc/wezterm の `main` の `826037f`）で渡した
 - ツールは[対象と検証環境](#対象と検証環境)の表
@@ -484,9 +482,9 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 ---
 
-### 付録: SSH の clone に変えたときの検証記録（2026-10-01）
+### 付録: SSH の clone の検証記録（2026-10-01）
 
-手順 2 の clone を HTTPS から SSH に変えた後に、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)を流し直した。インターネットに出られないホストだけは HTTPS のままにした（SSH の git がトンネルを通らないため）が、トンネル越しの clone と pull は試していない。どの検証も、本物の `~/.ssh/known_hosts` には書いていない。
+SSH の clone で、手順 2 と[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)を流した。SSH の git はトンネルを通らないため、インターネットに出られないホストには HTTPS を使う条件だったが、トンネル越しの clone と pull は試していない。どの検証も、本物の `~/.ssh/known_hosts` には書いていない。
 
 **Windows 11 の PC の Git Bash**: 前の付録と同じ PC で、同じ流し方（`wezterm-mux-server` のペインのログインシェルに、この文書から抜き出したブロックを括弧付き貼り付けで貼る）。
 
@@ -567,7 +565,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 | 確かめたこと | 結果 |
 |---|---|
-| 非対話（CLAUDE.md の「よく使うコマンド」） | `bash -c '. ~/.config/bash/bashrc'`・`bash -c '. ~/.bashrc'`・sshd の起動のしかたを真似た `bash -c true`（`SSH_CLIENT` を付け、`SHLVL` 無し）は 0 バイト。`bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok`、`bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1` |
+| 非対話（AGENTS.md の「よく使うコマンド」） | `bash -c '. ~/.config/bash/bashrc'`・`bash -c '. ~/.bashrc'`・sshd の起動のしかたを真似た `bash -c true`（`SSH_CLIENT` を付け、`SHLVL` 無し）は 0 バイト。`bash -u -c '. ~/.config/bash/bashrc; echo ok'` は `ok`、`bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'` は `ok-1` |
 | 対話のシェルの生の出力（`script` の擬似端末。WezTerm の GUI の形と ssh の形） | 導入の前も後も、`false` の後は `D;1`（COPR の統合が送る。`D` は重ならない）。`cd /usr/share` → `cd` → `z share` は警告無しで `/usr/share` へ移った。`. ~/.bashrc` の前後で `PROMPT_COMMAND` は同じ（導入の後は `([0]=$'__bp_precmd_invoke_cmd\n__wz_mouse_off;:;__zoxide_hook' [1]="__bp_interactive_mode")`）で、`PS0` は無い。制御文字を印に置き換えて比べると、導入の前と後のログは同じで、違いはプロンプトごとのマウス報告の解除（`__wz_mouse_off`）だけだった（起動して最初のコマンドに `C` が無いのも、導入の前と同じ） |
 | 導入の前後のシェルの状態（`alias`・`declare -F`・`PATH`・`EDITOR`・`VISUAL`・`MANPAGER`・`DOCKER_HOST`・`y` の中身） | 違いは、`alias vi='nvim'`、`EDITOR`・`VISUAL` が `nvim`、`__wz_mouse_off`・`__wz_eat_mouse_report`、`__bash_config_loaded=1`、`y` の比べ方（`!=` から `-ef`）だけ。`PATH` は同じ |
 | tmux のペイン（`TERM=tmux-256color`・`TERM_PROGRAM=tmux`） | `false` の後は `D;1`、読み直しても `PROMPT_COMMAND` は同じ、`z Docu` で `~/Documents` へ移り、警告は出なかった |
@@ -605,7 +603,7 @@ x86_64 のクラウドホストで `dockerd` を動かし、`docker run -d --net
 
 ### 付録: 履歴・shopt・Homebrew の補完・fzf を足したときの検証記録（2026-10-02）
 
-setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) にまとめてある）を足したときに、`bashrc` に履歴と `shopt`・Homebrew の補完・fzf（`FZF_*` を含む）を足した。**x86_64 のコンテナだけで確かめた**（Git Bash と実機は未確認）。
+`bashrc` に履歴と `shopt`・Homebrew の補完・fzf（`FZF_*` を含む）を足した。対応する手順は setup-notes の[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)にある。**x86_64 のコンテナだけで確かめた**（Git Bash と実機は未確認）。
 
 **環境**: AlmaLinux 10.2 の `quay.io/almalinuxorg/10-init`（Docker 29.6.2、`--privileged`・`--network host`。systemd と sshd）。Homebrew 7.0.7 に fzf 0.74.4・fd 10.5.0・bat 0.26.1・eza 0.23.5・zoxide 0.10.0・starship 1.26.0・shellcheck 0.11.0。bash-completion 2.11（BaseOS）。`~/.config/wezterm` は無し。
 
@@ -627,9 +625,9 @@ setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https:
 
 ---
 
-### 付録: HTTPS の clone に変えたときの検証記録（2026-10-03）
+### 付録: HTTPS の clone の検証記録（2026-10-03）
 
-このリポジトリを公開した後に、手順 2 の clone を HTTPS に戻し、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)を 1 つの手順（`origin` を HTTPS にそろえる `set-url`・pull・log）にまとめた。そのブロックを、x86_64 のコンテナで流した。
+公開リポジトリの HTTPS の clone（手順 2）と、[更新](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#更新)の手順（`origin` を HTTPS にそろえる `set-url`・pull・log）のブロックを、x86_64 のコンテナで流した。
 
 **環境**: `docker.io/library/almalinux:10`（AlmaLinux 10.2、x86_64。クラウドのホストの Docker 29.6.2、`--network host`）に `git-core-2.52.0-1.el10` を入れ、一般ユーザー（git の設定も `~/.ssh` も無い）の `bash` に、この文書のブロックを抜き出したものを流した。
 
@@ -664,7 +662,7 @@ setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https:
 **手順書の外で行った準備**:
 
 - プロキシの CA・dnf・systemd とログインシェルのプロキシの環境変数を入れ、ホストの側の中継でプロキシに届かせた（root の podman のネットワークがホストに及ばないよう、`--network host` にしなかった）
-- Homebrew の root の断りが効くように `/.dockerenv` を消した（あると Homebrew は root を断らない。setup-notes の homebrew.md の付録）
+- Homebrew の root の断りが効くように `/.dockerenv` を消した（あると Homebrew は root を断らない。setup-notes の almalinux-setup.md の検証記録の「Homebrew」の付録）
 - 手順 2・更新の clone の URL を、このリポジトリの作業中のコミットの bare リポジトリ（`/srv/bash.git`、root の持ち物。`git config --system --add safe.directory`）に置き換えた
 - `<USER>` で[実施手順](https://github.com/ryo-aoki-pc/bash/blob/67abb84ed5601b242870841ff1da381388f5427a/docs/install.md#実施手順)の手順 1〜5・8・10 を通した（手順 9 は ssh を入り直した）
 - `/root/.bashrc` には、setup-notes の homebrew.md「root のシェルでも使う」の手順 1 と lazydocker.md「root でも使う」の手順 1〜3 を、`<USER>` の端末に貼って書かせた（root のコンテナ `lazydocker-root-web` も動かした）
@@ -754,17 +752,17 @@ setup-notes の bash-settings.md と fzf.md（今は [almalinux-setup.md](https:
 
 - 修正後の `bash -n`・`shellcheck -s bash`・導入と移行の 8 回帰テストも成功した。共通設定本体は非対話・対話の `set -u` で読めた。OS の `/etc/bashrc` は起動時の `set -u` に対応していないため、その試験は共通設定本体を直接読む形で行った
 
-## 注意点に記載していた実施記録
+## 非対話シェルとツールの初期化
 
-### 注意点
+### 読み込みと初期化の条件
 
 - **非対話のシェルでも `~/.bashrc` は読まれる**
-  - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-openssh-server.md の Git Bash）
+  - `ssh <HOST> <コマンド>`・scp・rsync のとき、bash は sshd から起動されたことを見分けて `~/.bashrc` を読む（検証コンテナの AlmaLinux 10 と、setup-notes の windows-setup.md の「OpenSSH サーバー」の Git Bash）
     - Git Bash は、`bash -c` のときに環境変数 `SSH_CLIENT` があり、`SHLVL` が無ければ読んだ（Windows 11 の PC で、sshd の起動のしかたを真似て確かめた。`SSH_CLIENT` を外すと読まなかった）
     - Windows の sshd（`DefaultShell` が Git Bash）では、sftp と scp（SFTP の方式）の `sftp-server.exe` も、`ssh <HOST> <コマンド>` と同じく `bash.exe` の下で動いた。sftp でも `~/.bashrc` が読まれる
   - `bashrc` の前半（PATH と環境変数）はそこでも効き、後半（エイリアス・関数・プロンプト）は読まない。何も出力しない（出力すると scp・sftp・rsync が壊れる）
 - **Windows の sshd（`DefaultShell` が Git Bash）でも、非対話のシェルでは外部コマンドを動かさない**
-  - Windows の前半は `command -v` などの組み込みだけで済む（Homebrew が無い）。SSH のセッションで scoop の shim が起動できない状態（setup-notes の windows-openssh-server.md の「scoop のツールを SSH のセッションで使う」）でも、`ssh <HOST> <コマンド>`・scp・sftp に何も出さない
+  - Windows の前半は `command -v` などの組み込みだけで済む（Homebrew が無い）。SSH のセッションで scoop の shim が起動できない状態（setup-notes の windows-setup.md の「scoop のツールを SSH のセッションで使う」）でも、`ssh <HOST> <コマンド>`・scp・sftp に何も出さない
   - 検証した PC の sshd で、自分で作ったジャンクションを通る shim（SSH のセッションでは起動できない）を PATH の先頭に置いて確かめた。`~/.bashrc` に zoxide の初期化を直に書いていたときは、`Shim: Could not create process …` が毎回出た（scp・sftp の転送は通ったが、エラーが出続けた）
   - 対話の SSH のセッションでは、zoxide などの初期化が scoop の shim を通る。shim が起動できない状態では、ログインのたびに shim のエラーが出て、`z` が無くなる（ほかは使える）。その任意節を行う
 - **ツールを入れた直後のシェルには効かない**
