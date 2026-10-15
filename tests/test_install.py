@@ -1,4 +1,4 @@
-"""実際のホームを変更せず、導入・移行と再実行を検証する。"""
+"""実際のホームを変更せず、導入と再実行を検証する。"""
 
 import os
 from pathlib import Path
@@ -54,19 +54,16 @@ class InstallTest(unittest.TestCase):
         )
         self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
 
-    def test_migrates_every_known_line_and_function(self):
-        old = (self.repo / "migrate/old-lines.txt").read_text()
-        old += (self.repo / "migrate/old-y.txt").read_text()
-        original = "# OS の設定\nexport HOST_ONLY=kept\n" + old
+    def test_preserves_existing_lines_and_functions(self):
+        original = (
+            "# OS の設定\nexport HOST_ONLY=kept\nexport EDITOR=nvim\n"
+            "function y() {\n  printf '%s\\n' custom\n}\n"
+        )
         self.rc.write_text(original)
         self.install()
         self.assertEqual(self.backup.read_text(), original)
         self.assertEqual(self.backup.stat().st_mode & 0o777, 0o600)
-        self.assertIn("export HOST_ONLY=kept\n", self.rc.read_text())
-        self.assertIn(SOURCE, self.rc.read_text())
-        for line in (self.repo / "migrate/old-lines.txt").read_text().splitlines():
-            self.assertNotIn(line, self.rc.read_text().splitlines())
-        self.assertNotIn("function y()", self.rc.read_text())
+        self.assertEqual(self.rc.read_text(), original + SOURCE)
         self.install()
 
     def test_preserves_custom_settings_and_missing_newline(self):
@@ -82,8 +79,8 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(self.backup.read_text(), "previous backup\n")
         self.assertFalse((self.home / ".bash_profile").exists())
 
-    def test_invalid_migration_leaves_original_untouched(self):
-        original = 'if true; then\nexport EDITOR=nvim\nfi\n'
+    def test_invalid_result_leaves_original_untouched(self):
+        original = 'if true; then\nexport EDITOR=nvim\n'
         self.rc.write_text(original)
         self.install(success=False)
         self.assertEqual(self.rc.read_text(), original)
