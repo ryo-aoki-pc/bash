@@ -6,10 +6,10 @@
 
 ## 導入手順の正本
 
-Windows 11・AlmaLinux 10 の導入・利用・更新・任意操作は、setup-notes の [windows-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) と [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) に集約する。既存の手順も対象とする。
+Windows 11・AlmaLinux 10 の導入・利用・更新・任意操作は、setup-notes の [windows-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) と [almalinux-setup.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) を正本にする。シェルと端末（共通の bash 設定・シェルのツール・WezTerm など）は [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) を正本にする。既存の手順も対象とする。
 
 - 固有の仕様・他 OS の手順・開発者検査・理由・注意・検証記録・ロールバックが残る文書は保持する
-- 案内だけになった旧文書は削除する。README から上の2冊と[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)へ案内する
+- 案内だけになった旧文書は削除する。README から上の正本と[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)へ案内する
 
 以下の旧手順書を参照する規則は、実行手順については上の正本へ適用する。操作を変えたら正本・案内・参照情報を同期し、過去の検証本文は保持する。共通 bash 設定が読むツールの初期化を `~/.bashrc` に直接追記しない。
 
@@ -44,7 +44,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 
 - プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（README の「読む順番」の表の作り方）
   - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
-- AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/almalinux-setup.md の「Homebrew」の手順 1〜3 と「シェルのツール」の手順 1）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
+- AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/almalinux-setup.md の「Homebrew」の手順 1〜3 と、シェルと端末のセットアップの「シェルのツール」の手順 1）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
 - AlmaLinux 10 の実機で試すときは、利用者の tmux とは別のソケット（`tmux -L <名前>`）のペインに、`load-buffer`・`paste-buffer -p` で貼る。出力は `pipe-pane` で生のまま受ける（AlmaLinux 10 の `tmux-3.3a-13.20230918git…` は、`capture-pane` でサーバーが SIGABRT で落ちた）
   - zoxide の本物のデータベースに書かないよう、`_ZO_DATA_DIR` を一時的な場所にする
   - ssh・scp・sftp は、自分のユーザーで `/usr/sbin/sshd` を 127.0.0.1 の別のポートに立てて通す（使い捨てのホスト鍵とクライアントの鍵、`UsePAM no`・`StrictModes no`。`~/.ssh/authorized_keys` は変えない）。PAM を通らないので `XDG_RUNTIME_DIR` は無い。対話の ssh に `_ZO_DATA_DIR` を渡すなら、その sshd に `AcceptEnv`、ssh に `-o SetEnv=…` を足す
@@ -82,7 +82,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 ## 変えたら合わせて直すもの
 
 - `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定を手動で移行する」の最終確認を同期し、`docs/verification/install.md` に新しい検証結果を追記する
-- setup-notes の2冊で扱うツールが `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、`docs/reference/readme.md` の「移行で消す行」
+- setup-notes で扱うツールが `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、`docs/reference/readme.md` の「移行で消す行」
   - `y()` を変えた（もとは setup-notes の yazi.md の手順 3 にあった形）→ `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
   - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
   - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1〔もとは homebrew.md〕、同書「lazydocker: root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
@@ -110,7 +110,7 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 ## 手順書の書き方
 
 
-Windows・AlmaLinux の操作は setup-notes の2冊を正本にする。執筆規則は setup-notes の `docs/dev/writing-rules.md` に従う。固有内容がある文書は保持し、案内だけの旧文書は削除する。README から正本と集約対応表へ案内する。開発者検査・他 OS の操作・ロールバックはこのリポジトリで管理する。操作を変えたら正本と参照情報を同期する。検証記録の既存本文・手順番号・出力は保持し、削除した文書へのリンクだけを削除前の固定コミット URL に変更する。新しい対象版・環境・範囲は追記する。
+Windows・AlmaLinux の操作は setup-notes の2冊と、シェルと端末のセットアップを正本にする。執筆規則は setup-notes の `docs/dev/writing-rules.md` に従う。固有内容がある文書は保持し、案内だけの旧文書は削除する。README から正本と集約対応表へ案内する。開発者検査・他 OS の操作・ロールバックはこのリポジトリで管理する。操作を変えたら正本と参照情報を同期する。検証記録の既存本文・手順番号・出力は保持し、削除した文書へのリンクだけを削除前の固定コミット URL に変更する。新しい対象版・環境・範囲は追記する。
 
 ## 手順書と記録の分離
 

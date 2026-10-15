@@ -1,14 +1,14 @@
 # 共通の bash 設定の導入
 
-Windows 11・AlmaLinux 10 の導入・利用・更新手順は setup-notes の2冊に集約した。
+Windows 11・AlmaLinux 10 の導入・利用・更新手順は setup-notes のシェルと端末のセットアップに集約した。
 
 ## 実施手順
 
-[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#git-bash-と-wezterm-の設定)
+[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)
 
 ## 更新
 
-[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を更新する) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#共通の-bash-設定を更新する)
+[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する)
 
 ## 検証
 
@@ -22,4 +22,4 @@ Windows 11・AlmaLinux 10 の導入・利用・更新手順は setup-notes の2�
 
 ## 手動移行
 
-[確認しながら移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する)（Windows 11 も Git Bash で同じ全節を行う）
+[確認しながら移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する)（Windows 11 も Git Bash で同じ全節を行う）

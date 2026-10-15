@@ -1,6 +1,6 @@
 # bash
 
-導入・利用・更新は [AlmaLinux 10 の手順](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md) / [Windows 11 の手順](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md) に集約している。設定仕様・開発者向け操作・過去の検証・ロールバックはこのリポジトリで管理する。
+導入・利用・更新は [シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) に集約している。設定仕様・開発者向け操作・過去の検証・ロールバックはこのリポジトリで管理する。
 
 
 いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）と、Windows 11 の Git Bash で同じものを使う。
@@ -10,9 +10,9 @@
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）
 - root のシェル（`sudo -i`・`su -`）でも読める。root は `/root/.config/bash` に自分の clone を作り、`/root/.bashrc` の同じ 1 行で読む（自分専用のマシンで、一般ユーザーを信用できるときだけ。[root のシェルでの違い](docs/reference/readme.md#root-のシェルでの違い)）
 
-通常は [AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#git-bash-と-wezterm-の設定) の `install.sh` で導入する。手で確認しながら移行する場合だけ、[手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を手動で移行する)の全節を自分のユーザーの bash で行う。Windows 11 は Git Bash、WSL は WSL 側で別に行う。
+通常は [AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定) の `install.sh` で導入する。手で確認しながら移行する場合だけ、[手動移行](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する)の全節を自分のユーザーの bash で行う。Windows 11 は Git Bash、WSL は WSL 側で別に行う。
 
-[root への導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を-root-に入れる)と更新（[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#共通の-bash-設定を更新する) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#共通の-bash-設定を更新する)）も正本で行う。戻すときは [install.sh の復元](docs/extra/quick-start.md#ロールバック) / [手動移行の復元](docs/extra/install.md#ロールバック)を使う。
+[root への導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を-root-に入れる)と更新（[AlmaLinux 10](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) / [Windows 11](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する)）も正本で行う。戻すときは [install.sh の復元](docs/extra/quick-start.md#ロールバック) / [手動移行の復元](docs/extra/install.md#ロールバック)を使う。
 
 [開発者検査](docs/quick-start.md#検証)・[設定一覧](docs/reference/readme.md)・[運用上の注意](docs/extra/install.md#注意点)・[検証記録](docs/verification/readme.md)・[集約対応表](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/dev/consolidation-map.md)。
 
