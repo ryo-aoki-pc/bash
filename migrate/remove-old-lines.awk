@@ -1,4 +1,4 @@
-# 元の手順書が ~/.bashrc に書いた行を消す（docs/install.md 手順 3）
+# 元の手順書が ~/.bashrc に書いた行を消す（setup-notes の shell-terminal.md の「共通の bash 設定を手動で移行する」の手順 3）
 #
 #   awk -f remove-old-lines.awk old-lines.txt old-y.txt <~/.bashrc の控え> > ~/.bashrc
 #

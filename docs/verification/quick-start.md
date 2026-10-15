@@ -2,7 +2,7 @@
 
 以下は既存文書から移した記録。本文の「本書」「この文書」と手順番号は、記録元の手順書を指す。新しく検証した記録ではない。
 
-操作は [quick-start.md](../quick-start.md) を参照する。
+操作は [quick-start.md](https://github.com/ryo-aoki-pc/bash/blob/4352d0a9808bf7819240e6e24afe5901b251175a/docs/quick-start.md) を参照する。
 
 ## 導入スクリプトの検証範囲
 

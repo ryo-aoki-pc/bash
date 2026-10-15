@@ -1,8 +1,10 @@
-# 共通 bash 設定を戻す
+# 共通の bash 設定の手動移行のロールバックと注意点
+
+setup-notes の[共通の bash 設定を手動で移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する)で入れたものを戻す。背景は[参考資料](../reference/install.md)、検証は[検証記録](../verification/install.md)。「この節の手順 N」はこの文書の手順、リンクの付いた「手順 N」は正本の「共通の bash 設定を手動で移行する」の手順を指す。
 
 ## ロールバック
 
-- 手動移行を戻す手順。AlmaLinux 10 は自分のユーザーの bash、Windows 11 は自分のユーザーの Git Bash で行う。WSL の設定は WSL 側で別に戻す
+- AlmaLinux 10 は自分のユーザーの bash、Windows 11 は自分のユーザーの Git Bash で行う。WSL の設定は WSL 側で別に戻す
 - この文書で足したものを外す。ツールと、ツールごとの設定（`~/.config/wezterm` など）は消さない
 - ツールの設定も戻すときは、この節の手順 2 で控えとの差を確認し、手順 3 で控えの内容を戻す
 - 手動で root にも入れたなら、`sudo -i` で入り、root 自身の設定を対象にこの節の手順 1〜5 を行う。`~` は `/root`。手順 5 は `/root/.config/bash` を消し、戻した後は root のシェルを開き直す
@@ -60,7 +62,7 @@
    ```
 
    - `No such file or directory` と出る
-   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#git-bash-の-bash_profile)）
+   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#共通の-bash-設定を手動で移行する--手順-8-補足-git-bash-の-bash_profile)）
    - 開いている端末には、この設定の関数やフックが残る。開き直すと消える
 
 ---
@@ -71,6 +73,5 @@
 - Windows の対話 SSH で scoop の shim が起動できないときは、setup-notes の [Windows 11 の初期設定の「scoop のツールを SSH のセッションで使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/windows-setup.md#scoop-のツールを-ssh-のセッションで使う)を行う
 - ツールを後から入れたときは `. ~/.bashrc` で読み直す。starship を入れたときは、読み込み順を保つため端末を開き直す
 - starship を使うホストでは、WezTerm の設定も更新する。コマンド出力の前に `${STARSHIP_START_TIME:0:0}` が出るときは古いシェル統合を更新する
-- トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は共通設定に書かず、ホストの読み込み行より後ろに置く
+- トークン・パスワード・トンネルの変数は共通設定に書かない（README の[ホストだけの設定](../../README.md#ホストだけの設定)）
 - root に導入するのは一般ユーザーを信用できるホストだけ。root は一般ユーザーが書き換えられる Homebrew のコマンドを実行する
-- WSL は WSL 側で導入する。MSYS2・QMK MSYS・macOS・zsh は対象外
