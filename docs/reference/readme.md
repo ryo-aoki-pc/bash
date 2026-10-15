@@ -1,6 +1,6 @@
 # bash 設定の補足資料
 
-操作は [README](../../README.md)、実測は [検証記録](../verification/readme.md) を参照する。
+導入は [README](../../README.md) の「導入」の表、ロールバックと注意点は [extra](../extra/install.md) (install.sh で入れたときは [extra/quick-start.md](../extra/quick-start.md))、実測は[検証記録](../verification/readme.md)。
 
 ## 読むもの
 

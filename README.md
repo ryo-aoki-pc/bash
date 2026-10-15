@@ -10,12 +10,12 @@
 
 | | AlmaLinux 10 | Windows 11 |
 | --- | --- | --- |
-| 導入 | [共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) | [Git Bash と WezTerm の設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)の手順 6 |
+| 導入 | [共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) | [Git Bash と WezTerm の設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)の手順 1〜6 (手順 6 が共通の bash 設定。手順 4 の Git の設定を clone より前に行う) |
 | 確かめながら手で移行する | [共通の bash 設定を手動で移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) | [Windows 11 で共通の bash 設定を手動で移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を手動で移行する) |
 | root にも入れる | [共通の bash 設定を root に入れる](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を-root-に入れる) | — |
 | 更新 | [共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) | [Windows 11 で共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する) |
-| 戻す（`install.sh` で入れた） | [install.sh で入れた共通の bash 設定のロールバック](docs/extra/quick-start.md#ロールバック) | 同じ |
-| 戻す（手で移行した） | [共通の bash 設定の手動移行のロールバック](docs/extra/install.md#ロールバック) | 同じ |
+| 戻す（`install.sh` で入れた） | [ロールバック](docs/extra/quick-start.md#ロールバック) | 同じ (Git Bash に貼る) |
+| 戻す（手で移行した） | [ロールバック](docs/extra/install.md#ロールバック) | 同じ (Git Bash に貼る) |
 
 - root に入れるのは、自分専用のマシンで一般ユーザーを信用できるときだけ（[root のシェルでの違い](docs/reference/readme.md#root-のシェルでの違い)）
 

@@ -62,7 +62,7 @@ setup-notes の[共通の bash 設定を手動で移行する](https://github.co
    ```
 
    - `No such file or directory` と出る
-   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#git-bash-の-bash_profile)）
+   - [手順 8](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) で作った `~/.bash_profile` は残す（Git Bash は、消すと次の起動で赤い `WARNING:` を出し、`~/.bashrc` を読む別の `~/.bash_profile` を作る。[ログイン設定の説明](../reference/install.md#共通の-bash-設定を手動で移行する--手順-8-補足-git-bash-の-bash_profile)）
    - 開いている端末には、この設定の関数やフックが残る。開き直すと消える
 
 ---
