@@ -33,26 +33,20 @@ root のシェル（[当時の手順書の「root のシェルでも読む」](h
 | 並び | `false` の後の OSC 133 の `D` | `z` の警告 | 出力の前の余計な文字 | `. ~/.bashrc` で読み直した後 |
 |---|---|---|---|---|
 | **starship → WezTerm → zoxide**（この設定） | `D;1`（正しい） | 出ない | 無し | 変わらない |
-| zoxide → WezTerm → starship（2026-09-30 に直す前の starship.md の並び） | いつも `D;0` | 文字列の `PROMPT_COMMAND` で出る | 無し | WezTerm のフックが 2 回ずつ動く |
-| WezTerm → starship → zoxide | いつも `D;0` | 出ない | 無し | WezTerm のフックが 2 回ずつ動く |
-| starship → WezTerm → zoxide（WezTerm の `PS0` を直す前） | `D;1` | 出ない | `${STARSHIP_START_TIME:0:0}` がコマンドごとに出る | （初期化し直さない判定を足す前は、zoxide のフックと starship の `PS0` が重なった） |
 | starship 無し（WezTerm → zoxide） | `D;1` | 出ない | 無し | 変わらない |
 
-- starship を WezTerm より後ろに読むと、WezTerm のフックは starship の中から呼ばれ、そのときの `$?` はいつも 0 になる。WezTerm には、失敗したコマンドも成功と送られる
 - WezTerm の統合は `PS0` の `C` を `ESC \` で終えていた。後ろに starship の `PS0`（`${STARSHIP_START_TIME:…}`）が続くと、bash が `\\` を `\` にしてから展開するので、その `\` が `$` をエスケープし、`${…}` が文字のまま画面に出た。ryo-aoki-pc/wezterm で `C` を BEL（`\007`）で終えるように直した
-- starship を使うと、`PS1` の OSC 133 の `A` / `B` はどの並びでも消える（starship が `PS1` を毎回作り直す）
 - 読み直したときの重なりを避けるため、starship と zoxide は、既に初期化してあれば初期化し直さない
   - starship は、初期化のたびに `PS0` に自分を足す
   - zoxide は、`PROMPT_COMMAND` が配列のとき（AlmaLinux 10）、先頭しか見ないので、初期化のたびにフックを足す
 - AlmaLinux 10 の COPR の WezTerm が入れる公式のシェル統合（`/etc/profile.d/wezterm.sh`。bash-preexec を含む）があるときも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（上流の `wezterm.sh` を置いた模擬）
-  - AlmaLinux 10 の aarch64 の実機（COPR の WezTerm 20260929。starship は無く、WezTerm → zoxide の並び）でも、`D;1`・警告無し・読み直しても変わらなかった（2026-10-02。[導入の検証記録の付録](install.md#付録-almalinux-10-の実機aarch64への導入2026-10-02)）。ryo-aoki-pc/wezterm の `shell/wezterm.sh` は、公式の統合が先に読まれていると、迷子のマウス報告よけだけを足して抜ける
+  - AlmaLinux 10 の aarch64 の実機（COPR の WezTerm 20260929。starship は無く、WezTerm → zoxide の並び）でも、`D;1`・警告無し・読み直しても変わらなかった（2026-10-02。[導入の検証記録の付録](install.md#付録-almalinux-10-の実機aarch64への導入2026-10-02)）
 - Windows 11 の Git Bash（bash 5.3。`PROMPT_COMMAND` は何も無いところから始まる）でも、この並びで `D;1`・警告無し・読み直しても変わらないことを確かめた（2026-10-01。starship 1.26.0・zoxide 0.9.9。starship 無しでも同じ）
-  - WezTerm の `PS0` を直す前の `shell/wezterm.sh`（ryo-aoki-pc/wezterm の main）では、表の 4 行目と同じく出力の前に余計な文字が出た。生の出力は `${STARSHIP_START_TIME:0:0}` で、WezTerm の画面では先頭の `${` がエスケープの続きとして読まれ、`STARSHIP_START_TIME:0:0}` と見えた
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
 
 ## 実施結果の要約
 
-2026-10-06 に新規 AlmaLinux 10.2 の x86_64 VM で、初回・再実行・root 自身の導入と 8 回帰テストを確認した（[新規導入の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。専用ユーザーでは[既知の旧設定の手動移行](install.md#付録-新規-almalinux-vm-での手動移行の再検証2026-10-06)も通した。同じ VM で見つけた man ページャを修正し、表示と 8 テストを再確認した（[修正の記録](install.md#付録-man-ページャの修正と再検証2026-10-06)）。Windows / WSL の新スクリプト実導入は未検証。
+2026-10-06 に新規 AlmaLinux 10.2 の x86_64 VM で、初回・再実行・root 自身の導入と 8 回帰テストを確認した（[新規導入の記録](quick-start.md#新規-almalinux-vm-での再検証2026-10-06)）。同じ VM で見つけた man ページャを修正し、表示と 8 テストを再確認した（[修正の記録](install.md#付録-man-ページャの修正と再検証2026-10-06)）。Windows / WSL の新スクリプト実導入は未検証。
 
 ## シェルの動作の観測
 
@@ -71,11 +65,6 @@ root のシェル（[当時の手順書の「root のシェルでも読む」](h
 ### 読む順番の観測
 
 - fzf（`fzf --bash`）は `bind` と `complete` と関数だけで、`PROMPT_COMMAND`・`PS0`・`PS1` に触らない（2026-10-02 に 0.74.4 の出力を `grep` で確かめた）。この 3 つの前に読む
-
-### 移行で消す行の観測
-
-  - それぞれを LazyVim で開いて保存した 8 行。保存のときに shfmt が `-i 2` で整形し、字下げが空白 2 つになり、`local` の行が 2 行に分かれる（Windows 11 の PC の `~/.bashrc` は、直す前の形のこれだった）
-
 
 ## ホストだけの設定の観測
 
