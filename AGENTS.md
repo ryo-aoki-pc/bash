@@ -12,7 +12,7 @@
 
 AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
 
-初回導入は正本から `install.sh` を実行する。既知の行の移行と構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
+初回導入は正本から `install.sh` を実行する。読み込み行を足した内容の構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
 ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
 
@@ -30,9 +30,6 @@ shellcheck -s bash install.sh bashrc
 bash -c '. ~/.config/bash/bashrc' 2>&1 | wc -c
 bash -u -c '. ~/.config/bash/bashrc; echo ok'                                  # set -u でも読める（前半。非対話では後半の前で抜ける）
 bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'  # 後半も（ok-1 が出ればよい）
-
-# 移行の awk を、控えに当てて結果だけ見る（~/.bashrc は変えない）
-awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.bashrc | diff ~/.bashrc -
 ```
 
 - プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（docs/verification/readme.md の「読む順番の検証記録」の表の作り方）
@@ -57,29 +54,22 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
   - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
     - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
 - root のシェルを試すときは、コンテナの `/.dockerenv` を消す（あると Homebrew が root を断らず、実機と違う。setup-notes の almalinux-setup.md の検証記録にある「Homebrew」の付録）。root の起動で何が動くかは、`strace -f -e trace=execve` を root の `bash -i -c exit` に当てて見る
-- 手順 2・更新の git を試すときは、`GIT_TERMINAL_PROMPT=0` を付けて、認証を聞かれずに通ることを見る（docs/verification/install.md の HTTPS の付録）
+- clone・更新の git を試すときは、`GIT_TERMINAL_PROMPT=0` を付けて、認証を聞かれずに通ることを見る（docs/verification/install.md の HTTPS の付録）
   - Windows の Git Bash では、`GIT_CONFIG_COUNT` などで `credential.helper` を空にして、Git Credential Manager を呼ばせない
 
 ## 構成
 
 - `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
-- `migrate/` — 正本の「共通の bash 設定を手動で移行する」の手順 3 で、元の手順書が `~/.bashrc` に書いた行を消すためのもの
-  - `old-lines.txt` — 行全体が同じなら消す行（1 行ずつ。空行は無視）
-  - `old-y.txt` — yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切って、setup-notes の今の形（7 行。移ったかを `-ef` で比べる）、それを `shfmt -i 2 -ln bash` に通した形（8 行。LazyVim で `~/.bashrc` を保存したときの整形と同じ）、2026-10-01 に直す前の形（`!=`）とその shfmt の形の 4 つ
-  - `remove-old-lines.awk` — 上の 2 つを読み、控えの `~/.bashrc` から消したものを出す
-- `install.sh` — 初回の読み込み設定と既知の旧設定の移行。`tests/test_install.py` が、一時ホームで導入・移行・再実行を確かめる
-- `docs/extra/install.md`・`docs/extra/quick-start.md` — 手動移行・`install.sh` のロールバックと注意点
-- `docs/reference/readme.md` — 読むもの・Git Bash と root での違い・読む順番・移行で消す行。`docs/reference/install.md` — 正本の手動移行の各手順の背景
-- `docs/verification/` — 検証記録（`readme.md` は README と参考資料の実測、`install.md` は設定本体と手動移行、`quick-start.md` は `install.sh`、`claude.md` は開発ガイドの検証記録）
+- `install.sh` — 初回の読み込み設定と控えの作成。`tests/test_install.py` が、一時ホームで導入・既存内容の保持・再実行を確かめる
+- `docs/extra/install.md` — 注意点。`docs/extra/quick-start.md` — `install.sh` のロールバック
+- `docs/reference/readme.md` — 読むもの・Git Bash と root での違い・読む順番。`docs/reference/install.md` — 導入の背景と `install.sh` の仕組み
+- `docs/verification/` — 検証記録（`readme.md` は README と参考資料の実測、`install.md` は設定本体と導入、`quick-start.md` は `install.sh`、`claude.md` は開発ガイドの検証記録）
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの
 
-- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定を手動で移行する」の最終確認を同期し、`docs/verification/install.md` に新しい検証結果を追記する
-- setup-notes で扱うツールが `~/.bashrc` に書く行が変わった → `bashrc`、`migrate/old-lines.txt`（古い形も残す）、`docs/reference/readme.md` の「移行で消す行」
-  - `y()` を変えた → `migrate/old-y.txt` に、新しい形と、それを `shfmt -i 2 -ln bash` に通した形を、空行で区切って足す（古い形も残す）
-  - 逆に、この設定が読むものを足したら、元の手順書の直接追記・削除のブロックを外し、共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
-  - setup-notes が `/root/.bashrc` に書く行（almalinux-setup.md「Homebrew を root のシェルでも使う」の手順 1、同書「lazydocker: root でも使う」の手順 2）も同じ扱い。変わったら `migrate/old-lines.txt` に足す。root の分岐（`EUID` が 0）を変えたら、その 2 つの手順の箇条書きも直す
+- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定」の確認を同期し、`docs/verification/install.md` に新しい検証結果を追記する
+- この設定が読むものを足したら、正本は共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
 - 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
 - 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の「導入」・`bashrc` の冒頭のコメントを同期し、`docs/verification/install.md` に新しい対象版と実施範囲を追記する
 
@@ -97,9 +87,9 @@ awk -f migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt ~/.b
 - ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の AGENTS.md の実測）
 - **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由は `docs/reference/readme.md` の「読む順番」、実測は `docs/verification/readme.md`
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
-  - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。正本の「共通の bash 設定を手動で移行する」の手順 6）
+  - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。README の「ホストだけの設定」）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
-- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` の本体は、`migrate/old-y.txt` の 1 つ目の形と同じ文字列にする（setup-notes は `y()` を書かず、almalinux-setup.md の「yazi」の手順 4 で確かめるだけ）
+- インデントはタブ（ryo-aoki-pc/wezterm の `shell/wezterm.sh` と同じ）。`y()` は、移動先と現在のディレクトリが同じかを `-ef` で比べ、空白と日本語を含むパスも引用して扱う
 
 ## 文書の置き場所
 

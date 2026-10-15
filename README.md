@@ -5,17 +5,15 @@
 ## 導入
 
 - 対象: AlmaLinux 10 の自分のユーザーの bash と、Windows 11 の Git Bash。WSL は WSL の中で AlmaLinux 10 と同じ手順を行う。macOS・zsh・MSYS2・QMK MSYS は対象外
-- `~/.config/bash` に HTTPS で clone し（公開なので認証は要らない）、`install.sh` で `~/.bashrc` に読み込みの 1 行を足す。`install.sh` は、既知の旧設定の移行と `~/.bashrc` の控えの作成もする
+- `~/.config/bash` に HTTPS で clone し（公開なので認証は要らない）、`install.sh` で `~/.bashrc` に読み込みの 1 行を足す。`install.sh` は、`~/.bashrc` の控えを作り、既存の内容を保つ
 - 手順は setup-notes の[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)にある
 
 | | AlmaLinux 10 | Windows 11 |
 | --- | --- | --- |
 | 導入 | [共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) | [Git Bash と WezTerm の設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)の手順 1〜6 (手順 6 が共通の bash 設定。手順 4 の Git の設定を clone より前に行う) |
-| 確かめながら手で移行する | [共通の bash 設定を手動で移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) | [Windows 11 で共通の bash 設定を手動で移行する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を手動で移行する) |
 | root にも入れる | [共通の bash 設定を root に入れる](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を-root-に入れる) | — |
 | 更新 | [共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) | [Windows 11 で共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する) |
-| 戻す（`install.sh` で入れた） | [ロールバック](docs/extra/quick-start.md#ロールバック) | 同じ (Git Bash に貼る) |
-| 戻す（手で移行した） | [ロールバック](docs/extra/install.md#ロールバック) | 同じ (Git Bash に貼る) |
+| 戻す | [ロールバック](docs/extra/quick-start.md#ロールバック) | 同じ (Git Bash に貼る) |
 
 - root に入れるのは、自分専用のマシンで一般ユーザーを信用できるときだけ（[root のシェルでの違い](docs/reference/readme.md#root-のシェルでの違い)）
 
@@ -23,7 +21,7 @@
 
 - `~/.bashrc` はホストのものとして残す（OS の既定の中身と、トークンなどホストだけの行）。この設定は、`~/.bashrc` の 1 行から読む
 - ホストによって入っているツールが違うので、どの設定も、そのコマンドがあるかをシェルを開くたびに確かめ、無ければ何もしない。ツールを後から入れても、次に開いた端末から効く
-- 何を読むか・読む順番・移行で消す行は、[参考資料](docs/reference/readme.md)
+- 何を読むか・読む順番は、[参考資料](docs/reference/readme.md)
 
 ## ホストだけの設定
 
@@ -37,12 +35,11 @@
 
 - `bashrc` に、ツールがあるときだけ動く `if … fi` を足す。PATH と環境変数は前半、エイリアス・関数・プロンプトは後半に置く
 - `PROMPT_COMMAND`・`PS0`・`PS1` を触るものは、[読む順番](docs/reference/readme.md#読む順番)を確かめてから位置を決める
-- 元の手順書が `~/.bashrc` に書く行を、`migrate/old-lines.txt` にも足す
 - 書き方の決まりと、変えたら合わせて直すものは [AGENTS.md](AGENTS.md)
 
 ## 文書
 
-- [参考資料](docs/reference/readme.md): 読むもの・Git Bash と root での違い・読む順番・移行で消す行。手動移行の各手順の背景は [docs/reference/install.md](docs/reference/install.md)
+- [参考資料](docs/reference/readme.md): 読むもの・Git Bash と root での違い・読む順番。導入と `install.sh` の背景は [docs/reference/install.md](docs/reference/install.md)
 - [注意点](docs/extra/install.md#注意点)
-- 検証記録: [README の実測](docs/verification/readme.md)・[設定本体と手動移行](docs/verification/install.md)・[install.sh](docs/verification/quick-start.md)
+- 検証記録: [README の実測](docs/verification/readme.md)・[設定本体と導入](docs/verification/install.md)・[install.sh](docs/verification/quick-start.md)
 - 変更後の確認のコマンド: [AGENTS.md の「よく使うコマンド」](AGENTS.md#よく使うコマンド)

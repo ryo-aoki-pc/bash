@@ -1,7 +1,6 @@
 # いろいろなホストで共有する bash の設定
 #
-# 読み込み方（install.sh が ~/.bashrc の末尾に次の 1 行を書く。手で書くときは setup-notes の
-# shell-terminal.md の「共通の bash 設定を手動で移行する」の手順 5）:
+# 読み込み方（setup-notes の shell-terminal.md「共通の bash 設定」から install.sh を実行する）:
 #
 #   if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 #
@@ -28,7 +27,7 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 fi
 
 # Neovim を既定のエディタにする（setup-notes の docs/neovim.md の「Neovim」の手順 4）
-# 手順書の直接追記に付ける目印は移行時に外し、ここではツールの有無で決める
+# ツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then
 	export EDITOR=nvim
 	export VISUAL=nvim

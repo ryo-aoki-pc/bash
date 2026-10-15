@@ -13,12 +13,10 @@ if [[ ! "$repo_dir" -ef "$HOME/.config/bash" ]]; then
 	printf '%s\n' '中断: このリポジトリを ~/.config/bash に clone してから実行する' >&2
 	exit 1
 fi
-for file in bashrc migrate/remove-old-lines.awk migrate/old-lines.txt migrate/old-y.txt; do
-	if [[ ! -r "$repo_dir/$file" ]]; then
-		printf '中断: %s が読めない\n' "$repo_dir/$file" >&2
-		exit 1
-	fi
-done
+if [[ ! -r "$repo_dir/bashrc" ]]; then
+	printf '中断: %s が読めない\n' "$repo_dir/bashrc" >&2
+	exit 1
+fi
 bash -n "$repo_dir/bashrc"
 
 rc_file=$HOME/.bashrc
@@ -36,16 +34,17 @@ fi
 umask 077
 stage_dir=$(mktemp -d "${TMPDIR:-/tmp}/bash-install.XXXXXX")
 trap 'rm -rf -- "$stage_dir"' EXIT
-awk -f "$repo_dir/migrate/remove-old-lines.awk" \
-	"$repo_dir/migrate/old-lines.txt" "$repo_dir/migrate/old-y.txt" \
-	"$input_file" > "$stage_dir/bashrc"
+cat -- "$input_file" > "$stage_dir/bashrc"
 source_line='if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi'
 if ! grep -qxF "$source_line" "$stage_dir/bashrc"; then
+	if [[ -s "$stage_dir/bashrc" && -n $(tail -c 1 "$stage_dir/bashrc") ]]; then
+		printf '\n' >> "$stage_dir/bashrc"
+	fi
 	printf '%s\n' "$source_line" >> "$stage_dir/bashrc"
 fi
-# 一致した行を消すと if の中が空になる場合などは、元のファイルを変える前に止まる。
+# 読み込み行を足した内容を確かめてから、元のファイルへ書く。
 if ! bash -n "$stage_dir/bashrc"; then
-	printf '%s\n' '中断: 移行後の構文が不正。~/.bashrc は変更していない。手動移行: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する' >&2
+	printf '%s\n' '中断: 読み込み行を足した内容の構文が不正。~/.bashrc は変更していない。導入手順: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定' >&2
 	exit 1
 fi
 
@@ -84,4 +83,4 @@ else
 fi
 printf '%s\n' \
 	'完了: 端末を開き直す。確認: echo "${__bash_config_loaded-読まれていない}"' \
-	'独自設定は共通設定の読み込み行より後ろへ移す（手動移行の手順 6: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する）。'
+	'独自設定は共通設定の読み込み行より後ろへ移す（導入手順: https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定）。'

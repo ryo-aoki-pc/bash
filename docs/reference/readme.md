@@ -1,6 +1,6 @@
 # bash 設定の補足資料
 
-導入は [README](../../README.md) の「導入」の表、ロールバックと注意点は [extra](../extra/install.md) (install.sh で入れたときは [extra/quick-start.md](../extra/quick-start.md))、実測は[検証記録](../verification/readme.md)。
+導入は [README](../../README.md) の「導入」の表、ロールバックは [extra/quick-start.md](../extra/quick-start.md)、注意点は [extra/install.md](../extra/install.md)、実測は[検証記録](../verification/readme.md)。
 
 ## 読むもの
 
@@ -58,7 +58,6 @@
 - zoxide のデータベースは root のもの（`/root/.local/share/zoxide`）
 - AlmaLinux 10 の `/root/.bashrc` の `cp`・`rm`・`mv` の `-i` のエイリアスは残る（この設定は変えない）
 - 非対話（`sudo -i <コマンド>`・`ssh root@<HOST> <コマンド>`）で何も出さない
-- setup-notes が以前 `/root/.bashrc` に書いていた 2 行（homebrew.md・lazydocker.md の root の節）は、導入の手順 3 で消える（この設定が同じことをする。homebrew.md の行は PATH の末尾に足すが、この設定は先頭に足す）
 
 ## 読む順番
 
@@ -70,16 +69,3 @@
 - fzf（`fzf --bash`）は `bind` と `complete` と関数だけで、`PROMPT_COMMAND`・`PS0`・`PS1` に触らない。この 3 つの前に読む
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
 - 読む順番の実測は[検証記録](../verification/readme.md#読む順番の検証記録)
-
-## 移行で消す行
-
-[正本の手動移行の手順 3](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を手動で移行する) は、手順書が `~/.bashrc` に書いた行のうち、次のものと行全体が同じ行を消す。少しでも違う行は残し、同じ項の手順 4・6・7 で見る。
-
-- `migrate/old-lines.txt`: 1 行ずつ
-  - Homebrew（`brew shellenv bash` と、引数の無い古い形）、`EDITOR` / `VISUAL` / `alias vi=nvim`、`MANPAGER`、`DOCKER_HOST`、eza の 3 つ（既定の `EZA_OPTS`）、`alias gdu=gdu-go`、starship、WezTerm のシェル統合（今の形と `[ -n "$WEZTERM_SHELL_INTEGRATION" ]` の古い形）、zoxide（`--cmd z` と、引数の無い形）
-  - bash-settings.md の `HISTSIZE` / `HISTFILESIZE` / `HISTCONTROL` / `shopt -s autocd …` の 4 行と Homebrew の補完の 1 行、fzf.md の `eval "$(fzf --bash)"` と `export FZF_…` の 4 行
-  - setup-notes が以前 `/root/.bashrc` に書いていた 2 行: homebrew.md「root のシェルでも使う」の PATH の `case` の行と、lazydocker.md「root でも使う」の `export DOCKER_HOST=unix:///run/podman/podman.sock`（末尾に `# setup-notes: lazydocker root` の目印が付いた形も含む）
-  - `~/.bashrc` の直接追記に付いた `# setup-notes: neovim editor begin` / `end` の目印も外す。元値の控え `~/.local/state/neovim-editor-before.bash` は消さない。この設定へ移行した後は、neovim.md の印付き部分のロールバックを使わず、この設定の `EDITOR`・`VISUAL`・`vi` を変更する
-- `migrate/old-y.txt`: yazi の `y()`（並びがすべて同じときだけ消す）。空行で区切った 4 つの形がある
-  - setup-notes の以前の yazi.md 手順 3 の 7 行（移ったかを `-ef` で比べる今の形と、2026-10-01 に直す前の `!=` の形）
-- `migrate/remove-old-lines.awk`: 上の 2 つを使って消す awk
