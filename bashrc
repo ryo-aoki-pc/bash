@@ -1,6 +1,7 @@
 # いろいろなホストで共有する bash の設定
 #
-# 読み込み方（~/.bashrc の末尾に次の 1 行を書く。docs/install.md）:
+# 読み込み方（install.sh が ~/.bashrc の末尾に次の 1 行を書く。手で書くときは setup-notes の
+# shell-terminal.md の「共通の bash 設定を手動で移行する」の手順 5）:
 #
 #   if [ -r ~/.config/bash/bashrc ]; then . ~/.config/bash/bashrc; fi
 #
@@ -130,7 +131,7 @@ if command -v starship >/dev/null 2>&1 && ! declare -F starship_precmd >/dev/nul
 	eval "$(starship init bash)"
 fi
 
-# WezTerm のシェル統合（wezterm の docs/install.md 手順 6）
+# WezTerm のシェル統合（$WEZTERM_SHELL_INTEGRATION。無ければ ryo-aoki-pc/wezterm の shell/wezterm.sh）
 if [ -r "${WEZTERM_SHELL_INTEGRATION:=$HOME/.config/wezterm/shell/wezterm.sh}" ]; then
 	# shellcheck source=/dev/null
 	. "$WEZTERM_SHELL_INTEGRATION"
@@ -140,10 +141,10 @@ fi
 # 読み直したときは初期化し直さない（AlmaLinux の /etc/bashrc は PROMPT_COMMAND を配列にし、
 # zoxide は配列の先頭しか見ないので、初期化のたびにフックを重ねて足す）
 # ~/.bashrc の読み込みの行より後ろで別の形（--cmd cd など）の zoxide を読むなら、--hook none を付ける
-# （付けないとフックが 2 つになる。docs/install.md 手順 6）
+# （付けないとフックが 2 つになる。README の「ホストだけの設定」）
 if command -v zoxide >/dev/null 2>&1 && ! declare -F __zoxide_hook >/dev/null; then
 	eval "$(zoxide init bash)"
 fi
 
-# 読み込んだ印（docs/install.md の手順 10 で確かめる用。非対話のシェルでは上で抜けるので付かない）
+# 読み込んだ印（setup-notes の shell-terminal.md で、読まれたかを確かめる用。非対話のシェルでは上で抜けるので付かない）
 __bash_config_loaded=1

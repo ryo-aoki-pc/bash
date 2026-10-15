@@ -27,7 +27,7 @@
 - 手で直した行（`alias ll="eza -l --icons"`、`eval "$(zoxide init bash --cmd cd)"` など）
 - 手で直した `y()`。`grep` は関数の中の `yazi` を含む 2 行だけを出し、`function y() {` と `}` の行は出さないので、手順 6 で `}` まで消す
 - Homebrew のコマンドを使う行（`brew --prefix` で補完を読む行など）。手順 3 で消した `brew shellenv` の行の代わりに、手順 5 の 1 行が Homebrew の PATH を足すので、その 1 行より前では動かなくなる
-- WSL で、Windows 側のシェル統合を読む行（wezterm の docs/install.md の「WSL でもシェル統合を使う」）。WSL の `~/.config/wezterm` は無いので、この行は残す
+- WSL で、Windows 側のシェル統合を読む行（setup-notes の[WezTerm のシェル統合を WSL で使う](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#wezterm-のシェル統合を-wsl-で使う)）。WSL の `~/.config/wezterm` は無いので、この行は残す
 - `diff` は AlmaLinux 10 の最小のコンテナに無かったので、git の `diff --no-index` を使っている
 
 ### 1 行の形
@@ -70,7 +70,7 @@
 ### 参照
 
 - setup-notes の手順書（`~/.bashrc` に書く手順のあるもの）: [AlmaLinux 10 の初期設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（Homebrew・yazi）・[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)（共通の bash 設定・zoxide・starship・eza・bat・fzf）・[Neovim](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)・[gdu の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu)・[Podman の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman)
-- ryo-aoki-pc/wezterm の [docs/install.md](https://github.com/ryo-aoki-pc/wezterm/blob/main/docs/install.md) — シェル統合
+- ryo-aoki-pc/wezterm の [README の「シェル統合」](https://github.com/ryo-aoki-pc/wezterm#シェル統合)
 - `man bash`（INVOCATION: ログインシェル・対話のシェル・sshd から起動されたときに読むファイル）
 
 ---
