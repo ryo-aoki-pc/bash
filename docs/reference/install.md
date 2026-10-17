@@ -51,6 +51,6 @@
 
 ## 参照
 
-- 対象ツールの導入: [AlmaLinux 10 の初期設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（Homebrew・yazi）・[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)（共通の bash 設定・zoxide・starship・eza・bat・fzf）・[Neovim](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)・[gdu の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu)・[Podman の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#podman)
+- 対象ツールの導入: [AlmaLinux 10 の初期設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md)（Homebrew・yazi）・[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)（共通の bash 設定・zoxide・starship・eza・bat・fzf）・[Neovim](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md)・[gdu の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#gdu)・[Podman の導入](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/containers.md#podman)
 - ryo-aoki-pc/wezterm の [README の「シェル統合」](https://github.com/ryo-aoki-pc/wezterm#シェル統合)
 - `man bash`（INVOCATION: ログインシェル・対話のシェル・sshd から起動されたときに読むファイル）
