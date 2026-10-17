@@ -1,6 +1,6 @@
 # bash 設定の補足資料
 
-導入は [README](../../README.md) の「導入」の表、ロールバックは [extra/quick-start.md](../extra/quick-start.md)、注意点は [extra/install.md](../extra/install.md)、実測は[検証記録](../verification/readme.md)。
+導入は [README](../../README.md) の「導入」の表、ロールバックは [extra/quick-start.md](../extra/quick-start.md)、注意点は [extra/install.md](../extra/install.md)、実測は[検証記録](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/readme.md)。
 
 ## 読むもの
 
@@ -68,4 +68,4 @@
 - zoxide は、`PROMPT_COMMAND` の末尾にフックを足し、`z` を使うたびに `PROMPT_COMMAND` にフックがあるかを確かめる（無いと `zoxide: detected a possible configuration issue.` と出す）
 - fzf（`fzf --bash`）は `bind` と `complete` と関数だけで、`PROMPT_COMMAND`・`PS0`・`PS1` に触らない。この 3 つの前に読む
 - 開いているシェルに後から starship を入れて `. ~/.bashrc` で読み直すと、そのシェルだけは WezTerm → starship の並びになる。starship を入れたら端末を開き直す
-- 読む順番の実測は[検証記録](../verification/readme.md#読む順番の検証記録)
+- 読む順番の実測は[検証記録](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/readme.md#読む順番の検証記録)

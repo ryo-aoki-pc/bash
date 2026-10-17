@@ -32,14 +32,14 @@ bash -u -c '. ~/.config/bash/bashrc; echo ok'                                  #
 bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"'  # 後半も（ok-1 が出ればよい）
 ```
 
-- プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（docs/verification/readme.md の「読む順番の検証記録」の表の作り方）
+- プロンプトに関わる変更（`PROMPT_COMMAND`・`PS0`・`PS1`）は、対話のシェルを擬似端末で動かして生の出力を見る。`script -q -E never -O <ログ> -c 'bash -il'` に、間を空けてコマンドを流し込み、ログの OSC 133（`\e]133;[A-D]`）の並びと `false` の後の `D;1`、`zoxide: detected a possible configuration issue.`、`. ~/.bashrc` の前後の `declare -p PROMPT_COMMAND PS0` を比べる（非公開側の検証記録の `readme.md` の「読む順番の検証記録」の表の作り方）
   - AlmaLinux 10 の `/etc/bashrc` は `PROMPT_COMMAND` を配列にする。Git Bash と同じ文字列の場合も、環境変数で `PROMPT_COMMAND=:` を渡して起動して確かめる
 - AlmaLinux 10 のコンテナで試すときは、`almalinux:10` に Homebrew（setup-notes の docs/almalinux-setup.md の「Homebrew」の手順 1〜3 と、シェルと端末のセットアップの「シェルのツール」の手順 1）でツールを入れ、`~/.config/wezterm` に ryo-aoki-pc/wezterm を置く。sshd は 127.0.0.1 の別のポートで立て、`ssh` のコマンド・scp・sftp・rsync を通す
 - AlmaLinux 10 の実機で試すときは、利用者の tmux とは別のソケット（`tmux -L <名前>`）のペインに、`load-buffer`・`paste-buffer -p` で貼る。出力は `pipe-pane` で生のまま受ける（AlmaLinux 10 の `tmux-3.3a-13.20230918git…` は、`capture-pane` でサーバーが SIGABRT で落ちた）
   - zoxide の本物のデータベースに書かないよう、`_ZO_DATA_DIR` を一時的な場所にする
   - ssh・scp・sftp は、自分のユーザーで `/usr/sbin/sshd` を 127.0.0.1 の別のポートに立てて通す（使い捨てのホスト鍵とクライアントの鍵、`UsePAM no`・`StrictModes no`。`~/.ssh/authorized_keys` は変えない）。PAM を通らないので `XDG_RUNTIME_DIR` は無い。対話の ssh に `_ZO_DATA_DIR` を渡すなら、その sshd に `AcceptEnv`、ssh に `-o SetEnv=…` を足す
   - podman.socket を一時的に起動したら、止めた後に `/run/user/<UID>/podman/podman.sock` を消す（unit に `RemoveOnStop` が無く、残ったファイルで `DOCKER_HOST` が入り続ける）
-- Windows 11 の Git Bash で試すときは、`HOME` を使い捨てのディレクトリにする（その PC の `~/.bashrc` には書かない。docs/verification/install.md の Windows の付録）
+- Windows 11 の Git Bash で試すときは、`HOME` を使い捨てのディレクトリにする（その PC の `~/.bashrc` には書かない。非公開側の検証記録の `install.md` の Windows の付録）
   - Git Bash には `script` が無い。擬似端末の代わりに、`wezterm-mux-server` を別のソケット（`unix_domains` の `socket_path`。長いパスは `SUN_LEN` で断られる）で動かし、`wezterm cli spawn`・`send-text`・`get-text` でペインを操作する。`wezterm cli` には必ず `WEZTERM_UNIX_SOCKET` で検証のソケットを渡す（WezTerm の中では、利用者の GUI を指している）
   - `wezterm cli spawn` は、呼んだ側の環境変数をペインに引き継ぐ。`MSYS_NO_PATHCONV` などを付けて呼んだら、ペインの中で外す（付いたままだと、yazi の `--cwd-file=/tmp/…` が変換されず、`C:\tmp` に書かれる）
   - 生の出力を見るだけなら、`bash -i` にコマンドを流し込み、stdout と stderr を 1 つのファイルに受ける（プロンプトと OSC 133 がそのまま残る）
@@ -54,7 +54,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
   - 利用者の WezTerm の GUI で試すときは、`wezterm cli spawn --new-window` で窓を足し、ペインに打つ・読む・閉じるコマンドに必ず `--pane-id` を付ける（付けないと、GUI で選ばれているペイン（この会話のペインのこともある）に送られる）
     - キー操作（プロンプトへのジャンプ・出力のコピー）と画面の撮影は、窓を前面にする必要がある。Windows の画面がロックされている間はできない（LogonUI が動き、前面の窓が無い）。ロック中に `PrintWindow` で撮ると、WezTerm の中身は灰色だった
 - root のシェルを試すときは、コンテナの `/.dockerenv` を消す（あると Homebrew が root を断らず、実機と違う。setup-notes の almalinux-setup.md の検証記録にある「Homebrew」の付録）。root の起動で何が動くかは、`strace -f -e trace=execve` を root の `bash -i -c exit` に当てて見る
-- clone・更新の git を試すときは、`GIT_TERMINAL_PROMPT=0` を付けて、認証を聞かれずに通ることを見る（docs/verification/install.md の HTTPS の付録）
+- clone・更新の git を試すときは、`GIT_TERMINAL_PROMPT=0` を付けて、認証を聞かれずに通ることを見る（非公開側の検証記録の `install.md` の HTTPS の付録）
   - Windows の Git Bash では、`GIT_CONFIG_COUNT` などで `credential.helper` を空にして、Git Credential Manager を呼ばせない
 
 ## 構成
@@ -63,15 +63,15 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 - `install.sh` — 初回の読み込み設定と控えの作成。`tests/test_install.py` が、一時ホームで導入・既存内容の保持・再実行を確かめる
 - `docs/extra/install.md` — 注意点。`docs/extra/quick-start.md` — `install.sh` のロールバック
 - `docs/reference/readme.md` — 読むもの・Git Bash と root での違い・読む順番。`docs/reference/install.md` — 導入の背景と `install.sh` の仕組み
-- `docs/verification/` — 検証記録（`readme.md` は README と参考資料の実測、`install.md` は設定本体と導入、`quick-start.md` は `install.sh`、`claude.md` は開発ガイドの検証記録）
+- 非公開側の検証記録 — `readme.md` は README と参考資料の実測、`install.md` は設定本体と導入、`quick-start.md` は `install.sh`、`claude.md` は開発ガイドの検証記録
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
 
 ## 変えたら合わせて直すもの
 
-- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定」の確認を同期し、`docs/verification/install.md` に新しい検証結果を追記する
+- `bashrc` に読むものを足した・変えた → `docs/reference/readme.md` の「読むもの」の表、正本の「共通の bash 設定」の確認を同期し、非公開側の検証記録の `install.md` に新しい検証結果を追記する
 - この設定が読むものを足したら、正本は共通設定を前提に読み込みと確認だけを書く（setup-notes の AGENTS.md にも同じ決まりがある）
-- 読む順番を変えた → `docs/verification/readme.md` の実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
-- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の「導入」・`bashrc` の冒頭のコメントを同期し、`docs/verification/install.md` に新しい対象版と実施範囲を追記する
+- 読む順番を変えた → 非公開側の検証記録の `readme.md` に実測を記録し、`docs/reference/readme.md` の「読む順番」を直す
+- 導入のしかた（置き場所・clone の URL・読み込みの 1 行）を変えた → 正本の手順・`docs/extra/install.md` の注意点・README の「導入」・`bashrc` の冒頭のコメントを同期し、非公開側の検証記録の `install.md` に新しい対象版と実施範囲を追記する
 
 ## コードの注意
 
@@ -85,7 +85,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 - 関数の中から読まない・読ませない（読み込むものが関数の外で `declare` を使うと、その関数のローカル変数になる。2026-09-30 の `brew shellenv`・starship 1.26.0・`shell/wezterm.sh`・zoxide 0.10.0 の初期化には無く、検証コンテナで関数の中から読んでも動いたが、上がったときに壊れないように）
 - ネットワークに出ない（自動の `git pull` もしない）。秘密（`*_TOKEN`）とトンネルの変数（`ALL_PROXY`・`https_proxy`）は書かない（ホストの `~/.bashrc` の、読み込みの 1 行より後ろに書く）
 - ツールの初期化の `$(…)` のほかに、`$(…)` や外部コマンドを足さない。Git Bash では `$(…)` 1 回で約 10ms、外部コマンド 1 回で 40〜55ms かかる（ryo-aoki-pc/wezterm の AGENTS.md の実測）
-- **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由は `docs/reference/readme.md` の「読む順番」、実測は `docs/verification/readme.md`
+- **プロンプトに関わる 3 つは starship → WezTerm → zoxide の順**。理由は `docs/reference/readme.md` の「読む順番」、実測は非公開側の検証記録の `readme.md`
   - starship と zoxide は、既に初期化してあれば初期化し直さない（`declare -F starship_precmd` / `declare -F __zoxide_hook`）。読み直すと starship は `PS0` に、zoxide は配列の `PROMPT_COMMAND` にフックを重ねる
   - ホストの `~/.bashrc` で別の形（`--cmd cd` など）の zoxide を読み込みの行より後ろに残すなら、`--hook none` を付けてもらう（付けないと、配列の `PROMPT_COMMAND` にフックが 2 つ入る。README の「ホストだけの設定」）
   - WezTerm のシェル統合（`shell/wezterm.sh`）は、何度読まれてもフックを重ねない作りなので、そのまま読む
@@ -94,7 +94,8 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 ## 文書の置き場所
 
 - 導入・利用・更新の手順は正本に置き、README の「導入」の表から正本の項へ直接リンクする（手順書の先頭やカテゴリの見出しへはリンクしない）。執筆規則は setup-notes の `docs/dev/writing-rules.md`
-- `docs/extra/` はロールバックと注意点、`docs/reference/` は背景、`docs/verification/` は検証記録（環境・日付・対象コミット・実出力・未確認事項）。変更後の確認のコマンドは上の「よく使うコマンド」
+- `docs/extra/` はロールバックと注意点、`docs/reference/` は背景。検証記録（環境・日付・対象コミット・実出力・未確認事項）は、非公開の `ryo-aoki-pc/setup-notes-verification` の `repos/bash/docs/verification/` に置く。変更後の確認のコマンドは上の「よく使うコマンド」
+- 検証記録を書く・直すときは、`setup-notes-verification` を clone し、そちらへ Pull Request を作る
 - 文書を移す・分ける・まとめるときは、移した経緯と、旧ファイル名・旧見出しとの対応を文書に書かない（経緯は git の履歴と Pull Request の本文に残す）。リンクを今の場所へ直す。中身が新しい場所への案内だけになったファイルは消す
 - 残す検証記録の実施日・対象版・環境・出力・成功と失敗・未実施の範囲・記録したときの手順番号は書き換えない。再検証せずに検証範囲を広げない。記録の手順番号が今の手順と違い、本文を読むのに要るときだけ「記録の手順 | 今の手順」の表で結ぶ
 - 操作を変えたら、正本・README の表・参考資料を合わせて直す
