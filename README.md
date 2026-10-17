@@ -41,5 +41,5 @@
 
 - [参考資料](docs/reference/readme.md): 読むもの・Git Bash と root での違い・読む順番。導入と `install.sh` の背景は [docs/reference/install.md](docs/reference/install.md)
 - [注意点](docs/extra/install.md#注意点)
-- 検証記録: [README の実測](docs/verification/readme.md)・[設定本体と導入](docs/verification/install.md)・[install.sh](docs/verification/quick-start.md)
+- 検証記録: [README の実測](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/readme.md)・[設定本体と導入](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/install.md)・[install.sh](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/quick-start.md)
 - 変更後の確認のコマンド: [AGENTS.md の「よく使うコマンド」](AGENTS.md#よく使うコマンド)

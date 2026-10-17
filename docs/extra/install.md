@@ -1,6 +1,6 @@
 # 共通の bash 設定の注意点
 
-手順は setup-notes の[共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定)。背景は[参考資料](../reference/install.md)、検証は[検証記録](../verification/install.md)、戻すときは [install.sh のロールバック](quick-start.md#ロールバック)を参照する。
+手順は setup-notes の[共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定)。背景は[参考資料](../reference/install.md)、検証は[検証記録](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/install.md)、戻すときは [install.sh のロールバック](quick-start.md#ロールバック)を参照する。
 
 ## 注意点
 

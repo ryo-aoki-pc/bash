@@ -1,6 +1,6 @@
 # bash 導入の補足資料
 
-手順は setup-notes の[共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定)。ロールバックは [extra/quick-start.md](../extra/quick-start.md)、注意点は [extra/install.md](../extra/install.md)、実施結果は[検証記録](../verification/install.md)。
+手順は setup-notes の[共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定)。ロールバックは [extra/quick-start.md](../extra/quick-start.md)、注意点は [extra/install.md](../extra/install.md)、実施結果は[検証記録](https://github.com/ryo-aoki-pc/setup-notes-verification/blob/main/repos/bash/docs/verification/install.md)。
 
 ## 配置と読み込み
 
