@@ -26,6 +26,15 @@ if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 
+# Termux は ~/.local/bin を PATH に足さない（ほかの OS では /etc/skel などが足す）。
+# 後から作られても（md-format の導入など）同じシェルで使えるよう、フォルダの有無は見ない
+if [ -n "${TERMUX_VERSION-}" ]; then
+	case ":${PATH-}:" in
+	*":$HOME/.local/bin:"*) ;;
+	*) export PATH="$HOME/.local/bin${PATH:+:}${PATH-}" ;;
+	esac
+fi
+
 # Neovim を既定のエディタにする（setup-notes の docs/neovim.md の「Neovim」の手順 4）
 # ツールの有無で決める
 if command -v nvim >/dev/null 2>&1; then

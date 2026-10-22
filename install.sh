@@ -73,13 +73,22 @@ for file in .bash_profile .bash_login .profile; do
 		break
 	fi
 done
-if [[ -z "$profile_file" ]]; then
-	(set -o noclobber; printf '%s\n' \
-		'# bash/install.sh: ログインシェルでも ~/.bashrc を読む' \
-		'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi' > "$HOME/.bash_profile")
-	printf '%s\n' '~/.bash_profile: 作成済み'
+if [[ -n "${TERMUX_VERSION-}" ]]; then
+	# Termux の $PREFIX/etc/profile は、ログインの対話シェルで ~/.bashrc を自分で読む
+	if [[ -z "$profile_file" ]]; then
+		printf '%s\n' '~/.bash_profile: 作成しない（Termux の $PREFIX/etc/profile がログインシェルで ~/.bashrc を読む）'
+	else
+		printf '~/%s: 既存の内容を維持。Termux の $PREFIX/etc/profile もログインシェルで ~/.bashrc を読むので、このファイルが ~/.bashrc を読むなら 2 回読まれる\n' "$profile_file"
+	fi
 else
-	printf '~/%s: 既存の内容を維持。ログインシェルから ~/.bashrc を読むことを確認する\n' "$profile_file"
+	if [[ -z "$profile_file" ]]; then
+		(set -o noclobber; printf '%s\n' \
+			'# bash/install.sh: ログインシェルでも ~/.bashrc を読む' \
+			'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi' > "$HOME/.bash_profile")
+		printf '%s\n' '~/.bash_profile: 作成済み'
+	else
+		printf '~/%s: 既存の内容を維持。ログインシェルから ~/.bashrc を読むことを確認する\n' "$profile_file"
+	fi
 fi
 printf '%s\n' \
 	'完了: 端末を開き直す。確認: echo "${__bash_config_loaded-読まれていない}"' \

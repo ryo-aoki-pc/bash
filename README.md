@@ -1,19 +1,20 @@
 # bash
 
-いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）と、Windows 11 の Git Bash で同じものを使う。
+いろいろなホストで共有する bash の設定。AlmaLinux 10（x86_64 / aarch64、WSL を含む）、Windows 11 の Git Bash、Android の Termux で同じものを使う。
 
 ## 導入
 
-- 対象: AlmaLinux 10 の自分のユーザーの bash と、Windows 11 の Git Bash。WSL は WSL の中で AlmaLinux 10 と同じ手順を行う。macOS・zsh・MSYS2・QMK MSYS は対象外
+- 対象: AlmaLinux 10 の自分のユーザーの bash、Windows 11 の Git Bash、Android の Termux。WSL は WSL の中で AlmaLinux 10 と同じ手順を行う。macOS・zsh・MSYS2・QMK MSYS は対象外
 - `~/.config/bash` に HTTPS で clone し（公開なので認証は要らない）、`install.sh` で `~/.bashrc` に読み込みの 1 行を足す。`install.sh` は、`~/.bashrc` の控えを作り、既存の内容を保つ
-- 手順は setup-notes の[シェルと端末のセットアップ](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md)にある
+- Termux では `$PREFIX/etc/profile` がログインシェルで `~/.bashrc` を読むので、`install.sh` は `~/.bash_profile` を作らない
+- 手順は、次の表の setup-notes の各項にある
 
-| | AlmaLinux 10 | Windows 11 |
-| --- | --- | --- |
-| 導入 | [共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) | [Git Bash と WezTerm の設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)の手順 1〜6 (手順 6 が共通の bash 設定。手順 4 の Git の設定を clone より前に行う) |
-| root にも入れる | [共通の bash 設定を root に入れる](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を-root-に入れる) | — |
-| 更新 | [共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) | [Windows 11 で共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する) |
-| 戻す | [ロールバック](docs/extra/quick-start.md#ロールバック) | 同じ (Git Bash に貼る) |
+| | AlmaLinux 10 | Windows 11 | Android の Termux |
+| --- | --- | --- | --- |
+| 導入 | [共通の bash 設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定) | [Git Bash と WezTerm の設定](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#git-bash-と-wezterm-の設定)の手順 1〜6 (手順 6 が共通の bash 設定。手順 4 の Git の設定を clone より前に行う) | [Termux のシェル](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル) |
+| root にも入れる | [共通の bash 設定を root に入れる](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を-root-に入れる) | — | — |
+| 更新 | [共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#共通の-bash-設定を更新する) | [Windows 11 で共通の bash 設定を更新する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#windows-11-で共通の-bash-設定を更新する) | [Termux のシェル: 更新](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル-更新) |
+| 戻す | [ロールバック](docs/extra/quick-start.md#ロールバック) | 同じ (Git Bash に貼る) | 同じ (Termux に貼る) |
 
 - root に入れるのは、自分専用のマシンで一般ユーザーを信用できるときだけ（[root のシェルでの違い](docs/reference/readme.md#root-のシェルでの違い)）
 
