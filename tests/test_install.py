@@ -20,6 +20,7 @@ class InstallTest(unittest.TestCase):
         self.repo = self.home / ".config/bash"
         shutil.copytree(ROOT, self.repo, ignore=shutil.ignore_patterns(".git", "__pycache__"))
         self.env = {**os.environ, "HOME": str(self.home), "BASH_ENV": "/dev/null"}
+        self.env.pop("TERMUX_VERSION", None)
         self.rc = self.home / ".bashrc"
         self.backup = self.home / ".bashrc.before-bash"
 
@@ -32,7 +33,8 @@ class InstallTest(unittest.TestCase):
         return result
 
     def test_fresh_and_repeat(self):
-        self.install()
+        result = self.install()
+        self.assertIn("~/.bash_profile: 作成済み", result.stdout.splitlines())
         self.assertEqual(self.rc.read_text(), SOURCE)
         self.assertEqual(self.backup.read_bytes(), b"")
         profile = self.home / ".bash_profile"
@@ -53,6 +55,106 @@ class InstallTest(unittest.TestCase):
             env=self.env, text=True, capture_output=True, check=False,
         )
         self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
+
+    def bashrc_path(self, search_path, termux_version=None, repeat=1):
+        env = {**self.env, "PATH": search_path}
+        if termux_version is not None:
+            env["TERMUX_VERSION"] = termux_version
+        bash = shutil.which("bash")
+        self.assertIsNotNone(bash)
+        # 読み込み自体が無出力かも確かめるため、PATH は一時ホームのファイルに受ける。
+        result = subprocess.run(
+            [bash, "-uc", '. "$HOME/.bashrc"; ' * repeat
+             + 'printf "%s" "$PATH" > "$HOME/path-after-bashrc"'],
+            env=env, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
+        return (self.home / "path-after-bashrc").read_text()
+
+    def test_empty_termux_version_creates_profile(self):
+        self.env["TERMUX_VERSION"] = ""
+        result = self.install()
+        self.assertIn("~/.bash_profile: 作成済み", result.stdout.splitlines())
+        self.assertIn(". ~/.bashrc", (self.home / ".bash_profile").read_text())
+
+    def test_termux_skips_profile_and_repeat(self):
+        self.env["TERMUX_VERSION"] = "0.118.3"
+        message = (
+            "~/.bash_profile: 作成しない（Termux の $PREFIX/etc/profile が"
+            "ログインシェルで ~/.bashrc を読む）"
+        )
+        result = self.install()
+        self.assertIn(message, result.stdout.splitlines())
+        self.assertFalse((self.home / ".bash_profile").exists())
+        self.assertEqual(self.rc.read_text(), SOURCE)
+        self.assertEqual(self.backup.read_bytes(), b"")
+        before = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in (self.rc, self.backup)}
+        result = self.install()
+        self.assertIn(message, result.stdout.splitlines())
+        self.assertEqual(before, {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in before})
+        for name in (".bash_profile", ".bash_login", ".profile"):
+            self.assertFalse((self.home / name).exists())
+
+    def test_termux_preserves_existing_login_profiles(self):
+        self.env["TERMUX_VERSION"] = "0.118.3"
+        profiles = [self.home / name for name in (".bash_profile", ".bash_login", ".profile")]
+        for profile in profiles:
+            profile.write_text("# 既存のログイン設定\n")
+        before = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in profiles}
+        self.install()
+        self.assertEqual(before, {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in profiles})
+
+    def test_termux_prepends_local_bin_without_duplicates(self):
+        self.install()
+        local_bin = self.home / ".local/bin"
+        local_bin.mkdir(parents=True)
+        # Homebrew がある環境でも比較できるよう、通常の読み込み後の PATH を基準にする。
+        baseline = self.bashrc_path(os.defpath)
+        self.assertEqual(
+            self.bashrc_path(os.defpath, "0.118.3"), f"{local_bin}:{baseline}",
+        )
+        repeated = self.bashrc_path(os.defpath, "0.118.3", repeat=2)
+        self.assertEqual(repeated.split(":").count(str(local_bin)), 1)
+
+    def test_termux_keeps_local_bin_already_in_path(self):
+        self.install()
+        local_bin = self.home / ".local/bin"
+        local_bin.mkdir(parents=True)
+        for search_path in (
+            f"{local_bin}:{os.defpath}",
+            f"{os.defpath}:{local_bin}",
+            f"{os.defpath}:{local_bin}:{os.defpath}",
+        ):
+            with self.subTest(search_path=search_path):
+                baseline = self.bashrc_path(search_path)
+                self.assertEqual(self.bashrc_path(search_path, "0.118.3"), baseline)
+                self.assertEqual(baseline.split(":").count(str(local_bin)), 1)
+
+    def test_termux_does_not_confuse_similar_paths_with_local_bin(self):
+        self.install()
+        local_bin = self.home / ".local/bin"
+        local_bin.mkdir(parents=True)
+        for similar in (f"{local_bin}-other", f"{local_bin}/tools"):
+            with self.subTest(similar=similar):
+                search_path = f"{similar}:{os.defpath}"
+                baseline = self.bashrc_path(search_path)
+                self.assertEqual(
+                    self.bashrc_path(search_path, "0.118.3"), f"{local_bin}:{baseline}",
+                )
+
+    def test_termux_leaves_path_when_local_bin_is_missing(self):
+        self.install()
+        baseline = self.bashrc_path(os.defpath)
+        self.assertEqual(self.bashrc_path(os.defpath, "0.118.3"), baseline)
+        self.assertFalse((self.home / ".local/bin").exists())
+
+    def test_non_termux_does_not_add_local_bin(self):
+        self.install()
+        local_bin = self.home / ".local/bin"
+        local_bin.mkdir(parents=True)
+        baseline = self.bashrc_path(os.defpath)
+        self.assertNotIn(str(local_bin), baseline.split(":"))
+        self.assertEqual(self.bashrc_path(os.defpath, ""), baseline)
 
     def test_preserves_existing_lines_and_functions(self):
         original = (

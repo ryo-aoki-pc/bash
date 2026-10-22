@@ -6,13 +6,13 @@
 
 ## 導入手順の正本
 
-導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
+導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）、[android.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル) の「Termux のシェル」（Android）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
 
 ## このリポジトリは何か
 
-AlmaLinux 10・WSL・Windows 11 の Git Bash で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
+AlmaLinux 10・WSL・Windows 11 の Git Bash・Android の Termux で共有する bash 設定。各ホストの `~/.config/bash` に公開 URL を HTTPS で clone し、`~/.bashrc` の 1 行で読む。root は自分の clone を使い、一般ユーザーを信用できるホストで導入する。
 
-初回導入は正本から `install.sh` を実行する。読み込み行を足した内容の構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。設定本体の実行・ネットワーク接続・ツールの導入はしない。
+初回導入は正本から `install.sh` を実行する。読み込み行を足した内容の構文検査を先に行い、控えが既にあれば上書きせず中断する。`.bashrc` のリンクとモードを保ち、既存のログイン設定は変えない。Termux では `~/.bash_profile` を作らず、`$PREFIX/etc/profile` による `~/.bashrc` の読み込みを使う。設定本体の実行・ネットワーク接続・ツールの導入はしない。
 
 ビルド・外部のテストフレームワークは無い。ドキュメント・コードのコメント・コミットメッセージは日本語で書く。検証していないことを「動く」と書かない。
 
