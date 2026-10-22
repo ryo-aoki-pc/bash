@@ -66,16 +66,21 @@ else
 	printf '%s\n' '~/.bashrc: 設定済み（元の内容: ~/.bashrc.before-bash）'
 fi
 
+profile_file=
+for file in .bash_profile .bash_login .profile; do
+	if [[ -e "$HOME/$file" || -L "$HOME/$file" ]]; then
+		profile_file=$file
+		break
+	fi
+done
 if [[ -n "${TERMUX_VERSION-}" ]]; then
-	printf '%s\n' '~/.bash_profile: 作成しない（Termux の $PREFIX/etc/profile がログインシェルで ~/.bashrc を読む）'
+	# Termux の $PREFIX/etc/profile は、ログインの対話シェルで ~/.bashrc を自分で読む
+	if [[ -z "$profile_file" ]]; then
+		printf '%s\n' '~/.bash_profile: 作成しない（Termux の $PREFIX/etc/profile がログインシェルで ~/.bashrc を読む）'
+	else
+		printf '~/%s: 既存の内容を維持。Termux の $PREFIX/etc/profile もログインシェルで ~/.bashrc を読むので、このファイルが ~/.bashrc を読むなら 2 回読まれる\n' "$profile_file"
+	fi
 else
-	profile_file=
-	for file in .bash_profile .bash_login .profile; do
-		if [[ -e "$HOME/$file" || -L "$HOME/$file" ]]; then
-			profile_file=$file
-			break
-		fi
-	done
 	if [[ -z "$profile_file" ]]; then
 		(set -o noclobber; printf '%s\n' \
 			'# bash/install.sh: ログインシェルでも ~/.bashrc を読む' \

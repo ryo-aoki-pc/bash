@@ -9,7 +9,7 @@
 | 読むもの | 条件 | 前半 / 後半 | 手順書 |
 |---|---|---|---|
 | Homebrew の PATH（`brew shellenv`） | `/home/linuxbrew/.linuxbrew/bin/brew` がある | 前半 | setup-notes の [almalinux-setup.md の「Homebrew」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#homebrew)の手順 3 |
-| `~/.local/bin` を PATH の先頭に | Termux（`TERMUX_VERSION` が空でない）で、ディレクトリがあり、PATH に含まれない | 前半 | setup-notes の [android.md の「Termux のシェル」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル) |
+| `~/.local/bin` を PATH の先頭に | Termux（`TERMUX_VERSION` が空でない）で、PATH に含まれない（フォルダの有無は見ない） | 前半 | setup-notes の [android.md の「Termux のシェル」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル) |
 | `EDITOR` / `VISUAL` を `nvim` に | `nvim` がある | 前半 | [neovim.md の「Neovim」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md#neovim)の手順 4 |
 | `MANPAGER=bat -plman` | `bat` がある | 前半 | [シェルと端末のセットアップの「シェルのツール」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#シェルのツール)の手順 7 |
 | `DOCKER_HOST` を podman のソケットに | `DOCKER_HOST` が空で、`$XDG_RUNTIME_DIR/podman/podman.sock` がある（root は `/run/podman/podman.sock` がある） | 前半 | [Podman の「Docker 向けのツールから使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/containers.md#podman-docker-向けのツールから使う)（root は [lazydocker の「root でも使う」](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/containers.md#lazydocker-root-でも使う)） |

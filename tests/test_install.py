@@ -58,7 +58,9 @@ class InstallTest(unittest.TestCase):
 
     def bashrc_path(self, search_path, termux_version=None, repeat=1):
         env = {**self.env, "PATH": search_path}
-        if termux_version is not None:
+        if termux_version is None:
+            env.pop("TERMUX_VERSION", None)
+        else:
             env["TERMUX_VERSION"] = termux_version
         bash = shutil.which("bash")
         self.assertIsNotNone(bash)
@@ -101,8 +103,13 @@ class InstallTest(unittest.TestCase):
         for profile in profiles:
             profile.write_text("# 既存のログイン設定\n")
         before = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in profiles}
-        self.install()
+        result = self.install()
         self.assertEqual(before, {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in profiles})
+        self.assertIn(
+            "~/.bash_profile: 既存の内容を維持。Termux の $PREFIX/etc/profile もログインシェルで"
+            " ~/.bashrc を読むので、このファイルが ~/.bashrc を読むなら 2 回読まれる",
+            result.stdout.splitlines(),
+        )
 
     def test_termux_prepends_local_bin_without_duplicates(self):
         self.install()
@@ -142,11 +149,15 @@ class InstallTest(unittest.TestCase):
                     self.bashrc_path(search_path, "0.118.3"), f"{local_bin}:{baseline}",
                 )
 
-    def test_termux_leaves_path_when_local_bin_is_missing(self):
+    def test_termux_adds_local_bin_even_when_missing(self):
+        # 後から作られたときに同じシェルで使えるよう、フォルダが無くても足す
         self.install()
+        local_bin = self.home / ".local/bin"
         baseline = self.bashrc_path(os.defpath)
-        self.assertEqual(self.bashrc_path(os.defpath, "0.118.3"), baseline)
-        self.assertFalse((self.home / ".local/bin").exists())
+        self.assertEqual(
+            self.bashrc_path(os.defpath, "0.118.3"), f"{local_bin}:{baseline}",
+        )
+        self.assertFalse(local_bin.exists())
 
     def test_non_termux_does_not_add_local_bin(self):
         self.install()
