@@ -6,7 +6,7 @@
 
 ## 導入手順の正本
 
-導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）、[android.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/android.md#termux-のシェル) の「Termux のシェル」（Android）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
+導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
 
 ## このリポジトリは何か
 
@@ -46,7 +46,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
   - zoxide は `HOME` ではなく `%LOCALAPPDATA%\zoxide` にデータベースを書くので、`_ZO_DATA_DIR` を一時的な場所にする
   - Git の `/etc/profile` は、環境変数 `ORIGINAL_PATH` があるとそれで `PATH` を組み立て直す。Claude Code などの Git Bash から起動したログインシェルで PATH を足すなら、`ORIGINAL_PATH` を外す
   - sshd の非対話は、`C:\Program Files\Git\bin\bash.exe -c <コマンド>` を `SSH_CLIENT` を付け、`SHLVL` を外して起動すると真似られる（`~/.bashrc` を読む）
-  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる。setup-notes の windows-setup.md の「SSH でログインを確かめる」と、その注意点）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
+  - 本物の sshd で試すときは、同じ PC の WSL の AlmaLinux 10 から、LAN の IP あてに鍵でつなぐ（WSL の既定の経路の先の IP あては、ファイアウォールで捨てられる）。本物の `~/.bashrc` は変えず、遠くで `env -u SHLVL HOME=<使い捨て> bash -c <コマンド>` を起動する
     - `scp -O`・scp は `-S` に遠くのコマンドを包むラッパーを、sftp は `-s` に同じ形のコマンド（`/` を含むとサブシステムではなくコマンドになる）を渡す。Windows の sshd は `sftp-server.exe` も bash から起動する
     - 対話は、`ssh <HOST>` でコマンドなしに入り、`exec env HOME=<使い捨て> … bash -i` に入れ替える（`ssh -tt <HOST> <コマンド>` は、最初の語しか動かなかった）。1 行が長い（585 文字）と次の入力まで渡らなかったので、パスは変数に入れて短くする。値は端末の出力からは拾わず（ConPTY が画面を描き直す）、遠くでファイルに書く
     - SSH のセッションで scoop の shim が起動できない状態は、自分のユーザーで作ったジャンクションを通る shim で作れる（SSH でなければ動く）
@@ -61,7 +61,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 
 - `bashrc` — 本体。前半（PATH と環境変数。非対話のシェルでも読む）と、`case $- in *i*)` で分けた後半（エイリアス・関数・プロンプト。対話のシェルだけ）。最後に `__bash_config_loaded=1`
 - `install.sh` — 初回の読み込み設定と控えの作成。`tests/test_install.py` が、一時ホームで導入・既存内容の保持・再実行を確かめる
-- `docs/extra/install.md` — 注意点。`docs/extra/quick-start.md` — `install.sh` のロールバック
+- `docs/extra/install.md` — 注意点
 - `docs/reference/readme.md` — 読むもの・Git Bash と root での違い・読む順番。`docs/reference/install.md` — 導入の背景と `install.sh` の仕組み
 - 非公開側の検証記録 — `readme.md` は README と参考資料の実測、`install.md` は設定本体と導入、`quick-start.md` は `install.sh`、`claude.md` は開発ガイドの検証記録
 - `.gitattributes` — `* text=auto eol=lf`（scoop の git の `core.autocrlf=true` で clone しても CRLF にしない。CRLF の `bashrc` は bash が読めない）
@@ -94,7 +94,7 @@ bash --norc -u -i -c '. ~/.config/bash/bashrc; echo "ok-$__bash_config_loaded"' 
 ## 文書の置き場所
 
 - 導入・利用・更新の手順は正本に置き、README の「導入」の表から正本の項へ直接リンクする（手順書の先頭やカテゴリの見出しへはリンクしない）。執筆規則は setup-notes の `docs/dev/writing-rules.md`
-- `docs/extra/` はロールバックと注意点、`docs/reference/` は背景。検証記録（環境・日付・対象コミット・実出力・未確認事項）は、非公開の `ryo-aoki-pc/setup-notes-verification` の `repos/bash/docs/verification/` に置く。変更後の確認のコマンドは上の「よく使うコマンド」
+- `docs/extra/` は注意点。ロールバック（取り消し）の手順は書かない。`docs/reference/` は背景。検証記録（環境・日付・対象コミット・実出力・未確認事項）は、非公開の `ryo-aoki-pc/setup-notes-verification` の `repos/bash/docs/verification/` に置く。変更後の確認のコマンドは上の「よく使うコマンド」
 - 検証記録を書く・直すときは、`setup-notes-verification` を clone し、そちらへ Pull Request を作る
 - 文書を移す・分ける・まとめるときは、移した経緯と、旧ファイル名・旧見出しとの対応を文書に書かない（経緯は git の履歴と Pull Request の本文に残す）。リンクを今の場所へ直す。中身が新しい場所への案内だけになったファイルは消す
 - 残す検証記録の実施日・対象版・環境・出力・成功と失敗・未実施の範囲・記録したときの手順番号は書き換えない。再検証せずに検証範囲を広げない。記録の手順番号が今の手順と違い、本文を読むのに要るときだけ「記録の手順 | 今の手順」の表で結ぶ
