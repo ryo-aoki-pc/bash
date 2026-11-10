@@ -26,7 +26,7 @@
 ## ホストだけの設定
 
 - `~/.bashrc` の、読み込みの 1 行より後ろに書く（この設定の後に読まれ、上書きできる）
-- 例: `GITLAB_TOKEN`（setup-notes の[LazyVim の GitLab プレビューを設定する](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/neovim.md#lazyvim-の-gitlab-プレビューを設定する)）、WSL で Windows 側の WezTerm のシェル統合を読む行（[WezTerm のシェル統合を WSL で使う](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#wezterm-のシェル統合を-wsl-で使う)）、`BAT_CONFIG_PATH` の独自の場所、eza の独自のオプション
+- 例: ホストごとの `GITLAB_TOKEN` の設定、WSL で Windows 側の WezTerm のシェル統合を読む行（[WezTerm のシェル統合を WSL で使う](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md#wezterm-のシェル統合を-wsl-で使う)）、`BAT_CONFIG_PATH` の独自の場所、eza の独自のオプション
 - Homebrew のコマンドを使う行も後ろに書く。Homebrew の PATH は、読み込みの 1 行で足される（Homebrew の補完は共通設定が読む）
 - zoxide を別の形（`--cmd cd` など）でも使うなら、`--hook none` を付けて後ろに書く（例: `eval "$(zoxide init bash --cmd cd --hook none)"`）。付けないと、AlmaLinux 10（配列の `PROMPT_COMMAND`）ではフックが 2 つになる。`z` はこの設定が定義する
 - トークン・パスワード・トンネルの変数（`ALL_PROXY`・`https_proxy`）は、このリポジトリに書かない。トンネルの変数は、トンネルを張ったシェルの中だけで設定し、永続化しない（setup-notes の[SSH の SOCKS トンネル](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/almalinux-setup.md#ssh-の-socks-トンネル)）
