@@ -4,7 +4,7 @@
 
 ## 導入手順の正本
 
-導入・利用・更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Git Bash と WezTerm の設定」とその子の項（Windows 11）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
+AlmaLinux 10 の導入・利用・更新と Windows 11 の更新の手順は、setup-notes の [shell-terminal.md](https://github.com/ryo-aoki-pc/setup-notes/blob/main/docs/shell-terminal.md) の「共通の bash 設定」とその子の項（AlmaLinux 10）、「Windows 11 で共通の bash 設定を更新する」（Windows 11 の更新）にある。このリポジトリには置かない。共通 bash 設定が読むツールの初期化を、手順書で `~/.bashrc` に直接追記させない。
 
 ## このリポジトリは何か
 
